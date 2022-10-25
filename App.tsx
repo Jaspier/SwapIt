@@ -1,3 +1,4 @@
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider } from "./hooks/authentication/authenticationContext";
 import StackNavigator from "./StackNavigator";
