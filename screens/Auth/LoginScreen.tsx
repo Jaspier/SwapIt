@@ -3,9 +3,12 @@ import {
   AccountContainer,
   AuthButton,
   AuthInput,
+  ErrorContainer,
 } from "./components/authStyles";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
+import { Text } from "react-native";
+import { ActivityIndicator, Colors } from "react-native-paper";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +17,7 @@ const LoginScreen = () => {
   if (!authContext) {
     return null;
   }
-  const { loginWithEmailAndPassword } = authContext;
+  const { loginWithEmailAndPassword, isLoading, error } = authContext;
 
   return (
     <SafeArea>
@@ -35,13 +38,22 @@ const LoginScreen = () => {
           autoCapitalize="none"
           onChangeText={(p) => setPassword(p)}
         />
-        <AuthButton
-          icon="lock-open-outline"
-          mode="contained"
-          onPress={() => loginWithEmailAndPassword(email, password)}
-        >
-          Login
-        </AuthButton>
+        {error && (
+          <ErrorContainer>
+            <Text style={{ color: "red" }}>{error}</Text>
+          </ErrorContainer>
+        )}
+        {!isLoading ? (
+          <AuthButton
+            icon="lock-open-outline"
+            mode="contained"
+            onPress={() => loginWithEmailAndPassword(email, password)}
+          >
+            Login
+          </AuthButton>
+        ) : (
+          <ActivityIndicator animating={true} color={Colors.blue300} />
+        )}
       </AccountContainer>
     </SafeArea>
   );
