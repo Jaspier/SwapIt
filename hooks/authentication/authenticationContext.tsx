@@ -3,30 +3,6 @@ import { Auth, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { loginRequest } from "./authenticationService";
 
-interface UserObj {
-  user: {
-    displayName: string;
-    email: string;
-    uid: string;
-  };
-}
-
-interface LoginFunction {
-  (arg1: string, arg2: string): void;
-}
-
-interface SignOutFunction {
-  (arg1: Auth): void;
-}
-
-interface AuthContextInterface {
-  user: UserObj | null;
-  loginWithEmailAndPassword: LoginFunction;
-  logout: SignOutFunction;
-  isLoading: boolean;
-  error: string | null;
-}
-
 type Props = {
   children?: React.ReactNode;
 };
