@@ -1,6 +1,7 @@
 import { View, ImageBackground, TouchableOpacity, Text } from "react-native";
 import styled from "styled-components";
 import { Button, TextInput } from "react-native-paper";
+import { colors } from "../../../theme/colors";
 
 export const AuthBackground = styled(ImageBackground).attrs({
   source: require("../../../assets/background.jpg"),
@@ -32,16 +33,16 @@ export const SplashText = styled(Text)`
 
 export const AuthContainer = styled(View)`
   background-color: rgba(255, 255, 255, 0.4);
-  padding: 32px;
-  margin-top: 8px;
+  padding: ${(props) => props.theme.space[4]};
+  margin-top: ${(props) => props.theme.space[2]};
   align-items: center;
 `;
 
 export const AuthButton = styled(Button).attrs({
-  color: "lightgreen",
+  color: colors.brand.primary,
 })`
-  padding: 8px;
-  margin-top: 32px;
+  padding: ${(props) => props.theme.space[2]};
+  margin-top: ${(props) => props.theme.space[4]};
 `;
 
 export const AuthInput = styled(TextInput)`
@@ -53,6 +54,6 @@ export const ErrorContainer = styled(View)`
   max-width: 300px;
   align-items: center;
   align-self: center;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: ${(props) => props.theme.space[2]};
+  margin-bottom: ${(props) => props.theme.space[2]};
 `;

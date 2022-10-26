@@ -1,4 +1,4 @@
-import { StatusBar, SafeAreaView, View } from "react-native";
+import { StatusBar, SafeAreaView, View, Text } from "react-native";
 import styled from "styled-components";
 
 export const SafeArea = styled(SafeAreaView)`
@@ -9,4 +9,8 @@ export const SafeArea = styled(SafeAreaView)`
 
 export const FullArea = styled(View)`
   flex: 1;
+`;
+
+export const ErrorText = styled(Text)`
+  color: ${(props) => props.theme.colors.text.error};
 `;

@@ -8,8 +8,7 @@ import {
   Title,
 } from "./components/authStyles";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
-import { FullArea } from "../../components/utilities";
-import { Text } from "react-native";
+import { ErrorText, FullArea } from "../../components/utilities";
 import { ActivityIndicator, Colors } from "react-native-paper";
 
 const LoginScreen = () => {
@@ -44,7 +43,7 @@ const LoginScreen = () => {
           />
           {error && (
             <ErrorContainer>
-              <Text style={{ color: "red" }}>{error}</Text>
+              <ErrorText>{error}</ErrorText>
             </ErrorContainer>
           )}
           {!isLoading ? (
