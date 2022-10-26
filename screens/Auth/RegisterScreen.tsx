@@ -15,11 +15,12 @@ import { ActivityIndicator, Colors } from "react-native-paper";
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [repeatedPassword, setRepeatedPassword] = useState("");
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
   }
-  const { loginWithEmailAndPassword, isLoading, error } = authContext;
+  const { registerWithEmailAndPassword, isLoading, error } = authContext;
 
   return (
     <FullArea>
@@ -42,6 +43,14 @@ const LoginScreen = ({ navigation }: any) => {
             autoCapitalize="none"
             onChangeText={(p) => setPassword(p)}
           />
+          <AuthInput
+            label="Repeat Password"
+            value={repeatedPassword}
+            textContentType="password"
+            secureTextEntry
+            autoCapitalize="none"
+            onChangeText={(p) => setRepeatedPassword(p)}
+          />
           {error && (
             <ErrorContainer>
               <ErrorText>{error}</ErrorText>
@@ -49,11 +58,13 @@ const LoginScreen = ({ navigation }: any) => {
           )}
           {!isLoading ? (
             <AuthButton
-              icon="lock-open-outline"
+              icon="email-outline"
               mode="contained"
-              onPress={() => loginWithEmailAndPassword(email, password)}
+              onPress={() =>
+                registerWithEmailAndPassword(email, password, repeatedPassword)
+              }
             >
-              Login
+              Register
             </AuthButton>
           ) : (
             <ActivityIndicator animating={true} color={Colors.blue300} />
@@ -61,9 +72,9 @@ const LoginScreen = ({ navigation }: any) => {
         </AuthContainer>
         <Spacer />
         <Label>
-          Don't have an account?{" "}
-          <LinkedLabel onPress={() => navigation.navigate("Register")}>
-            Click here to Register.
+          Have an account already?{" "}
+          <LinkedLabel onPress={() => navigation.navigate("Login")}>
+            Click here to Login.
           </LinkedLabel>
         </Label>
       </AuthBackground>
