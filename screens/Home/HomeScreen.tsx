@@ -1,6 +1,7 @@
-import { View, Text, Button } from "react-native";
+import { Text, Button } from "react-native";
 import React from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
+import { SafeArea } from "../../components/utilities";
 
 const HomeScreen = () => {
   const authContext = AuthenticationContext();
@@ -9,10 +10,10 @@ const HomeScreen = () => {
   }
   const { logout } = authContext;
   return (
-    <View>
+    <SafeArea>
       <Text>HomeScreen</Text>
       <Button title="Logout" onPress={() => logout()} />
-    </View>
+    </SafeArea>
   );
 };
 
