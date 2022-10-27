@@ -38,6 +38,7 @@ const AuthContext = createContext<AuthContextInterface | null>(null);
 
 export const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState(null);
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }: Props) => {
         } else {
           setUser(null);
         }
-        setIsLoading(false);
+        setLoadingInitial(false);
       }),
     []
   );
@@ -109,7 +110,9 @@ export const AuthProvider = ({ children }: Props) => {
   );
 
   return (
-    <AuthContext.Provider value={memoedValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={memoedValue}>
+      {!loadingInitial && children}
+    </AuthContext.Provider>
   );
 };
 
