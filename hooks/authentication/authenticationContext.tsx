@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -90,18 +96,20 @@ export const AuthProvider = ({ children }: Props) => {
     });
   };
 
-  const sampleAuthContext: AuthContextInterface = {
-    user: user,
-    loginWithEmailAndPassword,
-    registerWithEmailAndPassword,
-    logout,
-    isLoading: isLoading,
-    error: error,
-  };
+  const memoedValue: AuthContextInterface = useMemo(
+    () => ({
+      user: user,
+      loginWithEmailAndPassword,
+      registerWithEmailAndPassword,
+      logout,
+      isLoading: isLoading,
+      error: error,
+    }),
+    [user, isLoading, error]
+  );
+
   return (
-    <AuthContext.Provider value={sampleAuthContext}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={memoedValue}>{children}</AuthContext.Provider>
   );
 };
 
