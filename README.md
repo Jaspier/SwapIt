@@ -11,7 +11,11 @@ A mobile app for swapping various items with others via interactive swipeable pr
 ## Installation
 
 - yarn
+
+## Usage
+
 - npm start
+- Requires [SwapIt-Backend](https://gitlab2.eeecs.qub.ac.uk/40253397/swapit-backend) running locally on port 8000 (for now until it is deployed)
 
 ## Support
 
