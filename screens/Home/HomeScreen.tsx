@@ -1,29 +1,40 @@
-import { Text, Button, View, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import React from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
-import { AvatarPressable } from "./homeStyles";
+import { HeaderContainer, AvatarIcon, Logo } from "./homeStyles";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from "../../theme/colors";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }: any) => {
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
   }
-  const { user, logout }: AuthContextInterface = authContext;
+  const { user }: AuthContextInterface = authContext;
   return (
     <SafeArea>
       {/* Start of Header */}
-      <View>
-        <TouchableOpacity>
-          <AvatarPressable
-            size={48}
+      <HeaderContainer>
+        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+          <AvatarIcon
             label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
           />
         </TouchableOpacity>
-      </View>
+
+        <TouchableOpacity>
+          <Logo>SwapIt</Logo>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate("Chat")}>
+          <Ionicons
+            name="chatbubbles-sharp"
+            size={30}
+            color={colors.brand.primary}
+          />
+        </TouchableOpacity>
+      </HeaderContainer>
       {/* End of Header */}
-      <Text>HomeScreen</Text>
-      <Button title="Logout" onPress={() => logout()} />
     </SafeArea>
   );
 };
