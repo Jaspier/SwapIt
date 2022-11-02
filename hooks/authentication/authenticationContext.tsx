@@ -13,23 +13,6 @@ import {
 import { auth } from "../../firebase";
 import { loginRequest } from "./authenticationService";
 
-interface LoginWithEmailAndPassword {
-  (arg1: string, arg2: string): void;
-}
-
-interface RegisterWithEmailAndPassword {
-  (arg1: string, arg2: string, arg3: string): void;
-}
-
-interface AuthContextInterface {
-  user: UserObj | null;
-  loginWithEmailAndPassword: LoginWithEmailAndPassword;
-  registerWithEmailAndPassword: RegisterWithEmailAndPassword;
-  logout: Logout;
-  isLoading: boolean;
-  error: string | null;
-}
-
 type Props = {
   children?: React.ReactNode;
 };
