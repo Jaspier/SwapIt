@@ -5,9 +5,13 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import { auth } from "../../firebase";
-import axios from "axios";
+import { loginRequest } from "./authenticationService";
 
 interface LoginWithEmailAndPassword {
   (arg1: string, arg2: string): void;
@@ -53,17 +57,14 @@ export const AuthProvider = ({ children }: Props) => {
 
   const loginWithEmailAndPassword = (email: string, password: string) => {
     setIsLoading(true);
-    axios
-      .post("/login", {
-        email,
-        password,
-      })
+    loginRequest(email, password)
       .then((u: any) => {
         if (u.data.status_code === 400) {
           setIsLoading(false);
           setError(u.data.detail.message);
           return;
         }
+        console.log(u.data.token);
         setUser(u);
         setIsLoading(false);
       })
@@ -84,11 +85,7 @@ export const AuthProvider = ({ children }: Props) => {
       setError("Error: Passwords do not match");
       return;
     }
-    axios
-      .post("/signup", {
-        email,
-        password,
-      })
+    createUserWithEmailAndPassword(auth, email, password)
       .then((u: any) => {
         if (u.data.status_code === 400) {
           setIsLoading(false);
