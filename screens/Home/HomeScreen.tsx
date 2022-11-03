@@ -76,6 +76,10 @@ const HomeScreen = ({ navigation }: any) => {
       <SwiperContainer>
         <DeckSwiper
           cards={DUMMY_DATA}
+          stackSize={5}
+          cardIndex={0}
+          animateCardOpacity
+          verticalSwipe={false}
           renderCard={(card: any) => (
             <Card key={card.id}>
               <CardImage source={{ uri: card.photoURLs[0] }} />
