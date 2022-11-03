@@ -1,4 +1,4 @@
-import { TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
@@ -10,6 +10,9 @@ import {
   SwiperContainer,
   Card,
   CardImage,
+  CardFooter,
+  ItemName,
+  Location,
 } from "./homeStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
@@ -83,6 +86,14 @@ const HomeScreen = ({ navigation }: any) => {
           renderCard={(card: any) => (
             <Card key={card.id}>
               <CardImage source={{ uri: card.photoURLs[0] }} />
+
+              <CardFooter>
+                <View>
+                  <ItemName>{card.itemName}</ItemName>
+                  <Text>{card.displayName}</Text>
+                </View>
+                <Location>{card.location}</Location>
+              </CardFooter>
             </Card>
           )}
         />
