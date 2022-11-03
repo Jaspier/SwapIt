@@ -83,6 +83,31 @@ const HomeScreen = ({ navigation }: any) => {
           cardIndex={0}
           animateCardOpacity
           verticalSwipe={false}
+          onSwipedLeft={() => {
+            console.log("Swipe NOPE");
+          }}
+          onSwipedRight={() => {
+            console.log("Swipe SWAPIT!");
+          }}
+          overlayLabels={{
+            left: {
+              title: "NOPE",
+              style: {
+                label: {
+                  textAlign: "right",
+                  color: "red",
+                },
+              },
+            },
+            right: {
+              title: "SWAPIT",
+              style: {
+                label: {
+                  color: colors.brand.primary,
+                },
+              },
+            },
+          }}
           renderCard={(card: any) => (
             <Card key={card.id}>
               <CardImage source={{ uri: card.photoURLs[0] }} />
