@@ -39,7 +39,7 @@ export const Card = styled(View)`
   background-color: white;
   height: 75%;
   border-radius: 12px;
-  shadow-color: #000;
+  box-shadow: 0px 1px rgba(0, 0, 0, 0.2);
 `;
 
 export const CardImage = styled(Image)`
