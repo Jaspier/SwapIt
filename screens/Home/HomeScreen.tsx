@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useRef } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import {
@@ -13,8 +13,10 @@ import {
   CardFooter,
   ItemName,
   Location,
+  SwipeButtonsContainer,
+  SwipeButton,
 } from "./homeStyles";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
 
 const DUMMY_DATA = [
@@ -47,6 +49,7 @@ const DUMMY_DATA = [
 
 const HomeScreen = ({ navigation }: any) => {
   const authContext = AuthenticationContext();
+  const swipeRef = useRef<any>(null);
   if (!authContext) {
     return null;
   }
@@ -78,6 +81,7 @@ const HomeScreen = ({ navigation }: any) => {
       {/* Start of Cards Section */}
       <SwiperContainer>
         <DeckSwiper
+          ref={swipeRef}
           cards={DUMMY_DATA}
           stackSize={5}
           cardIndex={0}
@@ -124,6 +128,27 @@ const HomeScreen = ({ navigation }: any) => {
         />
       </SwiperContainer>
       {/* End of Cards Section */}
+
+      {/* Start of swipe buttons */}
+      <SwipeButtonsContainer>
+        <SwipeButton
+          type="cross"
+          onPress={() =>
+            swipeRef.current ? swipeRef?.current.swipeLeft() : {}
+          }
+        >
+          <Entypo name="cross" size={24} color="red" />
+        </SwipeButton>
+        <SwipeButton
+          type="swap"
+          onPress={() =>
+            swipeRef.current ? swipeRef?.current.swipeRight() : {}
+          }
+        >
+          <AntDesign name="swap" size={24} color="green" />
+        </SwipeButton>
+      </SwipeButtonsContainer>
+      {/* End of swipe buttons */}
     </SafeArea>
   );
 };
