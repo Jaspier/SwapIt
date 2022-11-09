@@ -1,4 +1,4 @@
-import { Text, Button, Image, FlatList } from "react-native";
+import { Text, Button, Image, FlatList, Platform } from "react-native";
 import React, { useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
@@ -13,18 +13,27 @@ const ProfileScreen = () => {
   const { logout }: AuthContextInterface = authContext;
 
   const pickImages = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
-      selectionLimit: 3,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    (async () => {
+      if (Platform.OS === "ios") {
+        const { accessPrivileges } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (accessPrivileges === "none") {
+          alert("No permission granted.");
+        } else {
+          let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsMultipleSelection: true,
+            selectionLimit: 3,
+            aspect: [4, 3],
+            quality: 1,
+          });
 
-    if (!result.cancelled) {
-      setImages(result.selected);
-    }
+          if (!result.cancelled) {
+            setImages(result.selected);
+          }
+        }
+      }
+    })();
   };
 
   return (
