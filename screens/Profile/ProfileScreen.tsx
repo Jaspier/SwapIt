@@ -1,8 +1,9 @@
-import { Text, Button, Image, FlatList, Platform } from "react-native";
+import { Button, Image, FlatList, Platform } from "react-native";
 import React, { useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import * as ImagePicker from "expo-image-picker";
+import Header from "../../components/Header/Header";
 
 const ProfileScreen = () => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
@@ -38,7 +39,7 @@ const ProfileScreen = () => {
 
   return (
     <SafeArea>
-      <Text>ProfileScreen</Text>
+      <Header title="Profile" />
       <Button title="Pick an image from camera roll" onPress={pickImages} />
       <FlatList
         horizontal={true}

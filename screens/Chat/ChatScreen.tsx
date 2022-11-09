@@ -1,11 +1,11 @@
-import { Text } from "react-native";
 import React from "react";
 import { SafeArea } from "../../components/utilities";
+import Header from "../../components/Header/Header";
 
 const ChatScreen = () => {
   return (
     <SafeArea>
-      <Text>ChatScreen</Text>
+      <Header title="Chat" />
     </SafeArea>
   );
 };
