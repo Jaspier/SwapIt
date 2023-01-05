@@ -1,5 +1,5 @@
 import { Button, FlatList, Platform } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import * as ImagePicker from "expo-image-picker";
@@ -20,11 +20,12 @@ import {
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 const ProfileScreen = ({ navigation }: any) => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
+  const [imagesSelected, setImagesSelected] = useState(false);
   const [itemName, setItemName] = useState("");
   const [location, setLocation] = useState("");
   const authContext = AuthenticationContext();
@@ -32,6 +33,25 @@ const ProfileScreen = ({ navigation }: any) => {
     return null;
   }
   const { user, logout }: AuthContextInterface = authContext;
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    try {
+      getDoc(doc(db, "users", user ? user.uid : "")).then(
+        (documentSnapshot) => {
+          if (!documentSnapshot.exists()) {
+            console.log("No such document!");
+            return;
+          }
+          setImages(JSON.parse(documentSnapshot.get("photoUrls")));
+          setItemName(documentSnapshot.get("itemName"));
+          setLocation(documentSnapshot.get("location"));
+        }
+      );
+    } catch (e) {
+      console.log("error fetching user data", e);
+    }
+  }, [user]);
 
   const pickImages = async () => {
     (async () => {
@@ -51,13 +71,14 @@ const ProfileScreen = ({ navigation }: any) => {
 
           if (!result.cancelled) {
             setImages(result.selected);
+            setImagesSelected(true);
           }
         }
       }
     })();
   };
 
-  const imageAllUrls: { imageUri: string }[] = [];
+  const imageAllUrls: { uri: string }[] = [];
   const storeToDB = async () => {
     images &&
       images.map(async (component, index) => {
@@ -67,7 +88,7 @@ const ProfileScreen = ({ navigation }: any) => {
         const urlParts = imageUrl.split(".");
         const extension = urlParts[urlParts.length - 1];
         const key = `${uuidv4()}.${extension}`;
-        imageAllUrls.push({ imageUri: key });
+        imageAllUrls.push({ uri: key });
         await Storage.put(key, blob);
         if (images.length === index + 1) {
           setDoc(doc(db, "users", user ? user.uid : "NULL"), {
@@ -99,7 +120,15 @@ const ProfileScreen = ({ navigation }: any) => {
       <FlatList
         horizontal={true}
         data={images}
-        renderItem={({ item }) => <SelectedImages source={{ uri: item.uri }} />}
+        renderItem={({ item }) => (
+          <SelectedImages
+            source={{
+              uri: imagesSelected
+                ? item.uri
+                : `https://d21mbriq1jyjvb.cloudfront.net/fit-in/400x400/public/${item.uri}`,
+            }}
+          />
+        )}
       />
       <DetailsContainer>
         <Label>Your item for swap</Label>

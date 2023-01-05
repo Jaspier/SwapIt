@@ -76,7 +76,7 @@ export const UpdateProfileButton = styled(TouchableOpacity)`
   padding: 12px;
   border-radius: 12px;
   position: absolute;
-  bottom: 40px;
+  bottom: 20px;
   background-color: ${colors.brand.primary};
 `;
 
