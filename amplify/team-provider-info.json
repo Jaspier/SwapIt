@@ -1,0 +1,21 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-swapit-dev-153449-authRole",
+      "UnauthRoleArn": "arn:aws:iam::437661476193:role/amplify-swapit-dev-153449-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::437661476193:role/amplify-swapit-dev-153449-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-swapit-dev-153449-deployment",
+      "UnauthRoleName": "amplify-swapit-dev-153449-unauthRole",
+      "StackName": "amplify-swapit-dev-153449",
+      "StackId": "arn:aws:cloudformation:eu-west-2:437661476193:stack/amplify-swapit-dev-153449/7e3a4540-8d0e-11ed-accb-0643d201ca20",
+      "AmplifyAppId": "dvnpxt0w76hy0"
+    },
+    "categories": {
+      "auth": {
+        "swapit74f20179": {},
+        "true": {}
+      }
+    }
+  }
+}

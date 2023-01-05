@@ -1,0 +1,18 @@
+{
+  "resourceName": "SwapitProject",
+  "policyUUID": "81c88564",
+  "bucketName": "swapitbucket",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

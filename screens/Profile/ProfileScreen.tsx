@@ -14,6 +14,9 @@ import {
   UpdateProfileButton,
   ButtonText,
 } from "./profileStyles";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+import { Storage } from "aws-amplify";
 
 const ProfileScreen = () => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
@@ -47,6 +50,21 @@ const ProfileScreen = () => {
     })();
   };
 
+  const imageAllUrls: { imageUri: string }[] = [];
+  const storeToDB = async () => {
+    images &&
+      images.map(async (component, _) => {
+        const imageUrl = component.uri;
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const urlParts = imageUrl.split(".");
+        const extension = urlParts[urlParts.length - 1];
+        const key = `${uuidv4()}.${extension}`;
+        imageAllUrls.push({ imageUri: key });
+        await Storage.put(key, blob);
+      });
+  };
+
   return (
     <SafeArea>
       <Header title="Profile" />
@@ -61,7 +79,7 @@ const ProfileScreen = () => {
         renderItem={({ item }) => <SelectedImages source={{ uri: item.uri }} />}
       />
       <ButtonContainer>
-        <UpdateProfileButton>
+        <UpdateProfileButton onPress={() => storeToDB()}>
           <ButtonText>Update Profile</ButtonText>
         </UpdateProfileButton>
       </ButtonContainer>
