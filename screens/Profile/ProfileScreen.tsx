@@ -13,13 +13,20 @@ import {
   ButtonContainer,
   UpdateProfileButton,
   ButtonText,
+  DetailsContainer,
+  Label,
+  Input,
 } from "./profileStyles";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }: any) => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
+  const [itemName, setItemName] = useState("");
+  const [location, setLocation] = useState("");
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -53,7 +60,7 @@ const ProfileScreen = () => {
   const imageAllUrls: { imageUri: string }[] = [];
   const storeToDB = async () => {
     images &&
-      images.map(async (component, _) => {
+      images.map(async (component, index) => {
         const imageUrl = component.uri;
         const response = await fetch(imageUrl);
         const blob = await response.blob();
@@ -62,6 +69,22 @@ const ProfileScreen = () => {
         const key = `${uuidv4()}.${extension}`;
         imageAllUrls.push({ imageUri: key });
         await Storage.put(key, blob);
+        if (images.length === index + 1) {
+          setDoc(doc(db, "users", user ? user.uid : "NULL"), {
+            id: user ? user.uid : null,
+            displayName: user ? user.email : null,
+            photoUrls: JSON.stringify(imageAllUrls),
+            itemName: itemName,
+            location: location,
+            timestamp: serverTimestamp(),
+          })
+            .then(() => {
+              navigation.navigate("Home");
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
+        }
       });
   };
 
@@ -78,6 +101,20 @@ const ProfileScreen = () => {
         data={images}
         renderItem={({ item }) => <SelectedImages source={{ uri: item.uri }} />}
       />
+      <DetailsContainer>
+        <Label>Your item for swap</Label>
+        <Input
+          value={itemName ? itemName : ""}
+          onChangeText={setItemName}
+          placeholder="Enter the name of your item"
+        />
+        <Label>Your location</Label>
+        <Input
+          value={location ? location : ""}
+          onChangeText={setLocation}
+          placeholder="Enter your location"
+        />
+      </DetailsContainer>
       <ButtonContainer>
         <UpdateProfileButton onPress={() => storeToDB()}>
           <ButtonText>Update Profile</ButtonText>

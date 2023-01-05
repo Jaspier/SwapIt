@@ -1,6 +1,13 @@
 import styled from "styled-components";
 import { colors } from "../../theme/colors";
-import { View, Text, Pressable, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 
 export const DisplayName = styled(Text)`
   text-align: center;
@@ -30,7 +37,7 @@ export const MaxImagesText = styled(Text)`
   font-size: 14px;
   line-height: 20px;
   color: ${colors.text.disabled};
-  padding-top: 8px;
+  padding-vertical: 8px;
   font-weight: 700;
 `;
 
@@ -38,6 +45,25 @@ export const SelectedImages = styled(Image)`
   width: 150px;
   height: 150px;
   margin-right: 10px;
+`;
+
+export const DetailsContainer = styled(View)`
+  margin-top: -100px;
+`;
+
+export const Label = styled(Text)`
+  text-align: center;
+  padding: 16px;
+  font-weight: 700;
+  color: ${colors.brand.primary};
+`;
+
+export const Input = styled(TextInput)`
+  text-align: center;
+  font-size: 20px;
+  line-height: 28px;
+  padding-bottom: 8px;
+  background: transparent;
 `;
 
 export const ButtonContainer = styled(View)`
