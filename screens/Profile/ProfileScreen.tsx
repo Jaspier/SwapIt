@@ -1,9 +1,19 @@
-import { Button, Image, FlatList, Platform } from "react-native";
+import { Button, FlatList, Platform } from "react-native";
 import React, { useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import * as ImagePicker from "expo-image-picker";
 import Header from "../../components/Header/Header";
+import { AntDesign } from "@expo/vector-icons";
+import {
+  DisplayName,
+  ImagePickerPressable,
+  MaxImagesText,
+  SelectedImages,
+  ButtonContainer,
+  UpdateProfileButton,
+  ButtonText,
+} from "./profileStyles";
 
 const ProfileScreen = () => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
@@ -11,7 +21,7 @@ const ProfileScreen = () => {
   if (!authContext) {
     return null;
   }
-  const { logout }: AuthContextInterface = authContext;
+  const { user, logout }: AuthContextInterface = authContext;
 
   const pickImages = async () => {
     (async () => {
@@ -40,17 +50,21 @@ const ProfileScreen = () => {
   return (
     <SafeArea>
       <Header title="Profile" />
-      <Button title="Pick an image from camera roll" onPress={pickImages} />
+      <DisplayName>{user ? user.email : "NULL"}</DisplayName>
+      <ImagePickerPressable onPress={pickImages}>
+        <AntDesign name="pluscircle" size={24} color="grey" />
+      </ImagePickerPressable>
+      <MaxImagesText>Upload images [Max 3 photos]</MaxImagesText>
       <FlatList
         horizontal={true}
         data={images}
-        renderItem={({ item }) => (
-          <Image
-            source={{ uri: item.uri }}
-            style={{ width: 200, height: 200 }}
-          />
-        )}
+        renderItem={({ item }) => <SelectedImages source={{ uri: item.uri }} />}
       />
+      <ButtonContainer>
+        <UpdateProfileButton>
+          <ButtonText>Update Profile</ButtonText>
+        </UpdateProfileButton>
+      </ButtonContainer>
       <Button title="Logout" onPress={() => logout()} />
     </SafeArea>
   );
