@@ -71,13 +71,16 @@ export const ButtonContainer = styled(View)`
   align-items: center;
 `;
 
-export const UpdateProfileButton = styled(TouchableOpacity)`
+export const UpdateProfileButton = styled(TouchableOpacity)<{
+  disabled: boolean;
+}>`
   width: 256px;
   padding: 12px;
   border-radius: 12px;
   position: absolute;
   bottom: 20px;
-  background-color: ${colors.brand.primary};
+  background-color: ${(props) =>
+    props.disabled ? colors.ui.disabled : colors.brand.primary};
 `;
 
 export const ButtonText = styled(Text)`

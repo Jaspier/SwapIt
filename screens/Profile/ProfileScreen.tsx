@@ -28,11 +28,14 @@ const ProfileScreen = ({ navigation }: any) => {
   const [imagesSelected, setImagesSelected] = useState(false);
   const [itemName, setItemName] = useState("");
   const [location, setLocation] = useState("");
+  const [processing, setProcessing] = useState(false);
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
   }
   const { user, logout }: AuthContextInterface = authContext;
+
+  const incompleteForm = !imagesSelected || !itemName || !location;
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
@@ -80,6 +83,7 @@ const ProfileScreen = ({ navigation }: any) => {
 
   const imageAllUrls: { uri: string }[] = [];
   const storeToDB = async () => {
+    setProcessing(true);
     images &&
       images.map(async (component, index) => {
         const imageUrl = component.uri;
@@ -100,6 +104,7 @@ const ProfileScreen = ({ navigation }: any) => {
             timestamp: serverTimestamp(),
           })
             .then(() => {
+              setProcessing(false);
               navigation.navigate("Home");
             })
             .catch((error) => {
@@ -145,7 +150,10 @@ const ProfileScreen = ({ navigation }: any) => {
         />
       </DetailsContainer>
       <ButtonContainer>
-        <UpdateProfileButton onPress={() => storeToDB()}>
+        <UpdateProfileButton
+          disabled={incompleteForm || processing}
+          onPress={() => storeToDB()}
+        >
           <ButtonText>Update Profile</ButtonText>
         </UpdateProfileButton>
       </ButtonContainer>
