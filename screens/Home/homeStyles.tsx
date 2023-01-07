@@ -95,3 +95,23 @@ export const SwipeButton = styled(TouchableOpacity)<{ type: string }>`
       ? "rgb(254, 202, 202)"
       : "none"};
 `;
+
+export const NoProfilesCard = styled(View)`
+  position: relative;
+  background-color: white;
+  height: 75%;
+  border-radius: 12px;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 1px rgba(0, 0, 0, 0.2);
+`;
+
+export const NoProfilesText = styled(Text)`
+  font-weight: 700;
+  padding-bottom: 20px;
+`;
+
+export const NoProfilesImage = styled(Image)`
+  height: 100px;
+  width: 100px;
+`;

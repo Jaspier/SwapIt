@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import {
@@ -15,6 +15,9 @@ import {
   Location,
   SwipeButtonsContainer,
   SwipeButton,
+  NoProfilesText,
+  NoProfilesImage,
+  NoProfilesCard,
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
@@ -51,6 +54,7 @@ const DUMMY_DATA = [
 
 const HomeScreen = ({ navigation }: any) => {
   const authContext = AuthenticationContext();
+  const [profiles, setProfiles] = useState([]);
   const swipeRef = useRef<any>(null);
   if (!authContext) {
     return null;
@@ -95,7 +99,7 @@ const HomeScreen = ({ navigation }: any) => {
       <SwiperContainer>
         <DeckSwiper
           ref={swipeRef}
-          cards={DUMMY_DATA}
+          cards={profiles}
           stackSize={5}
           cardIndex={0}
           animateCardOpacity
@@ -125,19 +129,28 @@ const HomeScreen = ({ navigation }: any) => {
               },
             },
           }}
-          renderCard={(card: any) => (
-            <Card key={card.id}>
-              <CardImage source={{ uri: card.photoURLs[0] }} />
+          renderCard={(card: any) =>
+            card ? (
+              <Card key={card.id}>
+                <CardImage source={{ uri: card.photoURLs[0] }} />
 
-              <CardFooter>
-                <View>
-                  <ItemName>{card.itemName}</ItemName>
-                  <Text>{card.displayName}</Text>
-                </View>
-                <Location>{card.location}</Location>
-              </CardFooter>
-            </Card>
-          )}
+                <CardFooter>
+                  <View>
+                    <ItemName>{card.itemName}</ItemName>
+                    <Text>{card.displayName}</Text>
+                  </View>
+                  <Location>{card.location}</Location>
+                </CardFooter>
+              </Card>
+            ) : (
+              <NoProfilesCard>
+                <NoProfilesText>No more profiles</NoProfilesText>
+                <NoProfilesImage
+                  source={require("../../assets/Crying_Face_Emoji_large.webp")}
+                />
+              </NoProfilesCard>
+            )
+          }
         />
       </SwiperContainer>
       {/* End of Cards Section */}
