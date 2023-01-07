@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import {
@@ -18,6 +18,8 @@ import {
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const DUMMY_DATA = [
   {
@@ -54,6 +56,17 @@ const HomeScreen = ({ navigation }: any) => {
     return null;
   }
   const { user }: AuthContextInterface = authContext;
+
+  useLayoutEffect(() => {
+    if (user) {
+      onSnapshot(doc(db, "users", user.uid), (snapshot) => {
+        if (!snapshot.exists()) {
+          navigation.navigate("Profile");
+        }
+      });
+    }
+  }, [user, navigation]);
+
   return (
     <SafeArea>
       {/* Start of Header */}

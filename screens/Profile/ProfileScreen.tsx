@@ -42,13 +42,11 @@ const ProfileScreen = ({ navigation }: any) => {
   }
   const { user, logout }: AuthContextInterface = authContext;
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    try {
-      getDoc(doc(db, "users", user ? user.uid : "")).then(
-        (documentSnapshot) => {
+    if (user) {
+      try {
+        getDoc(doc(db, "users", user.uid)).then((documentSnapshot) => {
           if (!documentSnapshot.exists()) {
-            console.log("No such document!");
             return;
           }
           setImages(JSON.parse(documentSnapshot.get("photoUrls")));
@@ -58,14 +56,13 @@ const ProfileScreen = ({ navigation }: any) => {
           setInitialItemName(documentSnapshot.get("itemName"));
           setLocation(documentSnapshot.get("location"));
           setInitialLocation(documentSnapshot.get("location"));
-        }
-      );
-    } catch (e) {
-      console.log("error fetching user data", e);
+        });
+      } catch (e) {
+        console.log("error fetching user data", e);
+      }
     }
   }, [user]);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (
       itemName !== initialItemName ||
@@ -140,8 +137,6 @@ const ProfileScreen = ({ navigation }: any) => {
         }
       });
   };
-
-  // const incompleteForm = !imagesSelected || !itemName || !location;
 
   return (
     <SafeArea>
