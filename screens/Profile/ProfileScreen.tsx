@@ -116,10 +116,10 @@ const ProfileScreen = ({ navigation }: any) => {
           await Storage.remove(imagesToDelete[i].uri);
         }
         await Storage.put(key, blob);
-        if (index + 1 === images.length) {
-          setDoc(doc(db, "users", user ? user.uid : "NULL"), {
-            id: user ? user.uid : null,
-            displayName: user ? user.email : null,
+        if (index + 1 === images.length && user) {
+          setDoc(doc(db, "users", user.uid), {
+            id: user.uid,
+            displayName: user.email,
             photoUrls: imagesSelected
               ? JSON.stringify(imageAllUrls)
               : initialPhotoUrls,
