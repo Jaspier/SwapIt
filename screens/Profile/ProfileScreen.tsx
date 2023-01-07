@@ -26,16 +26,21 @@ import { db } from "../../firebase";
 const ProfileScreen = ({ navigation }: any) => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
   const [imagesSelected, setImagesSelected] = useState(false);
+  const [imagesToDelete, setImagesToDelete] = useState<ImagePicker.ImageInfo[]>(
+    []
+  );
+  const [incompleteForm, setIncompleteForm] = useState(true);
+  const [initialPhotoUrls, setInitialPhotoUrls] = useState("");
   const [itemName, setItemName] = useState("");
+  const [initialItemName, setInitialItemName] = useState("");
   const [location, setLocation] = useState("");
+  const [initialLocation, setInitialLocation] = useState("");
   const [processing, setProcessing] = useState(false);
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
   }
   const { user, logout }: AuthContextInterface = authContext;
-
-  const incompleteForm = !imagesSelected || !itemName || !location;
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
@@ -47,14 +52,31 @@ const ProfileScreen = ({ navigation }: any) => {
             return;
           }
           setImages(JSON.parse(documentSnapshot.get("photoUrls")));
+          setImagesToDelete(JSON.parse(documentSnapshot.get("photoUrls")));
+          setInitialPhotoUrls(documentSnapshot.get("photoUrls"));
           setItemName(documentSnapshot.get("itemName"));
+          setInitialItemName(documentSnapshot.get("itemName"));
           setLocation(documentSnapshot.get("location"));
+          setInitialLocation(documentSnapshot.get("location"));
         }
       );
     } catch (e) {
       console.log("error fetching user data", e);
     }
   }, [user]);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (
+      itemName !== initialItemName ||
+      location !== initialLocation ||
+      imagesSelected
+    ) {
+      setIncompleteForm(false);
+    } else {
+      setIncompleteForm(true);
+    }
+  }, [itemName, initialItemName, location, initialLocation, imagesSelected]);
 
   const pickImages = async () => {
     (async () => {
@@ -93,12 +115,17 @@ const ProfileScreen = ({ navigation }: any) => {
         const extension = urlParts[urlParts.length - 1];
         const key = `${uuidv4()}.${extension}`;
         imageAllUrls.push({ uri: key });
+        for (let i in imagesToDelete) {
+          await Storage.remove(imagesToDelete[i].uri);
+        }
         await Storage.put(key, blob);
-        if (images.length === index + 1) {
+        if (index + 1 === images.length) {
           setDoc(doc(db, "users", user ? user.uid : "NULL"), {
             id: user ? user.uid : null,
             displayName: user ? user.email : null,
-            photoUrls: JSON.stringify(imageAllUrls),
+            photoUrls: imagesSelected
+              ? JSON.stringify(imageAllUrls)
+              : initialPhotoUrls,
             itemName: itemName,
             location: location,
             timestamp: serverTimestamp(),
@@ -114,6 +141,8 @@ const ProfileScreen = ({ navigation }: any) => {
       });
   };
 
+  // const incompleteForm = !imagesSelected || !itemName || !location;
+
   return (
     <SafeArea>
       <Header title="Profile" />
@@ -124,6 +153,7 @@ const ProfileScreen = ({ navigation }: any) => {
       <MaxImagesText>Upload images [Max 3 photos]</MaxImagesText>
       <FlatList
         horizontal={true}
+        showsHorizontalScrollIndicator={false}
         data={images}
         renderItem={({ item }) => (
           <SelectedImages
