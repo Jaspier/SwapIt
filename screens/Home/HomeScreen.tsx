@@ -64,7 +64,7 @@ const HomeScreen = ({ navigation }: any) => {
 
     fetchCards();
     return unsub;
-  }, []);
+  }, [db]);
 
   return (
     <SafeArea>
