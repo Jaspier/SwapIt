@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import {
@@ -21,40 +21,13 @@ import {
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
-
-const DUMMY_DATA = [
-  {
-    id: 1,
-    displayName: "Allen Dungo",
-    itemName: "Variegated Monstera",
-    location: "Antrim",
-    photoURLs: [
-      "http://static1.squarespace.com/static/5a032c682278e74417b38113/t/5d3647e5339e9100019b9557/1563838454790/monvar.jpg?format=1500w",
-    ],
-  },
-  {
-    id: 2,
-    displayName: "Jasper Davidson",
-    itemName: "Golden Pothos",
-    location: "Belfast",
-    photoURLs: ["https://media.bunches.co.uk/products/ptempp-1.jpg"],
-  },
-  {
-    id: 3,
-    displayName: "Olivia Craig",
-    itemName: "Succulent",
-    location: "Ballymena",
-    photoURLs: [
-      "https://www.bhg.com/thmb/CV-IdGD-c0WFMRCsFgj-_tUnelo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/panda-plant-ee6cc069-72de16b817654cfe944b1f3055420f3e.jpg",
-    ],
-  },
-];
+import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 
 const HomeScreen = ({ navigation }: any) => {
   const authContext = AuthenticationContext();
-  const [profiles, setProfiles] = useState([]);
+  const [profiles, setProfiles] = useState<{ id: string }[]>([]);
   const swipeRef = useRef<any>(null);
   if (!authContext) {
     return null;
@@ -70,6 +43,28 @@ const HomeScreen = ({ navigation }: any) => {
       });
     }
   }, [user, navigation]);
+
+  useEffect(() => {
+    let unsub;
+
+    const fetchCards = async () => {
+      if (user) {
+        unsub = onSnapshot(collection(db, "users"), (snapshot) => {
+          setProfiles(
+            snapshot.docs
+              .filter((doc) => doc.id !== user.uid)
+              .map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+              }))
+          );
+        });
+      }
+    };
+
+    fetchCards();
+    return unsub;
+  }, []);
 
   return (
     <SafeArea>
@@ -132,8 +127,13 @@ const HomeScreen = ({ navigation }: any) => {
           renderCard={(card: any) =>
             card ? (
               <Card key={card.id}>
-                <CardImage source={{ uri: card.photoURLs[0] }} />
-
+                <CardImage
+                  source={{
+                    uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/1000x1000/public/${
+                      JSON.parse(card.photoUrls)[0].uri
+                    }`,
+                  }}
+                />
                 <CardFooter>
                   <View>
                     <ItemName>{card.itemName}</ItemName>

@@ -22,6 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 
 const ProfileScreen = ({ navigation }: any) => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
@@ -155,7 +156,7 @@ const ProfileScreen = ({ navigation }: any) => {
             source={{
               uri: imagesSelected
                 ? item.uri
-                : `https://d21mbriq1jyjvb.cloudfront.net/fit-in/400x400/public/${item.uri}`,
+                : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${item.uri}`,
             }}
           />
         )}
