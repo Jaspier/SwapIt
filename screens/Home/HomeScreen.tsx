@@ -28,11 +28,13 @@ import {
   getDocs,
   onSnapshot,
   query,
+  serverTimestamp,
   setDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
+import generateId from "../../lib/generateId";
 
 interface Profile {
   id: string;
@@ -114,10 +116,50 @@ const HomeScreen = ({ navigation }: any) => {
     if (!profiles[cardIndex]) return;
 
     const userSwiped = profiles[cardIndex];
+    if (user) {
+      const loggedInProfile = await await (
+        await getDoc(doc(db, "users", user.uid))
+      ).data();
 
-    console.log(
-      `You swiped on ${userSwiped.displayName} (${userSwiped.itemName})`
-    );
+      // Check if user swiped on 'you' (TODO: Migrate to cloud function)
+      getDoc(doc(db, "users", userSwiped.id, "swipes", user.uid)).then(
+        (documentSnapshot) => {
+          if (documentSnapshot.exists()) {
+            console.log(`HOORAY! You MATCHED with ${userSwiped.displayName}`);
+
+            setDoc(
+              doc(db, "users", user.uid, "swipes", userSwiped.id),
+              userSwiped
+            );
+
+            // Create MATCH
+            setDoc(doc(db, "matches", generateId(user.uid, userSwiped.id)), {
+              users: {
+                [user.uid]: loggedInProfile,
+                [userSwiped.id]: userSwiped,
+              },
+              usersMatched: [user.uid, userSwiped.id],
+              timestamp: serverTimestamp(),
+            });
+
+            navigation.navigate("Match", {
+              loggedInProfile,
+              userSwiped,
+            });
+          } else {
+            // User has swiped as first interaction with another user or no match :(
+            console.log(
+              `You swiped on ${userSwiped.displayName} (${userSwiped.itemName})`
+            );
+            setDoc(
+              doc(db, "users", user.uid, "swipes", userSwiped.id),
+              userSwiped
+            );
+          }
+        }
+      );
+    }
+
     if (user) {
       setDoc(doc(db, "users", user.uid, "swipes", userSwiped.id), userSwiped);
     }
