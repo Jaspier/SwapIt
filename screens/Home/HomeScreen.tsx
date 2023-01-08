@@ -21,13 +21,28 @@ import {
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 
+interface Profile {
+  id: string;
+  displayName: string;
+  itemName: string;
+}
+
 const HomeScreen = ({ navigation }: any) => {
   const authContext = AuthenticationContext();
-  const [profiles, setProfiles] = useState<{ id: string }[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const swipeRef = useRef<any>(null);
   if (!authContext) {
     return null;
@@ -49,22 +64,64 @@ const HomeScreen = ({ navigation }: any) => {
 
     const fetchCards = async () => {
       if (user) {
-        unsub = onSnapshot(collection(db, "users"), (snapshot) => {
-          setProfiles(
-            snapshot.docs
-              .filter((doc) => doc.id !== user.uid)
-              .map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }))
-          );
-        });
+        const passes = await getDocs(
+          collection(db, "users", user.uid, "passes")
+        ).then((snapshot) => snapshot.docs.map((doc) => doc.id));
+
+        const swipes = await getDocs(
+          collection(db, "users", user.uid, "swipes")
+        ).then((snapshot) => snapshot.docs.map((doc) => doc.id));
+
+        const passedUserIds = passes.length > 0 ? passes : ["none"];
+        const swipedUserIds = swipes.length > 0 ? swipes : ["none"];
+
+        unsub = onSnapshot(
+          query(
+            collection(db, "users"),
+            where("id", "not-in", [...passedUserIds, ...swipedUserIds])
+          ),
+          (snapshot) => {
+            setProfiles(
+              snapshot.docs
+                .filter((doc) => doc.id !== user.uid)
+                .map((doc) => ({
+                  id: doc.id,
+                  displayName: doc.data().displayName,
+                  itemName: doc.data().itemName,
+                  ...doc.data(),
+                }))
+            );
+          }
+        );
       }
     };
 
     fetchCards();
     return unsub;
   }, [db]);
+
+  const swipeLeft = async (cardIndex: number) => {
+    if (!profiles[cardIndex]) return;
+
+    const userSwiped = profiles[cardIndex];
+    console.log(`You swiped NOPE on ${userSwiped.displayName}`);
+    if (user) {
+      setDoc(doc(db, "users", user.uid, "passes", userSwiped.id), userSwiped);
+    }
+  };
+
+  const swipeRight = async (cardIndex: number) => {
+    if (!profiles[cardIndex]) return;
+
+    const userSwiped = profiles[cardIndex];
+
+    console.log(
+      `You swiped on ${userSwiped.displayName} (${userSwiped.itemName})`
+    );
+    if (user) {
+      setDoc(doc(db, "users", user.uid, "swipes", userSwiped.id), userSwiped);
+    }
+  };
 
   return (
     <SafeArea>
@@ -99,11 +156,11 @@ const HomeScreen = ({ navigation }: any) => {
           cardIndex={0}
           animateCardOpacity
           verticalSwipe={false}
-          onSwipedLeft={() => {
-            console.log("Swipe NOPE");
+          onSwipedLeft={(cardIndex) => {
+            swipeLeft(cardIndex);
           }}
-          onSwipedRight={() => {
-            console.log("Swipe SWAPIT!");
+          onSwipedRight={(cardIndex) => {
+            swipeRight(cardIndex);
           }}
           overlayLabels={{
             left: {
