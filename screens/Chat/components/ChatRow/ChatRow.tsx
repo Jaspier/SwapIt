@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import AuthenticationContext from "../../../../hooks/authentication/authenticationContext";
 import getMatchedUserInfo from "../../../../lib/getMatchedUserInfo";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
+import { useNavigation, NavigationProp } from "@react-navigation/core";
 import {
   ProfileDisplayName,
   ProfileImage,
@@ -16,7 +17,8 @@ interface MatchedUserInfo {
   itemName: string;
 }
 
-const ChatRow = ({ navigation, matchDetails }: any) => {
+const ChatRow = ({ matchDetails }: any) => {
+  const navigation: NavigationProp<any> = useNavigation();
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -32,7 +34,13 @@ const ChatRow = ({ navigation, matchDetails }: any) => {
   }, [matchDetails, user]);
 
   return (
-    <Row>
+    <Row
+      onPress={() =>
+        navigation.navigate("Message", {
+          matchDetails,
+        })
+      }
+    >
       <ProfileImage
         source={{
           uri: matchedUserInfo

@@ -8,6 +8,7 @@ import AuthenticationContext from "./hooks/authentication/authenticationContext"
 import SplashScreen from "./screens/Auth/SplashScreen";
 import ProfileScreen from "./screens/Profile/ProfileScreen";
 import MatchedScreen from "./screens/MatchedModal/MatchedScreen";
+import MessageScreen from "./screens/Message/MessageScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ const StackNavigator = () => {
           <Stack.Group>
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />
+            <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: "transparentModal" }}>
