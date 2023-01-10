@@ -10,6 +10,14 @@ import {
   ProfileItemName,
   Row,
 } from "./ChatRowStyles";
+import { db } from "../../../../firebase";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 
 interface MatchedUserInfo {
   photoUrls: string;
@@ -26,12 +34,26 @@ const ChatRow = ({ matchDetails }: any) => {
   const { user }: AuthContextInterface = authContext;
   const [matchedUserInfo, setMatchedUserInfo] =
     useState<MatchedUserInfo | null>(null);
+  const [lastMessage, setLastMessage] = useState(null);
 
   useEffect(() => {
     if (user) {
       setMatchedUserInfo(getMatchedUserInfo(matchDetails.users, user.uid));
     }
   }, [matchDetails, user]);
+
+  useEffect(
+    () =>
+      onSnapshot(
+        query(
+          collection(db, "matches", matchDetails.id, "messages"),
+          orderBy("timestamp", "desc"),
+          limit(1)
+        ),
+        (snapshot) => setLastMessage(snapshot.docs[0]?.data()?.message)
+      ),
+    [matchDetails, db]
+  );
 
   return (
     <Row
@@ -55,7 +77,7 @@ const ChatRow = ({ matchDetails }: any) => {
           {matchedUserInfo?.displayName}{" "}
           <ProfileItemName>({matchedUserInfo?.itemName})</ProfileItemName>
         </ProfileDisplayName>
-        <Text>Say Hi!</Text>
+        <Text>{lastMessage || "Say Hi!"}</Text>
       </View>
     </Row>
   );
