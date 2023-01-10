@@ -23,6 +23,7 @@ import { Storage } from "aws-amplify";
 import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
+import axios from "axios";
 
 const ProfileScreen = ({ navigation }: any) => {
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
@@ -45,22 +46,19 @@ const ProfileScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (user) {
-      try {
-        getDoc(doc(db, "users", user.uid)).then((documentSnapshot) => {
-          if (!documentSnapshot.exists()) {
-            return;
-          }
-          setImages(JSON.parse(documentSnapshot.get("photoUrls")));
-          setImagesToDelete(JSON.parse(documentSnapshot.get("photoUrls")));
-          setInitialPhotoUrls(documentSnapshot.get("photoUrls"));
-          setItemName(documentSnapshot.get("itemName"));
-          setInitialItemName(documentSnapshot.get("itemName"));
-          setLocation(documentSnapshot.get("location"));
-          setInitialLocation(documentSnapshot.get("location"));
-        });
-      } catch (e) {
-        console.log("error fetching user data", e);
-      }
+      axios
+        .get(`/myprofile?user=${user.uid}`)
+        .then((res) => {
+          const documentSnapshot = res.data;
+          setImages(JSON.parse(documentSnapshot.photoUrls));
+          setImagesToDelete(JSON.parse(documentSnapshot.photoUrls));
+          setInitialPhotoUrls(documentSnapshot.photoUrls);
+          setItemName(documentSnapshot.itemName);
+          setInitialItemName(documentSnapshot.itemName);
+          setLocation(documentSnapshot.location);
+          setInitialLocation(documentSnapshot.location);
+        })
+        .catch((e) => console.log("error fetching profile data", e));
     }
   }, [user]);
 
@@ -106,17 +104,19 @@ const ProfileScreen = ({ navigation }: any) => {
     setProcessing(true);
     images &&
       images.map(async (component, index) => {
-        const imageUrl = component.uri;
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const urlParts = imageUrl.split(".");
-        const extension = urlParts[urlParts.length - 1];
-        const key = `${uuidv4()}.${extension}`;
-        imageAllUrls.push({ uri: key });
-        for (let i in imagesToDelete) {
-          await Storage.remove(imagesToDelete[i].uri);
+        if (imagesSelected) {
+          const imageUrl = component.uri;
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const urlParts = imageUrl.split(".");
+          const extension = urlParts[urlParts.length - 1];
+          const key = `${uuidv4()}.${extension}`;
+          imageAllUrls.push({ uri: key });
+          for (let i in imagesToDelete) {
+            await Storage.remove(imagesToDelete[i].uri);
+          }
+          await Storage.put(key, blob);
         }
-        await Storage.put(key, blob);
         if (index + 1 === images.length && user) {
           setDoc(doc(db, "users", user.uid), {
             id: user.uid,
