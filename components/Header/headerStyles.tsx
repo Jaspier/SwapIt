@@ -26,9 +26,24 @@ export const Chevron = styled(Ionicons).attrs({
   color: colors.brand.primary,
 })``;
 
+export const HeaderTextContainer = styled(View)`
+  display: flex;
+`;
+
 export const Title = styled(Text)`
   font-size: 24px;
   line-height: 32px;
   font-weight: 700;
   padding-left: 8px;
+`;
+
+export const SubHeading = styled(Text)`
+  margin-left: 8px;
+`;
+
+export const NFCButton = styled(TouchableOpacity)`
+  border-radius: 9999px;
+  margin-right: 16px;
+  padding: 12px;
+  background-color: rgb(187, 247, 208);
 `;

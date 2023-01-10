@@ -77,6 +77,8 @@ const MessageScreen = () => {
     <SafeArea>
       <Header
         title={getMatchedUserInfo(matchDetails.users, user?.uid).displayName}
+        subheading={getMatchedUserInfo(matchDetails.users, user?.uid).itemName}
+        nfc
       />
       <MessagesView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
