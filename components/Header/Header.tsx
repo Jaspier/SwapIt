@@ -16,16 +16,19 @@ interface Props {
   title?: ReactNode;
   subheading?: ReactNode;
   nfc?: ReactNode;
+  isNewUser?: ReactNode;
 }
 
-const Header = ({ title, subheading, nfc }: Props) => {
+const Header = ({ title, subheading, nfc, isNewUser }: Props) => {
   const navigation = useNavigation();
   return (
     <HeaderContainer>
       <NavContainer>
-        <GoBackButton onPress={() => navigation.goBack()}>
-          <Chevron />
-        </GoBackButton>
+        {!isNewUser && (
+          <GoBackButton onPress={() => navigation.goBack()}>
+            <Chevron />
+          </GoBackButton>
+        )}
         <HeaderTextContainer>
           <Title>{title}</Title>
           {subheading && <SubHeading>{subheading}</SubHeading>}

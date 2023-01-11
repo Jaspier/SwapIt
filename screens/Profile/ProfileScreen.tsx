@@ -24,8 +24,24 @@ import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import axios from "axios";
+import { useRoute } from "@react-navigation/core";
 
 const ProfileScreen = ({ navigation }: any) => {
+  const { params } = useRoute();
+  let isNewUser:
+    | string
+    | number
+    | boolean
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactFragment
+    | React.ReactPortal
+    | null
+    | undefined;
+  if (params) {
+    // @ts-ignore
+    const { newUser } = params;
+    isNewUser = newUser;
+  }
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
   const [imagesSelected, setImagesSelected] = useState(false);
   const [imagesToDelete, setImagesToDelete] = useState<ImagePicker.ImageInfo[]>(
@@ -45,7 +61,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const { user, logout }: AuthContextInterface = authContext;
 
   useEffect(() => {
-    if (user) {
+    if (user && !isNewUser) {
       axios
         .get(`/myprofile?user=${user.uid}`)
         .then((res) => {
@@ -141,7 +157,7 @@ const ProfileScreen = ({ navigation }: any) => {
 
   return (
     <SafeArea>
-      <Header title="Profile" />
+      <Header title="Profile" isNewUser={isNewUser} />
       <DisplayName>{user ? user.email : "NULL"}</DisplayName>
       <ImagePickerPressable onPress={pickImages}>
         <AntDesign name="pluscircle" size={24} color="grey" />
