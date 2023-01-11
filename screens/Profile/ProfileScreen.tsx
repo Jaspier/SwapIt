@@ -80,8 +80,9 @@ const ProfileScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (
-      itemName !== initialItemName ||
-      location !== initialLocation ||
+      (itemName !== initialItemName || location !== initialLocation) &&
+      itemName !== "" &&
+      location !== "" &&
       imagesSelected
     ) {
       setIncompleteForm(false);
