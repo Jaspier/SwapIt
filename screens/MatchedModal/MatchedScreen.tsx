@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import React from "react";
 import { useRoute } from "@react-navigation/core";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";

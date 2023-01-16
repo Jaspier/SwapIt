@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { colors } from "../../theme/colors";
 import {
   View,
-  Text,
   Button,
   TextInput,
   KeyboardAvoidingView,

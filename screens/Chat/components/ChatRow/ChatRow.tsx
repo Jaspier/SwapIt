@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import AuthenticationContext from "../../../../hooks/authentication/authenticationContext";
 import getMatchedUserInfo from "../../../../lib/getMatchedUserInfo";

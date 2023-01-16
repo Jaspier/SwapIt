@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../../../../theme/colors";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { Text, Image, TouchableOpacity } from "react-native";
 
 export const Row = styled(TouchableOpacity)`
   display: flex;

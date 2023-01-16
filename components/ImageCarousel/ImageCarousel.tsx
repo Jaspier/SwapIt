@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
+import { Pressable } from "react-native";
 import React, { useState } from "react";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { CardImage, Pagination, PaginationDot } from "./ImageCarouselStyles";

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../../../../theme/colors";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image } from "react-native";
 
 export const ReceiverMessageBubble = styled(View)`
   background-color: rgb(34, 197, 94);

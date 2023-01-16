@@ -32,7 +32,6 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import generateId from "../../lib/generateId";
 import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
 
