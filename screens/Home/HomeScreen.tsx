@@ -9,7 +9,6 @@ import {
   DeckSwiper,
   SwiperContainer,
   Card,
-  CardImage,
   CardFooter,
   ItemName,
   Location,
@@ -35,6 +34,7 @@ import {
 import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import generateId from "../../lib/generateId";
+import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
 
 interface Profile {
   id: string;
@@ -227,13 +227,7 @@ const HomeScreen = ({ navigation }: any) => {
           renderCard={(card: any) =>
             card ? (
               <Card key={card.id}>
-                <CardImage
-                  source={{
-                    uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/1000x1000/public/${
-                      JSON.parse(card.photoUrls)[0].uri
-                    }`,
-                  }}
-                />
+                <ImageCarousel images={JSON.parse(card.photoUrls)} />
                 <CardFooter>
                   <View>
                     <ItemName>{card.itemName}</ItemName>

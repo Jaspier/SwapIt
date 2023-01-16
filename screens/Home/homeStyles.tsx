@@ -42,14 +42,6 @@ export const Card = styled(View)`
   box-shadow: 0px 1px rgba(0, 0, 0, 0.2);
 `;
 
-export const CardImage = styled(Image)`
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  border-radius: 12px;
-`;
-
 export const CardFooter = styled(View)`
   position: absolute;
   flex-direction: row;
