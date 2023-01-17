@@ -36,15 +36,7 @@ import { useRoute } from "@react-navigation/core";
 
 const ProfileScreen = ({ navigation }: any) => {
   const { params } = useRoute();
-  let isNewUser:
-    | string
-    | number
-    | boolean
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | React.ReactFragment
-    | React.ReactPortal
-    | null
-    | undefined;
+  let isNewUser: boolean | null | undefined;
   if (params) {
     // @ts-ignore
     const { newUser } = params;
@@ -168,10 +160,10 @@ const ProfileScreen = ({ navigation }: any) => {
       <Header title="Profile" isNewUser={isNewUser} settings />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>
-          {user && !user.displayName && <DisplayName>{user.email}</DisplayName>}
-          {user && user.displayName && (
-            <DisplayName>Hello, {user.displayName}</DisplayName>
-          )}
+          <DisplayName>
+            Hello,{" "}
+            {user && !user.displayName ? user.email : user && user.displayName}
+          </DisplayName>
           <DetailsContainer>
             <Label>Your item for swap</Label>
             <Input
