@@ -4,7 +4,6 @@ import AuthenticationContext from "../../hooks/authentication/authenticationCont
 import { SafeArea } from "../../components/utilities";
 import {
   HeaderContainer,
-  AvatarIcon,
   Logo,
   DeckSwiper,
   SwiperContainer,
@@ -17,6 +16,8 @@ import {
   NoProfilesText,
   NoProfilesImage,
   NoProfilesCard,
+  DefaultAccountIcon,
+  AccountImage,
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
@@ -34,6 +35,7 @@ import {
 import { db } from "../../firebase";
 import generateId from "../../lib/generateId";
 import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
+import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 
 interface Profile {
   id: string;
@@ -170,9 +172,17 @@ const HomeScreen = ({ navigation }: any) => {
       {/* Start of Header */}
       <HeaderContainer>
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <AvatarIcon
-            label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
-          />
+          {user && user.photoURL ? (
+            <AccountImage
+              source={{
+                uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${user.photoURL}`,
+              }}
+            />
+          ) : (
+            <DefaultAccountIcon
+              label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
+            />
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity>

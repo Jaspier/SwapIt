@@ -13,7 +13,13 @@ export const HeaderContainer = styled(View)`
   padding-right: 20px;
 `;
 
-export const AvatarIcon = styled(Avatar.Text).attrs({
+export const DefaultAccountIcon = styled(Avatar.Text).attrs({
+  size: 40,
+})`
+  background-color: ${colors.bg.account};
+`;
+
+export const AccountImage = styled(Avatar.Image).attrs({
   size: 40,
 })`
   background-color: ${colors.bg.account};
