@@ -18,8 +18,9 @@ import {
 } from "../../components/form";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { updateProfile } from "firebase/auth";
+import { useRoute } from "@react-navigation/native";
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ navigation }: any) => {
   const [photo, setPhoto] = useState(null);
   const [displayName, setDisplayName] = useState("");
   const [initialDisplayName, setInitialDisplayName] = useState("");
@@ -31,12 +32,19 @@ const SettingsScreen = () => {
   }
   const { user, logout }: AuthContextInterface = authContext;
 
+  const { params } = useRoute();
   useEffect(() => {
     if (user && user.displayName) {
       setDisplayName(user.displayName);
       setInitialDisplayName(user.displayName);
     }
-  }, [user]);
+    if (params) {
+      // @ts-ignore
+      const { photo } = params;
+      setPhoto(photo.uri);
+      setIncompleteForm(false);
+    }
+  }, [user, params]);
 
   useEffect(() => {
     if (displayName !== initialDisplayName && displayName !== "") {
@@ -54,6 +62,7 @@ const SettingsScreen = () => {
     })
       .then(() => {
         setProcessing(false);
+        setIncompleteForm(true);
       })
       .catch((error) => {
         alert(error.message);
@@ -64,7 +73,7 @@ const SettingsScreen = () => {
     <SafeArea>
       <Header title="Settings" />
       <ProfilePicContainer>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Camera")}>
           {!photo && (
             <DefaultProfilePic
               label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
