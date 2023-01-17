@@ -10,6 +10,7 @@ import ProfileScreen from "./screens/Profile/ProfileScreen";
 import MatchedScreen from "./screens/MatchedModal/MatchedScreen";
 import MessageScreen from "./screens/Message/MessageScreen";
 import SettingsScreen from "./screens/Settings/SettingsScreen";
+import CameraScreen from "./screens/Settings/Camera/CameraScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ const StackNavigator = () => {
             <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Camera" component={CameraScreen} />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: "transparentModal" }}>
             <Stack.Screen name="Match" component={MatchedScreen} />

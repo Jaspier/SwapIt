@@ -3,20 +3,24 @@ import React, { useEffect, useState } from "react";
 import { SafeArea } from "../../components/utilities";
 import Header from "../../components/Header/Header";
 import {
-  ButtonContainer,
-  ButtonText,
   DefaultProfilePic,
-  Input,
-  Label,
   ProfilePicContainer,
+  ProfilePicture,
   SettingsContainer,
-  UpdateProfileButton,
   UserEmail,
 } from "./SettingsStyles";
+import {
+  Label,
+  Input,
+  ButtonContainer,
+  ButtonText,
+  UpdateProfileButton,
+} from "../../components/form";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { updateProfile } from "firebase/auth";
 
 const SettingsScreen = () => {
+  const [photo, setPhoto] = useState(null);
   const [displayName, setDisplayName] = useState("");
   const [initialDisplayName, setInitialDisplayName] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -61,9 +65,12 @@ const SettingsScreen = () => {
       <Header title="Settings" />
       <ProfilePicContainer>
         <TouchableOpacity>
-          <DefaultProfilePic
-            label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
-          />
+          {!photo && (
+            <DefaultProfilePic
+              label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
+            />
+          )}
+          {photo && <ProfilePicture source={{ uri: photo }} />}
         </TouchableOpacity>
       </ProfilePicContainer>
       <UserEmail>{user ? user.email : "NULL"}</UserEmail>

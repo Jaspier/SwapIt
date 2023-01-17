@@ -10,13 +10,15 @@ import {
   ImagePickerPressable,
   MaxImagesText,
   SelectedImages,
-  ButtonContainer,
-  UpdateProfileButton,
-  ButtonText,
   DetailsContainer,
+} from "./profileStyles";
+import {
   Label,
   Input,
-} from "./profileStyles";
+  ButtonContainer,
+  ButtonText,
+  UpdateProfileButton,
+} from "../../components/form";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
