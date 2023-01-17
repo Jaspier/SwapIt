@@ -6,16 +6,10 @@ import {
   PermissionsContainer,
   PermissionsText,
 } from "./CameraStyles";
-import AuthenticationContext from "../../../hooks/authentication/authenticationContext";
 
 const CameraScreen = ({ navigation }: any) => {
   const [type, setType] = useState(CameraType.front);
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const authContext = AuthenticationContext();
-  if (!authContext) {
-    return null;
-  }
-  const { user }: AuthContextInterface = authContext;
 
   const cameraRef = createRef<Camera>();
 

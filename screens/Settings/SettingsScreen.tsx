@@ -18,10 +18,14 @@ import {
 } from "../../components/form";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { updateProfile } from "firebase/auth";
-import { useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/core";
+import { v4 as uuidv4 } from "uuid";
+import { Storage } from "aws-amplify";
+import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 
 const SettingsScreen = ({ navigation }: any) => {
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState("");
+  const [photoTaken, setPhotoTaken] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [initialDisplayName, setInitialDisplayName] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -38,10 +42,14 @@ const SettingsScreen = ({ navigation }: any) => {
       setDisplayName(user.displayName);
       setInitialDisplayName(user.displayName);
     }
+    if (user && user.photoURL) {
+      setPhoto(user.photoURL);
+    }
     if (params) {
       // @ts-ignore
       const { photo } = params;
       setPhoto(photo.uri);
+      setPhotoTaken(true);
       setIncompleteForm(false);
     }
   }, [user, params]);
@@ -56,9 +64,23 @@ const SettingsScreen = ({ navigation }: any) => {
 
   const updateUserInfo = async () => {
     setProcessing(true);
+    let key;
+    if (photoTaken) {
+      const imageUrl = photo;
+      const response = await fetch(photo);
+      const blob = await response.blob();
+      const urlParts = imageUrl.split(".");
+      const extension = urlParts[urlParts.length - 1];
+      key = `${uuidv4()}.${extension}`;
+      if (user && user.photoURL) {
+        await Storage.remove(`profiles/${user.photoURL}`);
+      }
+      await Storage.put(`profiles/${key}`, blob);
+    }
     // @ts-ignore
     updateProfile(user, {
       displayName: displayName,
+      photoURL: photoTaken ? key : user?.photoURL,
     })
       .then(() => {
         setProcessing(false);
@@ -79,7 +101,15 @@ const SettingsScreen = ({ navigation }: any) => {
               label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
             />
           )}
-          {photo && <ProfilePicture source={{ uri: photo }} />}
+          {photo && (
+            <ProfilePicture
+              source={{
+                uri: photoTaken
+                  ? photo
+                  : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${photo}`,
+              }}
+            />
+          )}
         </TouchableOpacity>
       </ProfilePicContainer>
       <UserEmail>{user ? user.email : "NULL"}</UserEmail>
