@@ -12,7 +12,7 @@ export const Label = styled(Text)`
 export const Input = styled(TextInput)`
   text-align: center;
   font-size: 20px;
-  line-height: 28px;
+  line-height: 26px;
   padding-bottom: 8px;
   background: transparent;
 `;

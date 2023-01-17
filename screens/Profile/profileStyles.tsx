@@ -1,13 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../../theme/colors";
-import {
-  View,
-  Text,
-  Pressable,
-  Image,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 
 export const DisplayName = styled(Text)`
   text-align: center;
@@ -16,6 +9,10 @@ export const DisplayName = styled(Text)`
   color: ${colors.text.primary};
   padding-bottom: 16px;
   font-weight: 700;
+`;
+
+export const DetailsContainer = styled(View)`
+  margin-bottom: 35px;
 `;
 
 export const ImagePickerPressable = styled(Pressable)`
@@ -45,8 +42,4 @@ export const SelectedImages = styled(Image)`
   width: 150px;
   height: 150px;
   margin-right: 10px;
-`;
-
-export const DetailsContainer = styled(View)`
-  margin-top: -100px;
 `;
