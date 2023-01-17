@@ -47,3 +47,7 @@ export const NFCButton = styled(TouchableOpacity)`
   padding: 12px;
   background-color: rgb(187, 247, 208);
 `;
+
+export const SettingsButton = styled(TouchableOpacity)`
+  margin-right: 16px;
+`;

@@ -6,10 +6,11 @@ import {
   HeaderTextContainer,
   NavContainer,
   NFCButton,
+  SettingsButton,
   SubHeading,
   Title,
 } from "./headerStyles";
-import { useNavigation } from "@react-navigation/core";
+import { useNavigation, NavigationProp } from "@react-navigation/core";
 import { MaterialIcons } from "@expo/vector-icons";
 
 interface Props {
@@ -17,10 +18,11 @@ interface Props {
   subheading?: ReactNode;
   nfc?: ReactNode;
   isNewUser?: ReactNode;
+  settings?: ReactNode;
 }
 
-const Header = ({ title, subheading, nfc, isNewUser }: Props) => {
-  const navigation = useNavigation();
+const Header = ({ title, subheading, nfc, isNewUser, settings }: Props) => {
+  const navigation: NavigationProp<any> = useNavigation();
   return (
     <HeaderContainer>
       <NavContainer>
@@ -38,6 +40,11 @@ const Header = ({ title, subheading, nfc, isNewUser }: Props) => {
         <NFCButton>
           <MaterialIcons name="nfc" size={20} color="green" />
         </NFCButton>
+      )}
+      {settings && (
+        <SettingsButton onPress={() => navigation.navigate("Settings")}>
+          <MaterialIcons name="settings" size={30} color="grey" />
+        </SettingsButton>
       )}
     </HeaderContainer>
   );

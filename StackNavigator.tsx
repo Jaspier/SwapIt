@@ -9,6 +9,7 @@ import SplashScreen from "./screens/Auth/SplashScreen";
 import ProfileScreen from "./screens/Profile/ProfileScreen";
 import MatchedScreen from "./screens/MatchedModal/MatchedScreen";
 import MessageScreen from "./screens/Message/MessageScreen";
+import SettingsScreen from "./screens/Settings/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ const StackNavigator = () => {
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: "transparentModal" }}>
             <Stack.Screen name="Match" component={MatchedScreen} />

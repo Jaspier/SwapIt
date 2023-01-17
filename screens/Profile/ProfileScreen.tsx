@@ -1,4 +1,4 @@
-import { Button, FlatList, Platform } from "react-native";
+import { FlatList, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
@@ -58,7 +58,7 @@ const ProfileScreen = ({ navigation }: any) => {
   if (!authContext) {
     return null;
   }
-  const { user, logout }: AuthContextInterface = authContext;
+  const { user }: AuthContextInterface = authContext;
 
   useEffect(() => {
     if (user && !isNewUser) {
@@ -136,7 +136,7 @@ const ProfileScreen = ({ navigation }: any) => {
         if (index + 1 === images.length && user) {
           setDoc(doc(db, "users", user.uid), {
             id: user.uid,
-            displayName: user.email,
+            displayName: user.displayName ? user.displayName : user.email,
             photoUrls: imagesSelected
               ? JSON.stringify(imageAllUrls)
               : initialPhotoUrls,
@@ -157,8 +157,11 @@ const ProfileScreen = ({ navigation }: any) => {
 
   return (
     <SafeArea>
-      <Header title="Profile" isNewUser={isNewUser} />
-      <DisplayName>{user ? user.email : "NULL"}</DisplayName>
+      <Header title="Profile" isNewUser={isNewUser} settings />
+      {user && !user.displayName && <DisplayName>{user.email}</DisplayName>}
+      {user && user.displayName && (
+        <DisplayName>Hello, {user.displayName}</DisplayName>
+      )}
       <ImagePickerPressable onPress={pickImages}>
         <AntDesign name="pluscircle" size={24} color="grey" />
       </ImagePickerPressable>
@@ -199,7 +202,6 @@ const ProfileScreen = ({ navigation }: any) => {
           <ButtonText>Update Profile</ButtonText>
         </UpdateProfileButton>
       </ButtonContainer>
-      <Button title="Logout" onPress={() => logout()} />
     </SafeArea>
   );
 };
