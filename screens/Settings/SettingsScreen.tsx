@@ -1,4 +1,11 @@
-import { View, Text, TouchableOpacity, Button } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Button,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeArea } from "../../components/utilities";
 import Header from "../../components/Header/Header";
@@ -111,39 +118,43 @@ const SettingsScreen = ({ navigation }: any) => {
   return (
     <SafeArea>
       <Header title="Settings" />
-      <ProfilePicContainer>
-        <TouchableOpacity onPress={() => navigation.navigate("Camera")}>
-          {!photo && (
-            <DefaultProfilePic
-              label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View>
+          <ProfilePicContainer>
+            <TouchableOpacity onPress={() => navigation.navigate("Camera")}>
+              {!photo && (
+                <DefaultProfilePic
+                  label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
+                />
+              )}
+              {photo && (
+                <ProfilePicture
+                  source={{
+                    uri: photoTaken
+                      ? photo
+                      : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${photo}`,
+                  }}
+                />
+              )}
+            </TouchableOpacity>
+          </ProfilePicContainer>
+          {user && user.photoURL && (
+            <Button
+              title="Remove Profile Picture"
+              onPress={() => removeProfilePicture()}
             />
           )}
-          {photo && (
-            <ProfilePicture
-              source={{
-                uri: photoTaken
-                  ? photo
-                  : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${photo}`,
-              }}
+          <UserEmail>{user ? user.email : "NULL"}</UserEmail>
+          <SettingsContainer>
+            <Label>Username</Label>
+            <Input
+              value={displayName ? displayName : ""}
+              onChangeText={setDisplayName}
+              placeholder="Enter your username"
             />
-          )}
-        </TouchableOpacity>
-      </ProfilePicContainer>
-      {user && user.photoURL && (
-        <Button
-          title="Remove Profile Picture"
-          onPress={() => removeProfilePicture()}
-        />
-      )}
-      <UserEmail>{user ? user.email : "NULL"}</UserEmail>
-      <SettingsContainer>
-        <Label>Username</Label>
-        <Input
-          value={displayName ? displayName : ""}
-          onChangeText={setDisplayName}
-          placeholder="Enter your username"
-        />
-      </SettingsContainer>
+          </SettingsContainer>
+        </View>
+      </TouchableWithoutFeedback>
       <ButtonContainer>
         <UpdateProfileButton
           onPress={() => updateUserInfo()}

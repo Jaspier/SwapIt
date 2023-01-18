@@ -1,4 +1,10 @@
-import { View, ImageBackground, TouchableOpacity, Text } from "react-native";
+import {
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Text,
+  KeyboardAvoidingView,
+} from "react-native";
 import styled from "styled-components";
 import { Button, TextInput } from "react-native-paper";
 import { colors } from "../../../theme/colors";
@@ -29,6 +35,10 @@ export const SplashButton = styled(TouchableOpacity)`
 export const SplashText = styled(Text)`
   font-weight: 600;
   text-align: center;
+`;
+
+export const AuthKeyboardAvoidingView = styled(KeyboardAvoidingView)`
+  flex: 1 1 0%;
 `;
 
 export const AuthContainer = styled(View)`
