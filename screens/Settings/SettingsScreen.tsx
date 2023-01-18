@@ -29,6 +29,14 @@ import { useRoute } from "@react-navigation/core";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../firebase";
 
 const SettingsScreen = ({ navigation }: any) => {
   const [photo, setPhoto] = useState("");
@@ -72,30 +80,61 @@ const SettingsScreen = ({ navigation }: any) => {
   const updateUserInfo = async () => {
     setProcessing(true);
     let key;
-    if (photoTaken) {
-      const imageUrl = photo;
-      const response = await fetch(photo);
-      const blob = await response.blob();
-      const urlParts = imageUrl.split(".");
-      const extension = urlParts[urlParts.length - 1];
-      key = `${uuidv4()}.${extension}`;
-      if (user && user.photoURL) {
-        await Storage.remove(`profiles/${user.photoURL}`);
+    if (user) {
+      if (photoTaken) {
+        const imageUrl = photo;
+        const response = await fetch(photo);
+        const blob = await response.blob();
+        const urlParts = imageUrl.split(".");
+        const extension = urlParts[urlParts.length - 1];
+        key = `${uuidv4()}.${extension}`;
+        if (user.photoURL) {
+          await Storage.remove(`profiles/${user.photoURL}`);
+        }
+        await Storage.put(`profiles/${key}`, blob);
       }
-      await Storage.put(`profiles/${key}`, blob);
-    }
-    // @ts-ignore
-    updateProfile(user, {
-      displayName: displayName,
-      photoURL: photoTaken ? key : user?.photoURL,
-    })
-      .then(() => {
-        setProcessing(false);
-        setIncompleteForm(true);
+      // @ts-ignore
+      updateProfile(user, {
+        displayName: displayName,
+        photoURL: photoTaken ? key : user.photoURL,
       })
-      .catch((error) => {
-        alert(error.message);
-      });
+        .then(() => {
+          setProcessing(false);
+          setIncompleteForm(true);
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        updateDoc(doc(db, "users", user.uid), {
+          id: user.uid,
+          displayName: displayName,
+          timestamp: serverTimestamp(),
+        })
+          .then(() => {
+            setProcessing(false);
+            navigation.navigate("Home");
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+      } else {
+        setDoc(doc(db, "users", user.uid), {
+          id: user.uid,
+          displayName: displayName,
+          timestamp: serverTimestamp(),
+        })
+          .then(() => {
+            setProcessing(false);
+            navigation.navigate("Home");
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+      }
+    }
   };
 
   const removeProfilePicture = async () => {
