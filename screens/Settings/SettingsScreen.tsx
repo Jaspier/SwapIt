@@ -91,6 +91,23 @@ const SettingsScreen = ({ navigation }: any) => {
       });
   };
 
+  const removeProfilePicture = async () => {
+    if (user && user.photoURL) {
+      // @ts-ignore
+      updateProfile(user, {
+        photoURL: "",
+      })
+        .then(() => {
+          navigation.goBack();
+          navigation.navigate("Settings");
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+      await Storage.remove(`profiles/${user.photoURL}`);
+    }
+  };
+
   return (
     <SafeArea>
       <Header title="Settings" />
@@ -112,6 +129,12 @@ const SettingsScreen = ({ navigation }: any) => {
           )}
         </TouchableOpacity>
       </ProfilePicContainer>
+      {user && user.photoURL && (
+        <Button
+          title="Remove Profile Picture"
+          onPress={() => removeProfilePicture()}
+        />
+      )}
       <UserEmail>{user ? user.email : "NULL"}</UserEmail>
       <SettingsContainer>
         <Label>Username</Label>
