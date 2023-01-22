@@ -81,6 +81,7 @@ const ChatList = () => {
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <Swipeable
+          friction={3}
           renderRightActions={() => <RightActions />}
           //@ts-ignore
           onSwipeableRightOpen={() => deleteMatch(item.usersMatched)}
