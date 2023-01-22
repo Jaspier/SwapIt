@@ -1,10 +1,11 @@
-import { View, Text } from "react-native";
+import { Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import AuthenticationContext from "../../../../hooks/authentication/authenticationContext";
 import getMatchedUserInfo from "../../../../lib/getMatchedUserInfo";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { useNavigation, NavigationProp } from "@react-navigation/core";
 import {
+  PreviewContainer,
   ProfileDisplayName,
   ProfileImage,
   ProfileItemName,
@@ -72,13 +73,15 @@ const ChatRow = ({ matchDetails }: any) => {
             : "NULL",
         }}
       />
-      <View>
-        <ProfileDisplayName>
+      <PreviewContainer>
+        <ProfileDisplayName numberOfLines={1} ellipsizeMode="tail">
           {matchedUserInfo?.displayName}{" "}
           <ProfileItemName>({matchedUserInfo?.itemName})</ProfileItemName>
         </ProfileDisplayName>
-        <Text>{lastMessage || "Say Hi!"}</Text>
-      </View>
+        <Text numberOfLines={1} ellipsizeMode="tail">
+          {lastMessage || "Say Hi!"}
+        </Text>
+      </PreviewContainer>
     </Row>
   );
 };
