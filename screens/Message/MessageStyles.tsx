@@ -29,6 +29,7 @@ export const MessageInputContainer = styled(View)`
 
 export const MessageInput = styled(TextInput)`
   height: 40px;
+  width: 85%;
   font-size: 18px;
   line-height: 28px;
 `;
