@@ -3,7 +3,7 @@ import { colors } from "../../../../theme/colors";
 import { View, Text, Image } from "react-native";
 
 export const ReceiverMessageBubble = styled(View)`
-  background-color: rgb(34, 197, 94);
+  background-color: ${colors.bg.brand};
   border-radius: 8px;
   border-top-left-radius: 0px;
   padding: 12px 20px;

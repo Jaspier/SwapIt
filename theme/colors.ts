@@ -18,6 +18,7 @@ export const colors = {
     primary: "#FFFFFF",
     secondary: "#F1F1F1",
     account: "#523A28",
+    brand: "#22C55E",
   },
   text: {
     primary: "#262626",

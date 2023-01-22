@@ -5,7 +5,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 export const MatchedContainer = styled(View)`
   position: absolute;
   height: 100%;
-  background-color: rgb(34, 197, 94);
+  background-color: ${colors.bg.brand};
   padding-top: 100px;
   opacity: 0.89;
 `;

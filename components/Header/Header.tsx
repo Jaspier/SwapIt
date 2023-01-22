@@ -37,7 +37,7 @@ const Header = ({ title, subheading, nfc, isNewUser, settings }: Props) => {
         </HeaderTextContainer>
       </NavContainer>
       {nfc && (
-        <NFCButton>
+        <NFCButton onPress={() => navigation.navigate("Swap")}>
           <MaterialIcons name="nfc" size={20} color="green" />
         </NFCButton>
       )}
