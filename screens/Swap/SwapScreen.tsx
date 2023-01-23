@@ -8,7 +8,6 @@ import {
 } from "firebase/firestore";
 import AnimatedLottieView from "lottie-react-native";
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
 import { db } from "../../firebase";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import generateId from "../../lib/generateId";
@@ -65,6 +64,17 @@ const SwapScreen = ({ navigation }: any) => {
               if (snapshot.data().users[user.uid].confirmed) {
                 setConfirmed(true);
               }
+              const matchedUser = getMatchedUserInfo(
+                snapshot.data().users,
+                user.uid
+              );
+              setMatchedUser(matchedUser);
+              if (
+                snapshot.data().users[user.uid].confirmed &&
+                snapshot.data().users[matchedUser.id].confirmed
+              ) {
+                console.log("SWAPIT!");
+              }
             } else {
               console.log("No such document!");
             }
@@ -76,30 +86,9 @@ const SwapScreen = ({ navigation }: any) => {
     return unsub;
   }, [db]);
 
-  useEffect(() => {
-    if (user) {
-      const matchedUser: User = getMatchedUserInfo(
-        matchDetails.users,
-        user.uid
-      );
-      setMatchedUser(matchedUser);
-    }
-  }, [user]);
-
   const ConfirmSwap = async (confirm: boolean) => {
-    if (user && matchedUsers && matchedUser) {
-      const currentUser: User = matchedUsers[user.uid];
-      const updatedCurrentUser = {
-        ...currentUser,
-        confirmed: confirm ? true : false,
-        timestamp: serverTimestamp(),
-      };
-
-      const updatedMatchedUsers = {
-        [user.uid]: updatedCurrentUser,
-        [matchedUser.id]: matchedUser,
-      };
-
+    let matchedUser;
+    if (user) {
       const docRef = doc(
         db,
         "matches",
@@ -107,18 +96,44 @@ const SwapScreen = ({ navigation }: any) => {
       );
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        updateDoc(docRef, {
-          users: updatedMatchedUsers,
+        matchedUser = getMatchedUserInfo(docSnap.data().users, user?.uid);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+      if (matchedUsers) {
+        const currentUser: User = matchedUsers[user.uid];
+        const updatedCurrentUser = {
+          ...currentUser,
+          confirmed: confirm ? true : false,
           timestamp: serverTimestamp(),
-        })
-          .then(() => {
-            if (!confirm) {
-              navigation.goBack();
-            }
+        };
+
+        const updatedMatchedUsers = {
+          [user.uid]: updatedCurrentUser,
+          [matchedUser.id]: matchedUser,
+        };
+
+        const docRef = doc(
+          db,
+          "matches",
+          generateId(matchDetails.usersMatched[0], matchDetails.usersMatched[1])
+        );
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          updateDoc(docRef, {
+            users: updatedMatchedUsers,
+            timestamp: serverTimestamp(),
           })
-          .catch((error) => {
-            alert(error.message);
-          });
+            .then(() => {
+              if (!confirm) {
+                navigation.goBack();
+              }
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
+        }
       }
     }
   };
