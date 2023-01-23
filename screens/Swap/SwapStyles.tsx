@@ -17,7 +17,7 @@ export const SwapContainer = styled(View)`
 `;
 
 export const SwapButton = styled(TouchableOpacity)`
-  background-color: white;
+  background-color: ${colors.bg.primary};
   height: 200px;
   width: 200px;
   border-radius: 9999px;
@@ -29,4 +29,33 @@ export const SwapText = styled(Text)`
   font-size: 36px;
   color: ${colors.bg.brand};
   font-weight: semi-bold;
+`;
+
+export const ConfirmedTextContainer = styled(View)`
+  position: absolute;
+  top: 120px;
+  padding-horizontal: 10px;
+`;
+
+export const ConfirmedText = styled(Text)`
+  font-size: 28px;
+  font-weight: semi-bold;
+  color: ${colors.text.inverse};
+`;
+
+export const CancelButton = styled(TouchableOpacity)`
+  position: absolute;
+  bottom: 10%;
+  width: 150px;
+  height: 50px;
+  background-color: ${colors.ui.error};
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+`;
+
+export const CancelText = styled(Text)`
+  color: ${colors.text.inverse};
+  font-size: 18px;
 `;

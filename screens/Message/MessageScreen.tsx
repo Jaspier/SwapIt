@@ -79,6 +79,7 @@ const MessageScreen = () => {
         title={getMatchedUserInfo(matchDetails.users, user?.uid).displayName}
         subheading={getMatchedUserInfo(matchDetails.users, user?.uid).itemName}
         nfc
+        matchDetails={matchDetails}
       />
       <MessagesView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

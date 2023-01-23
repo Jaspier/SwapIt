@@ -79,11 +79,10 @@ const ChatList = () => {
       style={{ height: "100%" }}
       data={matches}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
+      renderItem={({ item }: any) => (
         <Swipeable
           friction={3}
           renderRightActions={() => <RightActions />}
-          //@ts-ignore
           onSwipeableRightOpen={() => deleteMatch(item.usersMatched)}
         >
           <ChatRow matchDetails={item} />

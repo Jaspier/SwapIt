@@ -19,9 +19,17 @@ interface Props {
   nfc?: ReactNode;
   isNewUser?: ReactNode;
   settings?: ReactNode;
+  matchDetails?: ReactNode;
 }
 
-const Header = ({ title, subheading, nfc, isNewUser, settings }: Props) => {
+const Header = ({
+  title,
+  subheading,
+  nfc,
+  isNewUser,
+  settings,
+  matchDetails,
+}: Props) => {
   const navigation: NavigationProp<any> = useNavigation();
   return (
     <HeaderContainer>
@@ -37,7 +45,13 @@ const Header = ({ title, subheading, nfc, isNewUser, settings }: Props) => {
         </HeaderTextContainer>
       </NavContainer>
       {nfc && (
-        <NFCButton onPress={() => navigation.navigate("Swap")}>
+        <NFCButton
+          onPress={() =>
+            navigation.navigate("Swap", {
+              matchDetails,
+            })
+          }
+        >
           <MaterialIcons name="nfc" size={20} color="green" />
         </NFCButton>
       )}
