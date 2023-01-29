@@ -56,8 +56,7 @@ const HomeScreen = ({ navigation }: any) => {
     if (user) {
       onSnapshot(doc(db, "users", user.uid), (snapshot) => {
         if (!snapshot.exists()) {
-          const newUser = true;
-          navigation.navigate("Profile", { newUser });
+          navigation.navigate("Profile", { newUser: true });
         }
       });
     }

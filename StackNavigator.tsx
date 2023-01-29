@@ -12,6 +12,7 @@ import MessageScreen from "./screens/Message/MessageScreen";
 import SettingsScreen from "./screens/Settings/SettingsScreen";
 import CameraScreen from "./screens/Settings/Camera/CameraScreen";
 import SwapScreen from "./screens/Swap/SwapScreen";
+import SwappedScreen from "./screens/Swapped/SwappedScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ const StackNavigator = () => {
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Camera" component={CameraScreen} />
+            <Stack.Screen name="Swapped" component={SwappedScreen} />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: "transparentModal" }}>
             <Stack.Screen name="Match" component={MatchedScreen} />

@@ -1,5 +1,6 @@
 import { useRoute } from "@react-navigation/native";
 import {
+  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -58,7 +59,7 @@ const SwapScreen = ({ navigation }: any) => {
               matchDetails.usersMatched[1]
             )
           ),
-          (snapshot) => {
+          async (snapshot) => {
             if (snapshot.exists()) {
               setMatchedUsers(snapshot.data().users);
               if (snapshot.data().users[user.uid].confirmed) {
@@ -73,7 +74,24 @@ const SwapScreen = ({ navigation }: any) => {
                 snapshot.data().users[user.uid].confirmed &&
                 snapshot.data().users[matchedUser.id].confirmed
               ) {
-                console.log("SWAPIT!");
+                navigation.goBack();
+                navigation.navigate("Swapped");
+                await deleteDoc(
+                  doc(db, "users", user.uid, "swipes", matchedUser.id)
+                );
+                await deleteDoc(
+                  doc(db, "users", matchedUser.id, "swipes", user.uid)
+                );
+                await deleteDoc(
+                  doc(
+                    db,
+                    "matches",
+                    generateId(
+                      matchDetails.usersMatched[0],
+                      matchDetails.usersMatched[1]
+                    )
+                  )
+                );
               }
             } else {
               console.log("No such document!");
