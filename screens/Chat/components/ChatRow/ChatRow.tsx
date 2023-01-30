@@ -36,6 +36,7 @@ const ChatRow = ({ matchDetails }: any) => {
   const [matchedUserInfo, setMatchedUserInfo] =
     useState<MatchedUserInfo | null>(null);
   const [lastMessage, setLastMessage] = useState(null);
+  const [lastMessageUser, setLastMessageUser] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -51,7 +52,10 @@ const ChatRow = ({ matchDetails }: any) => {
           orderBy("timestamp", "desc"),
           limit(1)
         ),
-        (snapshot) => setLastMessage(snapshot.docs[0]?.data()?.message)
+        (snapshot) => {
+          setLastMessage(snapshot.docs[0]?.data()?.message);
+          setLastMessageUser(snapshot.docs[0]?.data()?.userId);
+        }
       ),
     [matchDetails, db]
   );
@@ -79,6 +83,7 @@ const ChatRow = ({ matchDetails }: any) => {
           <ProfileItemName>({matchedUserInfo?.itemName})</ProfileItemName>
         </ProfileDisplayName>
         <Text numberOfLines={1} ellipsizeMode="tail">
+          {lastMessageUser === user?.uid && "You: "}
           {lastMessage || "Say Hi!"}
         </Text>
       </PreviewContainer>

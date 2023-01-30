@@ -39,7 +39,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import Slider from "@react-native-community/slider";
 import { colors } from "../../theme/colors";
 
 const SettingsScreen = ({ navigation }: any) => {
