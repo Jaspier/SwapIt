@@ -11,9 +11,11 @@ import { SafeArea } from "../../components/utilities";
 import Header from "../../components/Header/Header";
 import {
   DefaultProfilePic,
+  DistanceSlider,
   ProfilePicContainer,
   ProfilePicture,
   SettingsContainer,
+  SliderContainer,
   UserEmail,
 } from "./SettingsStyles";
 import {
@@ -37,6 +39,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import Slider from "@react-native-community/slider";
+import { colors } from "../../theme/colors";
 
 const SettingsScreen = ({ navigation }: any) => {
   const [photo, setPhoto] = useState("");
@@ -45,6 +49,7 @@ const SettingsScreen = ({ navigation }: any) => {
   const [initialDisplayName, setInitialDisplayName] = useState("");
   const [processing, setProcessing] = useState(false);
   const [incompleteForm, setIncompleteForm] = useState(true);
+  const [sliderValue, setSliderValue] = useState(50);
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -194,6 +199,19 @@ const SettingsScreen = ({ navigation }: any) => {
           </SettingsContainer>
         </View>
       </TouchableWithoutFeedback>
+      <SliderContainer>
+        <Label>Search Distance ({sliderValue}mi)</Label>
+        <DistanceSlider
+          minimumValue={0}
+          maximumValue={100}
+          step={1}
+          onValueChange={(value) => setSliderValue(value)}
+          value={sliderValue}
+          minimumTrackTintColor={colors.brand.primary}
+          thumbTintColor={colors.brand.primary}
+          maximumTrackTintColor={colors.ui.disabled}
+        />
+      </SliderContainer>
       <ButtonContainer>
         <UpdateProfileButton
           onPress={() => updateUserInfo()}

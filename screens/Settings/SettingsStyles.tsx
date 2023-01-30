@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { colors } from "../../theme/colors";
 import { View, Text } from "react-native";
 import { Avatar } from "react-native-paper";
+import Slider from "@react-native-community/slider";
 
 export const ProfilePicContainer = styled(View)`
   align-items: center;
@@ -25,4 +26,14 @@ export const UserEmail = styled(Text)`
   text-align: center;
   padding: 16px;
   font-weight: 700;
+`;
+
+export const SliderContainer = styled(View)`
+  justify-content: center;
+  align-items: center;
+`;
+
+export const DistanceSlider = styled(Slider)`
+  width: 300px;
+  height: 40px;
 `;
