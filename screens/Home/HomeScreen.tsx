@@ -55,7 +55,10 @@ const HomeScreen = ({ navigation }: any) => {
   useLayoutEffect(() => {
     if (user) {
       onSnapshot(doc(db, "users", user.uid), (snapshot) => {
-        if (!snapshot.exists()) {
+        if (
+          !snapshot.exists() ||
+          (snapshot.exists() && !snapshot.data().active)
+        ) {
           navigation.navigate("Profile", { newUser: true });
         }
       });

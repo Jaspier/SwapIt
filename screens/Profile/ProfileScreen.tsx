@@ -142,6 +142,7 @@ const ProfileScreen = ({ navigation }: any) => {
               : initialPhotoUrls,
             itemName: itemName,
             location: location,
+            active: true,
             timestamp: serverTimestamp(),
           })
             .then(() => {

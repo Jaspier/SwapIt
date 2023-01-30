@@ -7,7 +7,7 @@ import {
 import AnimatedLottieView from "lottie-react-native";
 import { TouchableWithoutFeedback } from "react-native";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
-import { deleteDoc, doc } from "firebase/firestore";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 const SwappedScreen = ({ navigation }: any) => {
@@ -19,7 +19,13 @@ const SwappedScreen = ({ navigation }: any) => {
 
   const resetProfile = async () => {
     if (user) {
-      await deleteDoc(doc(db, "users", user.uid));
+      await updateDoc(doc(db, "users", user.uid), {
+        itemName: null,
+        location: null,
+        photoUrls: null,
+        timestamp: serverTimestamp(),
+        active: false,
+      });
     }
   };
 
