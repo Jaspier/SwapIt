@@ -10,7 +10,7 @@ import {
   Card,
   CardFooter,
   ItemName,
-  Location,
+  LocationText,
   SwipeButtonsContainer,
   SwipeButton,
   NoProfilesText,
@@ -30,11 +30,13 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import generateId from "../../lib/generateId";
 import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
+import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 
 interface Profile {
@@ -64,6 +66,32 @@ const HomeScreen = ({ navigation }: any) => {
       });
     }
   }, [user, navigation]);
+
+  useEffect(() => {
+    const getPermissions = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        alert("Please grant location permissions");
+        return;
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      const coords = {
+        longitude: currentLocation.coords.longitude,
+        latitude: currentLocation.coords.latitude,
+      };
+      const reverseGeocode = await Location.reverseGeocodeAsync(coords);
+      const city = reverseGeocode[0].city;
+      if (user) {
+        await updateDoc(doc(db, "users", user.uid), {
+          location: city,
+          coords: coords,
+          timestamp: serverTimestamp(),
+        });
+      }
+    };
+    getPermissions();
+  }, []);
 
   useEffect(() => {
     let unsub;
@@ -244,7 +272,7 @@ const HomeScreen = ({ navigation }: any) => {
                     <ItemName>{card.itemName}</ItemName>
                     <Text>{card.displayName}</Text>
                   </View>
-                  <Location>{card.location}</Location>
+                  <LocationText>{card.location}</LocationText>
                 </CardFooter>
               </Card>
             ) : (

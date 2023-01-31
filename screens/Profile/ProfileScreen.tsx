@@ -33,6 +33,7 @@ import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import axios from "axios";
 import { useRoute } from "@react-navigation/core";
+import { colors } from "../../theme/colors";
 
 const ProfileScreen = ({ navigation }: any) => {
   const { params } = useRoute();
@@ -172,9 +173,11 @@ const ProfileScreen = ({ navigation }: any) => {
               onChangeText={setItemName}
               placeholder="Enter the name of your item"
             />
-            <Label>Your location</Label>
+            <Label>Current location</Label>
             <Input
+              style={{ color: colors.text.disabled }}
               value={location ? location : ""}
+              editable={false}
               onChangeText={setLocation}
               placeholder="Enter your location"
             />

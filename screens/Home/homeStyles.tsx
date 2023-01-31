@@ -68,7 +68,7 @@ export const ItemName = styled(Text)`
   font-weight: 700;
 `;
 
-export const Location = styled(Text)`
+export const LocationText = styled(Text)`
   font-size: 16px;
   line-height: 32px;
   font-weight: 700;
