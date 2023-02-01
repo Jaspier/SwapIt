@@ -38,6 +38,8 @@ import generateId from "../../lib/generateId";
 import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
 import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
+import { getDistance } from "geolib";
+import { useRoute } from "@react-navigation/native";
 
 interface Profile {
   id: string;
@@ -53,6 +55,8 @@ const HomeScreen = ({ navigation }: any) => {
     return null;
   }
   const { user }: AuthContextInterface = authContext;
+
+  const { params } = useRoute();
 
   useLayoutEffect(() => {
     if (user) {
@@ -97,7 +101,16 @@ const HomeScreen = ({ navigation }: any) => {
     let unsub;
 
     const fetchCards = async () => {
+      let userCoords: any;
+      let radius: number;
       if (user) {
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        if (docSnap.exists()) {
+          userCoords = docSnap.data().coords;
+          radius = docSnap.data().radius;
+        } else {
+          console.log("No such document!");
+        }
         const passes = await getDocs(
           collection(db, "users", user.uid, "passes")
         ).then((snapshot) => snapshot.docs.map((doc) => doc.id));
@@ -112,12 +125,20 @@ const HomeScreen = ({ navigation }: any) => {
         unsub = onSnapshot(
           query(
             collection(db, "users"),
-            where("id", "not-in", [...passedUserIds, ...swipedUserIds])
+            where("id", "not-in", [
+              ...passedUserIds,
+              ...swipedUserIds,
+              user.uid,
+            ])
           ),
           (snapshot) => {
             setProfiles(
               snapshot.docs
-                .filter((doc) => doc.id !== user.uid)
+                .filter(
+                  (doc) =>
+                    getDistance(doc.data().coords, userCoords) / 1609.34 <
+                    radius
+                )
                 .map((doc) => ({
                   id: doc.id,
                   displayName: doc.data().displayName,
@@ -132,7 +153,7 @@ const HomeScreen = ({ navigation }: any) => {
 
     fetchCards();
     return unsub;
-  }, [db]);
+  }, [db, params]);
 
   const swipeLeft = async (cardIndex: number) => {
     if (!profiles[cardIndex]) return;

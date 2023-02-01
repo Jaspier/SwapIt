@@ -48,7 +48,8 @@ const SettingsScreen = ({ navigation }: any) => {
   const [initialDisplayName, setInitialDisplayName] = useState("");
   const [processing, setProcessing] = useState(false);
   const [incompleteForm, setIncompleteForm] = useState(true);
-  const [sliderValue, setSliderValue] = useState(50);
+  const [distance, setDistance] = useState(0);
+  const [initialDistance, setInitialDistance] = useState(0);
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -56,13 +57,16 @@ const SettingsScreen = ({ navigation }: any) => {
   const { user, logout }: AuthContextInterface = authContext;
 
   const { params } = useRoute();
+
   useEffect(() => {
-    if (user && user.displayName) {
-      setDisplayName(user.displayName);
-      setInitialDisplayName(user.displayName);
-    }
-    if (user && user.photoURL) {
-      setPhoto(user.photoURL);
+    if (user) {
+      if (user.displayName) {
+        setDisplayName(user.displayName);
+        setInitialDisplayName(user.displayName);
+      }
+      if (user.photoURL) {
+        setPhoto(user.photoURL);
+      }
     }
     if (params) {
       // @ts-ignore
@@ -74,12 +78,30 @@ const SettingsScreen = ({ navigation }: any) => {
   }, [user, params]);
 
   useEffect(() => {
-    if (displayName !== initialDisplayName && displayName !== "") {
-      setIncompleteForm(false);
-    } else {
-      setIncompleteForm(true);
+    if (user) {
+      const getInitialDistance = async () => {
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        if (docSnap.exists()) {
+          const getInitialDistance = docSnap.data().radius;
+          if (distance === 0) {
+            setDistance(getInitialDistance);
+          }
+          setInitialDistance(getInitialDistance);
+          if (
+            (displayName !== initialDisplayName && displayName !== "") ||
+            (distance !== initialDistance && distance !== 0)
+          ) {
+            setIncompleteForm(false);
+          } else {
+            setIncompleteForm(true);
+          }
+        } else {
+          console.log("No such document!");
+        }
+      };
+      getInitialDistance();
     }
-  }, [displayName, initialDisplayName, user]);
+  }, [user, initialDistance, distance, displayName, initialDisplayName]);
 
   const updateUserInfo = async () => {
     setProcessing(true);
@@ -113,13 +135,13 @@ const SettingsScreen = ({ navigation }: any) => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         updateDoc(doc(db, "users", user.uid), {
-          id: user.uid,
           displayName: displayName,
+          radius: distance,
           timestamp: serverTimestamp(),
         })
           .then(() => {
             setProcessing(false);
-            navigation.navigate("Home");
+            navigation.navigate("Home", { distanceChanged: true });
           })
           .catch((error) => {
             alert(error.message);
@@ -128,11 +150,12 @@ const SettingsScreen = ({ navigation }: any) => {
         setDoc(doc(db, "users", user.uid), {
           id: user.uid,
           displayName: displayName,
+          radius: distance,
           timestamp: serverTimestamp(),
         })
           .then(() => {
             setProcessing(false);
-            navigation.navigate("Home");
+            navigation.navigate("Home", { distanceChanged: true });
           })
           .catch((error) => {
             alert(error.message);
@@ -199,13 +222,13 @@ const SettingsScreen = ({ navigation }: any) => {
         </View>
       </TouchableWithoutFeedback>
       <SliderContainer>
-        <Label>Search Distance ({sliderValue}mi)</Label>
+        <Label>Search Distance ({distance}mi)</Label>
         <DistanceSlider
-          minimumValue={0}
+          minimumValue={1}
           maximumValue={100}
           step={1}
-          onValueChange={(value) => setSliderValue(value)}
-          value={sliderValue}
+          onValueChange={(value) => setDistance(value)}
+          value={distance}
           minimumTrackTintColor={colors.brand.primary}
           thumbTintColor={colors.brand.primary}
           maximumTrackTintColor={colors.ui.disabled}
