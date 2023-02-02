@@ -28,12 +28,19 @@ import {
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import axios from "axios";
 import { useRoute } from "@react-navigation/core";
 import { colors } from "../../theme/colors";
+import * as Location from "expo-location";
 
 const ProfileScreen = ({ navigation }: any) => {
   const { params } = useRoute();
@@ -52,14 +59,41 @@ const ProfileScreen = ({ navigation }: any) => {
   const [initialPhotoUrls, setInitialPhotoUrls] = useState("");
   const [itemName, setItemName] = useState("");
   const [initialItemName, setInitialItemName] = useState("");
-  const [location, setLocation] = useState("");
-  const [initialLocation, setInitialLocation] = useState("");
+  const [location, setLocation] = useState<null | string>("");
+  const [coords, setCoords] = useState({});
   const [processing, setProcessing] = useState(false);
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
   }
   const { user }: AuthContextInterface = authContext;
+
+  useEffect(() => {
+    const getPermissions = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        alert("Please grant location permissions");
+        return;
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      const coords = {
+        longitude: currentLocation.coords.longitude,
+        latitude: currentLocation.coords.latitude,
+      };
+      const reverseGeocode = await Location.reverseGeocodeAsync(coords);
+      const city = reverseGeocode[0].city;
+      if (user) {
+        setLocation(city);
+        setCoords(coords);
+      }
+    };
+    if (isNewUser) {
+      getPermissions();
+    } else {
+      return;
+    }
+  }, []);
 
   useEffect(() => {
     if (user && !isNewUser) {
@@ -77,23 +111,18 @@ const ProfileScreen = ({ navigation }: any) => {
           setItemName(documentSnapshot.itemName);
           setInitialItemName(documentSnapshot.itemName);
           setLocation(documentSnapshot.location);
-          setInitialLocation(documentSnapshot.location);
         })
         .catch((e) => console.log("error fetching profile data", e));
     }
   }, [user]);
 
   useEffect(() => {
-    if (
-      itemName !== initialItemName ||
-      location !== initialLocation ||
-      (itemName !== "" && location !== "" && imagesSelected)
-    ) {
+    if (itemName !== initialItemName || (itemName !== "" && imagesSelected)) {
       setIncompleteForm(false);
     } else {
       setIncompleteForm(true);
     }
-  }, [itemName, initialItemName, location, initialLocation, imagesSelected]);
+  }, [itemName, initialItemName, imagesSelected]);
 
   const pickImages = async () => {
     (async () => {
@@ -147,12 +176,18 @@ const ProfileScreen = ({ navigation }: any) => {
               : initialPhotoUrls,
             itemName: itemName,
             location: location,
+            coords: coords,
             active: true,
             timestamp: serverTimestamp(),
           })
             .then(() => {
+              if (isNewUser) {
+                updateDoc(doc(db, "users", user.uid), {
+                  radius: 50,
+                });
+              }
               setProcessing(false);
-              navigation.navigate("Home");
+              navigation.navigate("Home", { refresh: true });
             })
             .catch((error) => {
               alert(error.message);
@@ -182,7 +217,6 @@ const ProfileScreen = ({ navigation }: any) => {
               style={{ color: colors.text.disabled }}
               value={location ? location : ""}
               editable={false}
-              onChangeText={setLocation}
               placeholder="Enter your location"
             />
           </DetailsContainer>

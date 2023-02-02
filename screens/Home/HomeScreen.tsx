@@ -73,6 +73,12 @@ const HomeScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     const getPermissions = async () => {
+      if (user) {
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        if (!docSnap.exists()) {
+          return;
+        }
+      }
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         alert("Please grant location permissions");
@@ -110,6 +116,7 @@ const HomeScreen = ({ navigation }: any) => {
           radius = docSnap.data().radius;
         } else {
           console.log("No such document!");
+          return;
         }
         const passes = await getDocs(
           collection(db, "users", user.uid, "passes")
