@@ -64,7 +64,11 @@ const ProfileScreen = ({ navigation }: any) => {
   useEffect(() => {
     if (user && !isNewUser) {
       axios
-        .get(`/myprofile?user=${user.uid}`)
+        .get("/myprofile", {
+          headers: {
+            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          },
+        })
         .then((res) => {
           const documentSnapshot = res.data;
           setImages(JSON.parse(documentSnapshot.photoUrls));
