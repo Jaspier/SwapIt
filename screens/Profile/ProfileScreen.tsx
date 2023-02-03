@@ -117,7 +117,12 @@ const ProfileScreen = ({ navigation }: any) => {
   }, [user]);
 
   useEffect(() => {
-    if (itemName !== initialItemName || (itemName !== "" && imagesSelected)) {
+    if (isNewUser && itemName !== "" && imagesSelected) {
+      setIncompleteForm(false);
+    } else if (
+      (!isNewUser && itemName !== initialItemName) ||
+      (itemName !== "" && imagesSelected)
+    ) {
       setIncompleteForm(false);
     } else {
       setIncompleteForm(true);
