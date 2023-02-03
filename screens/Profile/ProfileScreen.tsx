@@ -186,13 +186,15 @@ const ProfileScreen = ({ navigation }: any) => {
             timestamp: serverTimestamp(),
           })
             .then(() => {
+              setProcessing(false);
               if (isNewUser) {
                 updateDoc(doc(db, "users", user.uid), {
                   radius: 50,
                 });
+                navigation.navigate("Settings", { newUser: true });
+              } else {
+                navigation.navigate("Home", { refresh: true });
               }
-              setProcessing(false);
-              navigation.navigate("Home", { refresh: true });
             })
             .catch((error) => {
               alert(error.message);
@@ -203,7 +205,11 @@ const ProfileScreen = ({ navigation }: any) => {
 
   return (
     <SafeArea>
-      <Header title="Profile" isNewUser={isNewUser} settings />
+      <Header
+        title={isNewUser ? "Create Profile" : "Profile"}
+        isNewUser={isNewUser}
+        settings
+      />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>
           <DisplayName>

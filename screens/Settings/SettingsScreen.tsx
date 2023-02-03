@@ -58,6 +58,13 @@ const SettingsScreen = ({ navigation }: any) => {
 
   const { params } = useRoute();
 
+  let isNewUser: boolean | null | undefined;
+  if (params) {
+    // @ts-ignore
+    const { newUser } = params;
+    isNewUser = newUser;
+  }
+
   useEffect(() => {
     if (user) {
       if (user.displayName) {
@@ -71,9 +78,11 @@ const SettingsScreen = ({ navigation }: any) => {
     if (params) {
       // @ts-ignore
       const { photo } = params;
-      setPhoto(photo.uri);
-      setPhotoTaken(true);
-      setIncompleteForm(false);
+      if (photo) {
+        setPhoto(photo.uri);
+        setPhotoTaken(true);
+        setIncompleteForm(false);
+      }
     }
   }, [user, params]);
 
@@ -183,7 +192,10 @@ const SettingsScreen = ({ navigation }: any) => {
 
   return (
     <SafeArea>
-      <Header title="Settings" />
+      <Header
+        title={isNewUser ? "Set Preferences" : "Settings"}
+        isNewUser={isNewUser}
+      />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>
           <ProfilePicContainer>

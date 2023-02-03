@@ -55,7 +55,7 @@ const Header = ({
           <MaterialIcons name="nfc" size={20} color="green" />
         </NFCButton>
       )}
-      {settings && (
+      {settings && !isNewUser && (
         <SettingsButton onPress={() => navigation.navigate("Settings")}>
           <MaterialIcons name="settings" size={30} color="grey" />
         </SettingsButton>
