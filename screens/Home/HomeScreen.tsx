@@ -40,6 +40,7 @@ import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { getDistance } from "geolib";
 import { useRoute } from "@react-navigation/native";
+import axios from "axios";
 
 interface Profile {
   id: string;
@@ -73,6 +74,7 @@ const HomeScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     const getPermissions = async () => {
+      // console.log(user?.stsTokenManager.accessToken);
       if (user) {
         const docSnap = await getDoc(doc(db, "users", user.uid));
         if (!docSnap.exists()) {
@@ -87,17 +89,29 @@ const HomeScreen = ({ navigation }: any) => {
 
       let currentLocation = await Location.getCurrentPositionAsync({});
       const coords = {
-        longitude: currentLocation.coords.longitude,
         latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
       };
       const reverseGeocode = await Location.reverseGeocodeAsync(coords);
       const city = reverseGeocode[0].city;
       if (user) {
-        await updateDoc(doc(db, "users", user.uid), {
-          location: city,
-          coords: coords,
-          timestamp: serverTimestamp(),
-        });
+        axios
+          .post(
+            "/updateLocation",
+            {
+              location: city,
+              coords: coords,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+              },
+            }
+          )
+          .catch((e) => {
+            console.error(e.response.data.detail);
+          });
       }
     };
     getPermissions();
@@ -110,21 +124,30 @@ const HomeScreen = ({ navigation }: any) => {
       let userCoords: any;
       let radius: number;
       if (user) {
-        const docSnap = await getDoc(doc(db, "users", user.uid));
-        if (docSnap.exists()) {
-          userCoords = docSnap.data().coords;
-          radius = docSnap.data().radius;
-        } else {
-          console.log("No such document!");
-          return;
+        try {
+          const res = await axios.get("/getSearchPref", {
+            headers: {
+              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+            },
+          });
+          userCoords = res.data.coords;
+          radius = res.data.radius;
+        } catch (e: any) {
+          console.log(e.response.data.detail);
         }
-        const passes = await getDocs(
-          collection(db, "users", user.uid, "passes")
-        ).then((snapshot) => snapshot.docs.map((doc) => doc.id));
-
-        const swipes = await getDocs(
-          collection(db, "users", user.uid, "swipes")
-        ).then((snapshot) => snapshot.docs.map((doc) => doc.id));
+        let passes;
+        let swipes;
+        try {
+          const res = await axios.get("/getCardsFilter", {
+            headers: {
+              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+            },
+          });
+          passes = res.data.passes;
+          swipes = res.data.swipes;
+        } catch (e: any) {
+          console.log(e.response.data.detail);
+        }
 
         const passedUserIds = passes.length > 0 ? passes : ["none"];
         const swipedUserIds = swipes.length > 0 ? swipes : ["none"];
@@ -168,7 +191,16 @@ const HomeScreen = ({ navigation }: any) => {
     const userSwiped = profiles[cardIndex];
     console.log(`You swiped NOPE on ${userSwiped.displayName}`);
     if (user) {
-      setDoc(doc(db, "users", user.uid, "passes", userSwiped.id), userSwiped);
+      axios
+        .post("/swipeLeft", userSwiped, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          },
+        })
+        .catch((e) => {
+          console.error(e.response.data.detail);
+        });
     }
   };
 
@@ -177,51 +209,25 @@ const HomeScreen = ({ navigation }: any) => {
 
     const userSwiped = profiles[cardIndex];
     if (user) {
-      const loggedInProfile = await await (
-        await getDoc(doc(db, "users", user.uid))
-      ).data();
-
-      // Check if user swiped on 'you' (TODO: Migrate to cloud function)
-      getDoc(doc(db, "users", userSwiped.id, "swipes", user.uid)).then(
-        (documentSnapshot) => {
-          if (documentSnapshot.exists()) {
-            console.log(`HOORAY! You MATCHED with ${userSwiped.displayName}`);
-
-            setDoc(
-              doc(db, "users", user.uid, "swipes", userSwiped.id),
-              userSwiped
-            );
-
-            // Create MATCH
-            setDoc(doc(db, "matches", generateId(user.uid, userSwiped.id)), {
-              users: {
-                [user.uid]: loggedInProfile,
-                [userSwiped.id]: userSwiped,
-              },
-              usersMatched: [user.uid, userSwiped.id],
-              timestamp: serverTimestamp(),
-            });
-
+      axios
+        .post("/swipeRight", userSwiped, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          },
+        })
+        .then((e) => {
+          if (e.status === 201) {
+            const loggedInProfile = e.data;
             navigation.navigate("Match", {
               loggedInProfile,
               userSwiped,
             });
-          } else {
-            // User has swiped as first interaction with another user or no match :(
-            console.log(
-              `You swiped on ${userSwiped.displayName} (${userSwiped.itemName})`
-            );
-            setDoc(
-              doc(db, "users", user.uid, "swipes", userSwiped.id),
-              userSwiped
-            );
           }
-        }
-      );
-    }
-
-    if (user) {
-      setDoc(doc(db, "users", user.uid, "swipes", userSwiped.id), userSwiped);
+        })
+        .catch((e) => {
+          console.error(e.response.data.detail);
+        });
     }
   };
 

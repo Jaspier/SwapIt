@@ -28,13 +28,7 @@ import {
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
-import {
-  doc,
-  getDoc,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import axios from "axios";
@@ -112,7 +106,7 @@ const ProfileScreen = ({ navigation }: any) => {
           setInitialItemName(documentSnapshot.itemName);
           setLocation(documentSnapshot.location);
         })
-        .catch((e) => console.log("error fetching profile data", e));
+        .catch((e) => console.log(e.response.data.detail));
     }
   }, [user]);
 
