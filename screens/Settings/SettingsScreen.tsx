@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   TouchableOpacity,
   Button,
   TouchableWithoutFeedback,
@@ -26,20 +25,12 @@ import {
   UpdateProfileButton,
 } from "../../components/form";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
-import { updateProfile } from "firebase/auth";
 import { useRoute } from "@react-navigation/core";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
-import {
-  doc,
-  getDoc,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "../../firebase";
 import { colors } from "../../theme/colors";
+import axios from "axios";
 
 const SettingsScreen = ({ navigation }: any) => {
   const [photo, setPhoto] = useState("");
@@ -87,30 +78,38 @@ const SettingsScreen = ({ navigation }: any) => {
   }, [user, params]);
 
   useEffect(() => {
-    if (user) {
-      const getInitialDistance = async () => {
-        const docSnap = await getDoc(doc(db, "users", user.uid));
-        if (docSnap.exists()) {
-          const getInitialDistance = docSnap.data().radius;
+    const getInitialDistance = async () => {
+      if (user) {
+        try {
+          const res = await axios.get("/getSearchRadius", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+            },
+          });
+          const getInitialDistance = res.data;
           if (distance === 0) {
             setDistance(getInitialDistance);
           }
           setInitialDistance(getInitialDistance);
-          if (
-            (displayName !== initialDisplayName && displayName !== "") ||
-            (distance !== initialDistance && distance !== 0)
-          ) {
-            setIncompleteForm(false);
-          } else {
-            setIncompleteForm(true);
-          }
-        } else {
-          console.log("No such document!");
+        } catch (e: any) {
+          console.error(e.response.data.detail);
         }
-      };
-      getInitialDistance();
+      }
+    };
+    getInitialDistance();
+  }, []);
+
+  useEffect(() => {
+    if (
+      (displayName !== initialDisplayName && displayName !== "") ||
+      (distance !== initialDistance && distance !== 0)
+    ) {
+      setIncompleteForm(false);
+    } else {
+      setIncompleteForm(true);
     }
-  }, [user, initialDistance, distance, displayName, initialDisplayName]);
+  }, [initialDistance, distance, displayName, initialDisplayName]);
 
   const updateUserInfo = async () => {
     setProcessing(true);
@@ -128,60 +127,43 @@ const SettingsScreen = ({ navigation }: any) => {
         }
         await Storage.put(`profiles/${key}`, blob);
       }
-      // @ts-ignore
-      updateProfile(user, {
-        displayName: displayName,
-        photoURL: photoTaken ? key : user.photoURL,
-      })
+      axios
+        .post(
+          "/updateUserPrefs",
+          {
+            displayName: displayName,
+            radius: distance,
+            photoURL: photoTaken ? key : user.photoURL,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+            },
+          }
+        )
         .then(() => {
           setProcessing(false);
           setIncompleteForm(true);
+          navigation.navigate("Home", { distanceChanged: true });
         })
-        .catch((error) => {
-          alert(error.message);
+        .catch((e) => {
+          console.error(e.response.data.detail);
         });
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        updateDoc(doc(db, "users", user.uid), {
-          displayName: displayName,
-          radius: distance,
-          timestamp: serverTimestamp(),
-        })
-          .then(() => {
-            setProcessing(false);
-            navigation.navigate("Home", { distanceChanged: true });
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
-      } else {
-        setDoc(doc(db, "users", user.uid), {
-          id: user.uid,
-          displayName: displayName,
-          radius: distance,
-          timestamp: serverTimestamp(),
-        })
-          .then(() => {
-            setProcessing(false);
-            navigation.navigate("Home", { distanceChanged: true });
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
-      }
     }
   };
 
   const removeProfilePicture = async () => {
     if (user && user.photoURL) {
-      // @ts-ignore
-      updateProfile(user, {
-        photoURL: "",
-      })
+      axios
+        .get("/removeProfilePic", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          },
+        })
         .then(() => {
-          navigation.goBack();
-          navigation.navigate("Settings");
+          window.location.reload();
         })
         .catch((error) => {
           alert(error.message);

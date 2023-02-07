@@ -25,16 +25,11 @@ import {
   collection,
   doc,
   getDoc,
-  getDocs,
   onSnapshot,
   query,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import generateId from "../../lib/generateId";
 import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
 import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
@@ -74,12 +69,22 @@ const HomeScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     const getPermissions = async () => {
-      // console.log(user?.stsTokenManager.accessToken);
       if (user) {
-        const docSnap = await getDoc(doc(db, "users", user.uid));
-        if (!docSnap.exists()) {
-          return;
-        }
+        axios
+          .get("/checkUserExists", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+            },
+          })
+          .then((e) => {
+            if (e.status !== 200) {
+              return;
+            }
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
       }
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -133,7 +138,7 @@ const HomeScreen = ({ navigation }: any) => {
           userCoords = res.data.coords;
           radius = res.data.radius;
         } catch (e: any) {
-          console.log(e.response.data.detail);
+          console.error(e.response.data.detail);
         }
         let passes;
         let swipes;
