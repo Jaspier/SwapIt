@@ -1,19 +1,12 @@
 import { FlatList, View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../../../firebase";
 import AuthenticationContext from "../../../../hooks/authentication/authenticationContext";
 import ChatRow from "../ChatRow/ChatRow";
 import { NoMatchesContainer, NoMatchesText } from "./ChatListStyles";
 import { Swipeable } from "react-native-gesture-handler";
-import generateId from "../../../../lib/generateId";
+import axios from "axios";
 
 const ChatList = () => {
   const authContext = AuthenticationContext();
@@ -25,15 +18,16 @@ const ChatList = () => {
 
   const deleteMatch = async (usersMatched: string[]) => {
     if (user) {
-      await deleteDoc(
-        doc(db, "users", usersMatched[0], "swipes", usersMatched[1])
-      );
-      await deleteDoc(
-        doc(db, "users", usersMatched[1], "swipes", usersMatched[0])
-      );
-      await deleteDoc(
-        doc(db, "matches", generateId(usersMatched[0], usersMatched[1]))
-      );
+      axios
+        .post("/deleteMatch", usersMatched, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          },
+        })
+        .catch((e) => {
+          console.error(e.response.data.detail);
+        });
     }
   };
 
