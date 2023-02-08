@@ -167,31 +167,39 @@ const ProfileScreen = ({ navigation }: any) => {
           await Storage.put(key, blob);
         }
         if (index + 1 === images.length && user) {
-          setDoc(doc(db, "users", user.uid), {
-            id: user.uid,
-            displayName: user.displayName ? user.displayName : user.email,
-            photoUrls: imagesSelected
-              ? JSON.stringify(imageAllUrls)
-              : initialPhotoUrls,
-            itemName: itemName,
-            location: location,
-            coords: coords,
-            active: true,
-            timestamp: serverTimestamp(),
-          })
-            .then(() => {
+          axios
+            .post(
+              "/createProfile",
+              {
+                id: user.uid,
+                displayName: user.displayName ? user.displayName : user.email,
+                photoUrls: imagesSelected
+                  ? JSON.stringify(imageAllUrls)
+                  : initialPhotoUrls,
+                itemName: itemName,
+                location: location,
+                coords: coords,
+                active: true,
+                radius: 50,
+                isNewUser: isNewUser,
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+                },
+              }
+            )
+            .then((e) => {
               setProcessing(false);
-              if (isNewUser) {
-                updateDoc(doc(db, "users", user.uid), {
-                  radius: 50,
-                });
+              if (e.status === 204 && e.data.isNewUser) {
                 navigation.navigate("Settings", { newUser: true });
               } else {
                 navigation.navigate("Home", { refresh: true });
               }
             })
-            .catch((error) => {
-              alert(error.message);
+            .catch((e) => {
+              console.error(e.response.data.detail);
             });
         }
       });
