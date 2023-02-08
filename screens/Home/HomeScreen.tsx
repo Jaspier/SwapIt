@@ -21,14 +21,7 @@ import {
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
-import {
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
 import * as Location from "expo-location";
@@ -128,30 +121,21 @@ const HomeScreen = ({ navigation }: any) => {
     const fetchCards = async () => {
       let userCoords: any;
       let radius: number;
+      let passes;
+      let swipes;
       if (user) {
         try {
-          const res = await axios.get("/getSearchPref", {
+          const res = await axios.get("/getSearchPreferences", {
             headers: {
               Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
             },
           });
           userCoords = res.data.coords;
           radius = res.data.radius;
-        } catch (e: any) {
-          console.error(e.response.data.detail);
-        }
-        let passes;
-        let swipes;
-        try {
-          const res = await axios.get("/getCardsFilter", {
-            headers: {
-              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-            },
-          });
           passes = res.data.passes;
           swipes = res.data.swipes;
         } catch (e: any) {
-          console.log(e.response.data.detail);
+          console.error(e.response.data.detail);
         }
 
         const passedUserIds = passes.length > 0 ? passes : ["none"];
@@ -213,6 +197,7 @@ const HomeScreen = ({ navigation }: any) => {
     if (!profiles[cardIndex]) return;
 
     const userSwiped = profiles[cardIndex];
+    console.log(`You swiped SWAPIT on ${userSwiped.displayName}`);
     if (user) {
       axios
         .post("/swipeRight", userSwiped, {
