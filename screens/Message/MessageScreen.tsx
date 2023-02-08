@@ -23,6 +23,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import axios from "axios";
 
 interface Message {
   id: string;
@@ -61,13 +62,23 @@ const MessageScreen = () => {
 
   const sendMessage = () => {
     if (user) {
-      addDoc(collection(db, "matches", matchDetails.id, "messages"), {
-        timestamp: serverTimestamp(),
-        userId: user.uid,
-        displayName: user.email,
-        photoUrl: JSON.parse(matchDetails.users[user.uid].photoUrls)[0],
-        message: input,
-      });
+      axios
+        .post(
+          "/sendMessage",
+          {
+            matchId: matchDetails.id,
+            message: input,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+            },
+          }
+        )
+        .catch((e) => {
+          console.error(e.response.data.detail);
+        });
 
       setInput("");
     }
