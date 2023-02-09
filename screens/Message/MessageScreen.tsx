@@ -14,14 +14,7 @@ import {
 } from "./MessageStyles";
 import SenderMessage from "./components/SenderMessage/SenderMessage";
 import ReceiverMessage from "./components/ReceiverMessage/ReceiverMessage";
-import {
-  addDoc,
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../../firebase";
 import axios from "axios";
 

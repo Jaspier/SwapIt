@@ -1,12 +1,6 @@
 import { useRoute } from "@react-navigation/native";
-import {
-  deleteDoc,
-  doc,
-  getDoc,
-  onSnapshot,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import axios from "axios";
+import { doc, onSnapshot } from "firebase/firestore";
 import AnimatedLottieView from "lottie-react-native";
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase";
@@ -62,7 +56,7 @@ const SwapScreen = ({ navigation }: any) => {
           async (snapshot) => {
             if (snapshot.exists()) {
               setMatchedUsers(snapshot.data().users);
-              if (snapshot.data().users[user.uid].confirmed) {
+              if (snapshot.data().users[user.uid].isConfirmed) {
                 setConfirmed(true);
               }
               const matchedUser = getMatchedUserInfo(
@@ -71,27 +65,21 @@ const SwapScreen = ({ navigation }: any) => {
               );
               setMatchedUser(matchedUser);
               if (
-                snapshot.data().users[user.uid].confirmed &&
-                snapshot.data().users[matchedUser.id].confirmed
+                snapshot.data().users[user.uid].isConfirmed &&
+                snapshot.data().users[matchedUser.id].isConfirmed
               ) {
                 navigation.goBack();
                 navigation.navigate("Swapped");
-                await deleteDoc(
-                  doc(db, "users", user.uid, "swipes", matchedUser.id)
-                );
-                await deleteDoc(
-                  doc(db, "users", matchedUser.id, "swipes", user.uid)
-                );
-                await deleteDoc(
-                  doc(
-                    db,
-                    "matches",
-                    generateId(
-                      matchDetails.usersMatched[0],
-                      matchDetails.usersMatched[1]
-                    )
-                  )
-                );
+                axios
+                  .post("/deleteMatch", matchDetails.usersMatched, {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+                    },
+                  })
+                  .catch((e) => {
+                    console.error(e.response.data.detail);
+                  });
               }
             } else {
               console.log("No such document!");
@@ -104,55 +92,36 @@ const SwapScreen = ({ navigation }: any) => {
     return unsub;
   }, [db]);
 
-  const ConfirmSwap = async (confirm: boolean) => {
-    let matchedUser;
-    if (user) {
-      const docRef = doc(
-        db,
-        "matches",
-        generateId(matchDetails.usersMatched[0], matchDetails.usersMatched[1])
-      );
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        matchedUser = getMatchedUserInfo(docSnap.data().users, user?.uid);
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-      }
-      if (matchedUsers) {
-        const currentUser: User = matchedUsers[user.uid];
-        const updatedCurrentUser = {
-          ...currentUser,
-          confirmed: confirm ? true : false,
-          timestamp: serverTimestamp(),
-        };
+  const cancelSwap = async () => {
+    if (user && matchedUsers) {
+      axios
+        .post("/cancelSwap", matchDetails.usersMatched, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          },
+        })
+        .then(() => {
+          navigation.goBack();
+        })
+        .catch((e) => {
+          console.error(e.response.data.detail);
+        });
+    }
+  };
 
-        const updatedMatchedUsers = {
-          [user.uid]: updatedCurrentUser,
-          [matchedUser.id]: matchedUser,
-        };
-
-        const docRef = doc(
-          db,
-          "matches",
-          generateId(matchDetails.usersMatched[0], matchDetails.usersMatched[1])
-        );
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          updateDoc(docRef, {
-            users: updatedMatchedUsers,
-            timestamp: serverTimestamp(),
-          })
-            .then(() => {
-              if (!confirm) {
-                navigation.goBack();
-              }
-            })
-            .catch((error) => {
-              alert(error.message);
-            });
-        }
-      }
+  const confirmSwap = async () => {
+    if (user && matchedUsers) {
+      axios
+        .post("/confirmSwap", matchDetails.usersMatched, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          },
+        })
+        .catch((e) => {
+          console.error(e.response.data.detail);
+        });
     }
   };
 
@@ -173,7 +142,7 @@ const SwapScreen = ({ navigation }: any) => {
               confirm...
             </ConfirmedText>
           </ConfirmedTextContainer>
-          <CancelButton onPress={() => ConfirmSwap(false)}>
+          <CancelButton onPress={() => cancelSwap()}>
             <CancelText>Cancel</CancelText>
           </CancelButton>
         </>
@@ -186,7 +155,7 @@ const SwapScreen = ({ navigation }: any) => {
             resizeMode="cover"
             source={require("../../assets/ripple.json")}
           />
-          <SwapButton onPress={() => ConfirmSwap(true)}>
+          <SwapButton onPress={() => confirmSwap()}>
             <SwapText>SWAP</SwapText>
           </SwapButton>
         </>

@@ -156,7 +156,7 @@ const HomeScreen = ({ navigation }: any) => {
                 .filter(
                   (doc) =>
                     getDistance(doc.data().coords, userCoords) / 1609.34 <
-                    radius
+                      radius && doc.data().active
                 )
                 .map((doc) => ({
                   id: doc.id,
