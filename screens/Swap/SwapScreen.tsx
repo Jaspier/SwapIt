@@ -7,6 +7,7 @@ import { db } from "../../firebase";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import generateId from "../../lib/generateId";
 import getMatchedUserInfo from "../../lib/getMatchedUserInfo";
+import { Storage } from "aws-amplify";
 import {
   CancelButton,
   CancelText,
@@ -70,16 +71,37 @@ const SwapScreen = ({ navigation }: any) => {
               ) {
                 navigation.goBack();
                 navigation.navigate("Swapped");
-                axios
-                  .post("/deleteMatch", matchDetails.usersMatched, {
+                try {
+                  await axios.post("/deleteMatch", matchDetails.usersMatched, {
                     headers: {
                       "Content-Type": "application/json",
                       Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
                     },
-                  })
-                  .catch((e) => {
-                    console.error(e.response.data.detail);
                   });
+                } catch (e: any) {
+                  console.error(e.response.data.detail);
+                }
+                try {
+                  await axios.post(
+                    "/deactivateMatches",
+                    matchDetails.users[user.uid].itemName,
+                    {
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+                      },
+                    }
+                  );
+                } catch (e: any) {
+                  console.error(e.response.data.detail);
+                }
+                const imagesToDelete = [
+                  ...snapshot.data().users[user.uid].photoUrls,
+                  ...snapshot.data().users[matchedUser.id].photoUrls,
+                ];
+                for (const image of imagesToDelete) {
+                  await Storage.remove(image.uri);
+                }
               }
             } else {
               console.log("No such document!");

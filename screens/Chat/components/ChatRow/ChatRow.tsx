@@ -62,6 +62,8 @@ const ChatRow = ({ matchDetails }: any) => {
 
   return (
     <Row
+      disabled={matchDetails.deactivated}
+      deactivated={matchDetails.deactivated}
       onPress={() =>
         navigation.navigate("Message", {
           matchDetails,
@@ -82,10 +84,14 @@ const ChatRow = ({ matchDetails }: any) => {
           {matchedUserInfo?.displayName}{" "}
           <ProfileItemName>({matchedUserInfo?.itemName})</ProfileItemName>
         </ProfileDisplayName>
-        <Text numberOfLines={1} ellipsizeMode="tail">
-          {lastMessageUser === user?.uid && "You: "}
-          {lastMessage || "Say Hi!"}
-        </Text>
+        {matchDetails.deactivated ? (
+          <Text>DEACTIVATED: Swipe to delete</Text>
+        ) : (
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            {lastMessageUser === user?.uid && "You: "}
+            {lastMessage || "Say Hi!"}
+          </Text>
+        )}
       </PreviewContainer>
     </Row>
   );
