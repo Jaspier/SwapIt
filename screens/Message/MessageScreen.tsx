@@ -98,7 +98,14 @@ const MessageScreen = () => {
               message.userId === user?.uid ? (
                 <SenderMessage key={message.id} message={message} />
               ) : (
-                <ReceiverMessage key={message.id} message={message} />
+                <ReceiverMessage
+                  key={message.id}
+                  message={message}
+                  matchedUserDetails={getMatchedUserInfo(
+                    matchDetails.users,
+                    user?.uid
+                  )}
+                />
               )
             }
           />

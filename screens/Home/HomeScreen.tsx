@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
@@ -7,10 +7,6 @@ import {
   Logo,
   DeckSwiper,
   SwiperContainer,
-  Card,
-  CardFooter,
-  ItemName,
-  LocationText,
   SwipeButtonsContainer,
   SwipeButton,
   NoProfilesText,
@@ -23,12 +19,12 @@ import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
-import ImageCarousel from "../../components/ImageCarousel/ImageCarousel";
 import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { getDistance } from "geolib";
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
+import ProfileCard from "../../components/ProfileCard/ProfileCard";
 
 interface Profile {
   id: string;
@@ -289,16 +285,7 @@ const HomeScreen = ({ navigation }: any) => {
           }}
           renderCard={(card: any) =>
             card ? (
-              <Card key={card.id}>
-                <ImageCarousel images={JSON.parse(card.photoUrls)} />
-                <CardFooter>
-                  <View>
-                    <ItemName>{card.itemName}</ItemName>
-                    <Text>{card.displayName}</Text>
-                  </View>
-                  <LocationText>{card.location}</LocationText>
-                </CardFooter>
-              </Card>
+              <ProfileCard key={card.id} matchedUserDetails={card} />
             ) : (
               <NoProfilesCard>
                 <NoProfilesText>No more profiles</NoProfilesText>

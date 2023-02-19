@@ -47,7 +47,6 @@ export const AuthProvider = ({ children }: Props) => {
           setError(u.data.detail.message);
           return;
         }
-        console.log(u.data.token);
         setUser(u);
         setIsLoading(false);
       })

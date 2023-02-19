@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { colors } from "../../../../theme/colors";
 import { View, Text, Image } from "react-native";
 import { Avatar } from "react-native-paper";
+import { TouchableOpacity } from "react-native";
 
 export const ReceiverMessageBubble = styled(View)`
   background-color: ${colors.bg.brand};
@@ -18,8 +19,6 @@ export const ReceiverProfileImage = styled(Image)`
   width: 48px;
   border-radius: 9999px;
   position: absolute;
-  top: 0px;
-  left: -56px;
 `;
 
 export const DefaultReceiverProfileImage = styled(Avatar.Text).attrs({
@@ -28,10 +27,13 @@ export const DefaultReceiverProfileImage = styled(Avatar.Text).attrs({
   background-color: ${colors.bg.account};
   border-radius: 9999px;
   position: absolute;
-  top: 0px;
-  left: -56px;
 `;
 
 export const ReceiverMessageText = styled(Text)`
   color: ${colors.text.inverse};
+`;
+
+export const ProfileImageTouchable = styled(TouchableOpacity)`
+  top: -15px;
+  left: -78px;
 `;
