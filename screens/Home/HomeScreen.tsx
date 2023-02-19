@@ -25,6 +25,7 @@ import { getDistance } from "geolib";
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
+import { Coords } from "../../types";
 
 interface Profile {
   id: string;
@@ -115,7 +116,7 @@ const HomeScreen = ({ navigation }: any) => {
     let unsub;
 
     const fetchCards = async () => {
-      let userCoords: any;
+      let userCoords: Coords;
       let radius: number;
       let passes;
       let swipes;
@@ -285,7 +286,11 @@ const HomeScreen = ({ navigation }: any) => {
           }}
           renderCard={(card: any) =>
             card ? (
-              <ProfileCard key={card.id} matchedUserDetails={card} />
+              <ProfileCard
+                modal={false}
+                key={card.id}
+                matchedUserDetails={card}
+              />
             ) : (
               <NoProfilesCard>
                 <NoProfilesText>No more profiles</NoProfilesText>

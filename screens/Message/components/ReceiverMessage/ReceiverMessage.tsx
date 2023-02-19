@@ -8,8 +8,17 @@ import {
 } from "./ReceiverStyles";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { useNavigation, NavigationProp } from "@react-navigation/core";
+import { MatchedUser, Message } from "../../../../types";
 
-const ReceiverMessage = ({ message, matchedUserDetails }: any) => {
+interface ReceiverMessageProps {
+  message: Message;
+  matchedUserDetails: MatchedUser;
+}
+
+const ReceiverMessage = ({
+  message,
+  matchedUserDetails,
+}: ReceiverMessageProps) => {
   const navigation: NavigationProp<any> = useNavigation();
   return (
     <ReceiverMessageBubble>

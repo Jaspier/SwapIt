@@ -19,22 +19,22 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+import { MatchedUser, Match } from "../../../../types";
 
-interface MatchedUserInfo {
-  photoUrls: string;
-  displayName: string;
-  itemName: string;
+interface ChatRowProps {
+  matchDetails: Match;
 }
 
-const ChatRow = ({ matchDetails }: any) => {
+const ChatRow = ({ matchDetails }: ChatRowProps) => {
   const navigation: NavigationProp<any> = useNavigation();
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
   }
   const { user }: AuthContextInterface = authContext;
-  const [matchedUserInfo, setMatchedUserInfo] =
-    useState<MatchedUserInfo | null>(null);
+  const [matchedUserInfo, setMatchedUserInfo] = useState<MatchedUser | null>(
+    null
+  );
   const [lastMessage, setLastMessage] = useState(null);
   const [lastMessageUser, setLastMessageUser] = useState(null);
 

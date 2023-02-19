@@ -1,4 +1,5 @@
-const getMatchedUserInfo = (users: any, userLoggedIn: any) => {
+import { MatchedUser } from "./../types";
+const getMatchedUserInfo = (users: MatchedUser[], userLoggedIn: any) => {
   const newUsers = { ...users };
   delete newUsers[userLoggedIn];
 

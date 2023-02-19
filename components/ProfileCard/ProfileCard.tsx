@@ -2,8 +2,14 @@ import { View, Text } from "react-native";
 import React from "react";
 import { Card, CardFooter, ItemName, LocationText } from "./ProfileCardStyles";
 import ImageCarousel from "../ImageCarousel/ImageCarousel";
+import { MatchedUser } from "../../types";
 
-const ProfileCard = ({ matchedUserDetails, modal }: any) => {
+interface ProfileCardProps {
+  matchedUserDetails: MatchedUser;
+  modal: boolean;
+}
+
+const ProfileCard = ({ matchedUserDetails, modal }: ProfileCardProps) => {
   return (
     <Card modal={modal}>
       <ImageCarousel images={JSON.parse(matchedUserDetails.photoUrls)} />
