@@ -28,9 +28,10 @@ import AuthenticationContext from "../../hooks/authentication/authenticationCont
 import { useRoute } from "@react-navigation/core";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
-import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { colors } from "../../theme/colors";
 import axios from "axios";
+import { updateProfile } from "firebase/auth";
+import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 
 const SettingsScreen = ({ navigation }: any) => {
   const [photo, setPhoto] = useState("");
@@ -127,13 +128,19 @@ const SettingsScreen = ({ navigation }: any) => {
         }
         await Storage.put(`profiles/${key}`, blob);
       }
+      // @ts-ignore
+      updateProfile(user, {
+        displayName: displayName,
+        photoURL: photoTaken ? key : user.photoURL,
+      }).catch((e) => {
+        console.log(e.message);
+      });
       axios
         .post(
-          "/updateUserPrefs",
+          "/updateUserPreferences",
           {
             displayName: displayName,
             radius: distance,
-            photoURL: photoTaken ? key : user.photoURL,
           },
           {
             headers: {
@@ -155,15 +162,13 @@ const SettingsScreen = ({ navigation }: any) => {
 
   const removeProfilePicture = async () => {
     if (user && user.photoURL) {
-      axios
-        .get("/removeProfilePic", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-          },
-        })
+      // @ts-ignore
+      updateProfile(user, {
+        photoURL: "",
+      })
         .then(() => {
-          window.location.reload();
+          navigation.goBack();
+          navigation.navigate("Settings");
         })
         .catch((error) => {
           alert(error.message);
