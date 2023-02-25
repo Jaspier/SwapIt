@@ -26,6 +26,7 @@ import { useRoute } from "@react-navigation/native";
 import axios from "axios";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { Coords } from "../../types";
+import * as Notifications from "expo-notifications";
 
 interface Profile {
   id: string;
@@ -56,6 +57,22 @@ const HomeScreen = ({ navigation }: any) => {
       });
     }
   }, [user, navigation]);
+
+  const handleNotification = (notification: any) => {
+    const data = notification.request.content.data;
+    if (data.type === "match") {
+      const loggedInProfile = data.loggedInProfile;
+      const userSwiped = data.userSwiped;
+      navigation.navigate("Match", {
+        loggedInProfile,
+        userSwiped,
+      });
+    }
+  };
+
+  useEffect(() => {
+    Notifications.addNotificationReceivedListener(handleNotification);
+  }, []);
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -206,6 +223,26 @@ const HomeScreen = ({ navigation }: any) => {
         .then((e) => {
           if (e.status === 201) {
             const loggedInProfile = e.data;
+            axios
+              .post(
+                "/sendPushNotification",
+                {
+                  type: "match",
+                  matchedUsers: {
+                    loggedInProfile,
+                    userSwiped,
+                  },
+                },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+                  },
+                }
+              )
+              .catch((e) => {
+                console.error(e.response.data.detail);
+              });
             navigation.navigate("Match", {
               loggedInProfile,
               userSwiped,
