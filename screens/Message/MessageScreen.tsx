@@ -69,6 +69,28 @@ const MessageScreen = () => {
             },
           }
         )
+        .then((e) => {
+          if (e.status === 200) {
+            axios.post(
+              "/sendPushNotification",
+              {
+                type: "message",
+                messageObj: {
+                  message: input,
+                  sender: matchDetails.users[user.uid],
+                  receiverId: getMatchedUserInfo(matchDetails.users, user.uid)
+                    .id,
+                },
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+                },
+              }
+            );
+          }
+        })
         .catch((e) => {
           console.error(e.response.data.detail);
         });

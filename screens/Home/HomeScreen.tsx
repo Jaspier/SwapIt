@@ -27,6 +27,7 @@ import axios from "axios";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { Coords } from "../../types";
 import * as Notifications from "expo-notifications";
+import Toast from "react-native-toast-message";
 
 interface Profile {
   id: string;
@@ -66,6 +67,12 @@ const HomeScreen = ({ navigation }: any) => {
       navigation.navigate("Match", {
         loggedInProfile,
         userSwiped,
+      });
+    } else if (data.type === "message") {
+      Toast.show({
+        type: "success",
+        text1: `${data.message.sender.displayName} (${data.message.sender.itemName})`,
+        text2: data.message.message,
       });
     }
   };
@@ -361,6 +368,7 @@ const HomeScreen = ({ navigation }: any) => {
         </SwipeButton>
       </SwipeButtonsContainer>
       {/* End of swipe buttons */}
+      <Toast />
     </SafeArea>
   );
 };
