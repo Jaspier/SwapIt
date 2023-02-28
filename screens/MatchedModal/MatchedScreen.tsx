@@ -10,6 +10,7 @@ import {
   MatchedContainer,
   ProfileImage,
   Subheader,
+  TouchableContainer,
 } from "./MatchedStyles";
 
 const MatchedScreen = ({ navigation }: any) => {
@@ -19,36 +20,38 @@ const MatchedScreen = ({ navigation }: any) => {
   const { loggedInProfile, userSwiped } = params;
 
   return (
-    <MatchedContainer>
-      <HeaderContainer>
-        <Header>Let's Get Swapping!</Header>
-      </HeaderContainer>
-      <Subheader>You and {userSwiped.displayName} want to swap.</Subheader>
-      <ImagesContainer>
-        <ProfileImage
-          source={{
-            uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${
-              JSON.parse(loggedInProfile.photoUrls)[0].uri
-            }`,
+    <TouchableContainer onPress={() => navigation.goBack()}>
+      <MatchedContainer>
+        <HeaderContainer>
+          <Header>Let's Get Swapping!</Header>
+        </HeaderContainer>
+        <Subheader>You and {userSwiped.displayName} want to swap.</Subheader>
+        <ImagesContainer>
+          <ProfileImage
+            source={{
+              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${
+                JSON.parse(loggedInProfile.photoUrls)[0].uri
+              }`,
+            }}
+          />
+          <ProfileImage
+            source={{
+              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${
+                JSON.parse(userSwiped.photoUrls)[0].uri
+              }`,
+            }}
+          />
+        </ImagesContainer>
+        <ChatButton
+          onPress={() => {
+            navigation.goBack();
+            navigation.navigate("Chat");
           }}
-        />
-        <ProfileImage
-          source={{
-            uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${
-              JSON.parse(userSwiped.photoUrls)[0].uri
-            }`,
-          }}
-        />
-      </ImagesContainer>
-      <ChatButton
-        onPress={() => {
-          navigation.goBack();
-          navigation.navigate("Chat");
-        }}
-      >
-        <ChatButtonText>Send a Message</ChatButtonText>
-      </ChatButton>
-    </MatchedContainer>
+        >
+          <ChatButtonText>Send a Message</ChatButtonText>
+        </ChatButton>
+      </MatchedContainer>
+    </TouchableContainer>
   );
 };
 

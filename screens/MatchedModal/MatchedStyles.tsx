@@ -2,6 +2,10 @@ import styled from "styled-components";
 import { colors } from "../../theme/colors";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 
+export const TouchableContainer = styled(TouchableOpacity)`
+  height: 100%;
+`;
+
 export const MatchedContainer = styled(View)`
   position: absolute;
   height: 100%;
