@@ -28,7 +28,7 @@ import { db } from "../../firebase";
 import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { getDistance } from "geolib";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useIsFocused } from "@react-navigation/native";
 import axios from "axios";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { Coords } from "../../types";
@@ -42,6 +42,7 @@ interface Profile {
 }
 
 const HomeScreen = ({ navigation }: any) => {
+  const isFocused = useIsFocused();
   const { notification, setNotification } = useContext(NotificationContext);
   const authContext = AuthenticationContext();
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -68,15 +69,21 @@ const HomeScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (notification) {
-      if (notification.type === "match") {
+      if (isFocused && notification.type === "match") {
         const loggedInProfile = notification.data.loggedInProfile;
         const userSwiped = notification.data.userSwiped;
         navigation.navigate("Match", {
           loggedInProfile,
           userSwiped,
         });
-      }
-      if (notification.type === "message") {
+      } else if (!isFocused && notification.type === "match") {
+        Toast.show({
+          type: "success",
+          text1: `You got a new match! (${notification.data.userSwiped.itemName})`,
+          text2: `${notification.data.userSwiped.displayName} wants to swap with you.`,
+          onHide: () => setNotification(null),
+        });
+      } else if (notification.type === "message") {
         Toast.show({
           type: "success",
           text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,

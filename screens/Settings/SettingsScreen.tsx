@@ -61,21 +61,6 @@ const SettingsScreen = ({ navigation }: any) => {
   }
 
   useEffect(() => {
-    if (notification && notification.type === "message") {
-      Toast.show({
-        type: "success",
-        text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,
-        text2: notification.data.message.message,
-        onHide: () => setNotification(null),
-      });
-    }
-
-    return () => {
-      setNotification(null);
-    };
-  }, [notification, setNotification]);
-
-  useEffect(() => {
     if (user) {
       if (user.displayName) {
         setDisplayName(user.displayName);

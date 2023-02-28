@@ -64,21 +64,6 @@ const ProfileScreen = ({ navigation }: any) => {
   const { user }: AuthContextInterface = authContext;
 
   useEffect(() => {
-    if (notification && notification.type === "message") {
-      Toast.show({
-        type: "success",
-        text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,
-        text2: notification.data.message.message,
-        onHide: () => setNotification(null),
-      });
-    }
-
-    return () => {
-      setNotification(null);
-    };
-  }, [notification, setNotification]);
-
-  useEffect(() => {
     const getPermissions = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
