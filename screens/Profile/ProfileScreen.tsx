@@ -5,7 +5,7 @@ import {
   Keyboard,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import * as ImagePicker from "expo-image-picker";
@@ -33,8 +33,11 @@ import axios from "axios";
 import { useRoute } from "@react-navigation/core";
 import { colors } from "../../theme/colors";
 import * as Location from "expo-location";
+import { NotificationContext } from "../../hooks/notifications/notificationContext";
+import Toast from "react-native-toast-message";
 
 const ProfileScreen = ({ navigation }: any) => {
+  const { notification, setNotification } = useContext(NotificationContext);
   const { params } = useRoute();
   let isNewUser: boolean | null | undefined;
   if (params) {
@@ -59,6 +62,21 @@ const ProfileScreen = ({ navigation }: any) => {
     return null;
   }
   const { user }: AuthContextInterface = authContext;
+
+  useEffect(() => {
+    if (notification && notification.type === "message") {
+      Toast.show({
+        type: "success",
+        text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,
+        text2: notification.data.message.message,
+        onHide: () => setNotification(null),
+      });
+    }
+
+    return () => {
+      setNotification(null);
+    };
+  }, [notification, setNotification]);
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -259,6 +277,7 @@ const ProfileScreen = ({ navigation }: any) => {
           <ButtonText>Update Profile</ButtonText>
         </UpdateProfileButton>
       </ButtonContainer>
+      <Toast />
     </SafeArea>
   );
 };

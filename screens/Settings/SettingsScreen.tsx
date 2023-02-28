@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SafeArea } from "../../components/utilities";
 import Header from "../../components/Header/Header";
 import {
@@ -32,8 +32,11 @@ import { colors } from "../../theme/colors";
 import axios from "axios";
 import { updateProfile } from "firebase/auth";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
+import Toast from "react-native-toast-message";
+import { NotificationContext } from "../../hooks/notifications/notificationContext";
 
 const SettingsScreen = ({ navigation }: any) => {
+  const { notification, setNotification } = useContext(NotificationContext);
   const [photo, setPhoto] = useState("");
   const [photoTaken, setPhotoTaken] = useState(false);
   const [displayName, setDisplayName] = useState("");
@@ -56,6 +59,21 @@ const SettingsScreen = ({ navigation }: any) => {
     const { newUser } = params;
     isNewUser = newUser;
   }
+
+  useEffect(() => {
+    if (notification && notification.type === "message") {
+      Toast.show({
+        type: "success",
+        text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,
+        text2: notification.data.message.message,
+        onHide: () => setNotification(null),
+      });
+    }
+
+    return () => {
+      setNotification(null);
+    };
+  }, [notification, setNotification]);
 
   useEffect(() => {
     if (user) {
@@ -242,6 +260,7 @@ const SettingsScreen = ({ navigation }: any) => {
         </UpdateProfileButton>
       </ButtonContainer>
       <Button title="Logout" onPress={() => logout()} />
+      <Toast />
     </SafeArea>
   );
 };

@@ -1,5 +1,11 @@
 import { TouchableOpacity } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import {
@@ -26,8 +32,8 @@ import { useRoute } from "@react-navigation/native";
 import axios from "axios";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { Coords } from "../../types";
-import * as Notifications from "expo-notifications";
 import Toast from "react-native-toast-message";
+import { NotificationContext } from "../../hooks/notifications/notificationContext";
 
 interface Profile {
   id: string;
@@ -36,6 +42,7 @@ interface Profile {
 }
 
 const HomeScreen = ({ navigation }: any) => {
+  const { notification, setNotification } = useContext(NotificationContext);
   const authContext = AuthenticationContext();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const swipeRef = useRef<any>(null);
@@ -59,27 +66,30 @@ const HomeScreen = ({ navigation }: any) => {
     }
   }, [user, navigation]);
 
-  const handleNotification = (notification: any) => {
-    const data = notification.request.content.data;
-    if (data.type === "match") {
-      const loggedInProfile = data.loggedInProfile;
-      const userSwiped = data.userSwiped;
-      navigation.navigate("Match", {
-        loggedInProfile,
-        userSwiped,
-      });
-    } else if (data.type === "message") {
-      Toast.show({
-        type: "success",
-        text1: `${data.message.sender.displayName} (${data.message.sender.itemName})`,
-        text2: data.message.message,
-      });
-    }
-  };
-
   useEffect(() => {
-    Notifications.addNotificationReceivedListener(handleNotification);
-  }, []);
+    if (notification) {
+      if (notification.type === "match") {
+        const loggedInProfile = notification.data.loggedInProfile;
+        const userSwiped = notification.data.userSwiped;
+        navigation.navigate("Match", {
+          loggedInProfile,
+          userSwiped,
+        });
+      }
+      if (notification.type === "message") {
+        Toast.show({
+          type: "success",
+          text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,
+          text2: notification.data.message.message,
+          onHide: () => setNotification(null),
+        });
+      }
+    }
+
+    return () => {
+      setNotification(null);
+    };
+  }, [notification, setNotification]);
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -235,7 +245,7 @@ const HomeScreen = ({ navigation }: any) => {
                 "/sendPushNotification",
                 {
                   type: "match",
-                  matchedUsers: {
+                  matchObj: {
                     loggedInProfile,
                     userSwiped,
                   },

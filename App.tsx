@@ -1,6 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider } from "./hooks/authentication/authenticationContext";
+import { NotificationListener } from "./hooks/notifications/notificationContext";
 import StackNavigator from "./StackNavigator";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./theme";
@@ -21,7 +22,9 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <NavigationContainer>
         <AuthProvider>
-          <StackNavigator />
+          <NotificationListener>
+            <StackNavigator />
+          </NotificationListener>
         </AuthProvider>
       </NavigationContainer>
     </ThemeProvider>
