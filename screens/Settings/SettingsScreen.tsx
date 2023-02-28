@@ -151,7 +151,7 @@ const SettingsScreen = ({ navigation }: any) => {
         displayName: displayName,
         photoURL: photoTaken ? key : user.photoURL,
       }).catch((e) => {
-        console.log(e.message);
+        console.error(e.message);
       });
       axios
         .post(

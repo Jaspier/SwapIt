@@ -209,7 +209,6 @@ const HomeScreen = ({ navigation }: any) => {
     if (!profiles[cardIndex]) return;
 
     const userSwiped = profiles[cardIndex];
-    console.log(`You swiped NOPE on ${userSwiped.displayName}`);
     if (user) {
       axios
         .post("/swipeLeft", userSwiped, {
@@ -228,7 +227,6 @@ const HomeScreen = ({ navigation }: any) => {
     if (!profiles[cardIndex]) return;
 
     const userSwiped = profiles[cardIndex];
-    console.log(`You swiped SWAPIT on ${userSwiped.displayName}`);
     if (user) {
       axios
         .post("/swipeRight", userSwiped, {

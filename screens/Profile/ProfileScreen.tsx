@@ -122,7 +122,7 @@ const ProfileScreen = ({ navigation }: any) => {
           setInitialItemName(documentSnapshot.itemName);
           setLocation(documentSnapshot.location);
         })
-        .catch((e) => console.log(e.response.data.detail));
+        .catch((e) => console.error(e.response.data.detail));
     }
   }, [user]);
 
