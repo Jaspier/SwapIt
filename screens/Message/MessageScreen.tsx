@@ -75,12 +75,8 @@ const MessageScreen = () => {
               "/sendPushNotification",
               {
                 type: "message",
-                messageObj: {
-                  message: input,
-                  sender: matchDetails.users[user.uid],
-                  receiverId: getMatchedUserInfo(matchDetails.users, user.uid)
-                    .id,
-                },
+                matchDetails: matchDetails,
+                message: input,
               },
               {
                 headers: {

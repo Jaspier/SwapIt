@@ -34,6 +34,7 @@ import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import { Coords } from "../../types";
 import Toast from "react-native-toast-message";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
+import generateId from "../../lib/generateId";
 
 interface Profile {
   id: string;
@@ -70,8 +71,8 @@ const HomeScreen = ({ navigation }: any) => {
   useEffect(() => {
     if (notification) {
       if (isFocused && notification.type === "match") {
-        const loggedInProfile = notification.data.loggedInProfile;
-        const userSwiped = notification.data.userSwiped;
+        const loggedInProfile = notification.data.match.loggedInProfile;
+        const userSwiped = notification.data.match.userSwiped;
         navigation.navigate("Match", {
           loggedInProfile,
           userSwiped,
@@ -79,8 +80,8 @@ const HomeScreen = ({ navigation }: any) => {
       } else if (!isFocused && notification.type === "match") {
         Toast.show({
           type: "success",
-          text1: `You got a new match! (${notification.data.userSwiped.itemName})`,
-          text2: `${notification.data.userSwiped.displayName} wants to swap with you.`,
+          text1: `You got a new match! (${notification.data.match.userSwiped.itemName})`,
+          text2: `${notification.data.match.userSwiped.displayName} wants to swap with you.`,
           onHide: () => setNotification(null),
         });
       } else if (notification.type === "message") {
@@ -245,15 +246,24 @@ const HomeScreen = ({ navigation }: any) => {
         .then((e) => {
           if (e.status === 201) {
             const loggedInProfile = e.data;
+            const matchDetails = {
+              id: generateId(loggedInProfile.id, userSwiped.id),
+              users: {
+                [loggedInProfile.id]: {
+                  ...loggedInProfile,
+                },
+                [userSwiped.id]: {
+                  ...userSwiped,
+                },
+              },
+              usersMatched: [loggedInProfile.id, userSwiped.id],
+            };
             axios
               .post(
                 "/sendPushNotification",
                 {
                   type: "match",
-                  matchObj: {
-                    loggedInProfile,
-                    userSwiped,
-                  },
+                  matchDetails: matchDetails,
                 },
                 {
                   headers: {
