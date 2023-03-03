@@ -17,7 +17,7 @@ const MatchedScreen = ({ navigation }: any) => {
   const { params } = useRoute();
 
   // @ts-ignore
-  const { loggedInProfile, userSwiped } = params;
+  const { loggedInProfile, userSwiped, matchDetails } = params;
 
   return (
     <TouchableContainer onPress={() => navigation.goBack()}>
@@ -45,7 +45,9 @@ const MatchedScreen = ({ navigation }: any) => {
         <ChatButton
           onPress={() => {
             navigation.goBack();
-            navigation.navigate("Chat");
+            navigation.navigate("Message", {
+              matchDetails,
+            });
           }}
         >
           <ChatButtonText>Send a Message</ChatButtonText>

@@ -76,6 +76,7 @@ const HomeScreen = ({ navigation }: any) => {
         navigation.navigate("Match", {
           loggedInProfile,
           userSwiped,
+          matchDetails: notification.data.matchDetails,
         });
       } else if (!isFocused && notification.type === "match") {
         Toast.show({
@@ -290,6 +291,7 @@ const HomeScreen = ({ navigation }: any) => {
             navigation.navigate("Match", {
               loggedInProfile,
               userSwiped,
+              matchDetails,
             });
           }
         })
