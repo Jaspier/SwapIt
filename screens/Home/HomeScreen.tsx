@@ -83,6 +83,12 @@ const HomeScreen = ({ navigation }: any) => {
           text1: `You got a new match! (${notification.data.match.userSwiped.itemName})`,
           text2: `${notification.data.match.userSwiped.displayName} wants to swap with you.`,
           onHide: () => setNotification(null),
+          onPress: () => {
+            Toast.hide();
+            navigation.navigate("Message", {
+              matchDetails: notification.data.matchDetails,
+            });
+          },
         });
       } else if (notification.type === "message") {
         Toast.show({
@@ -90,6 +96,12 @@ const HomeScreen = ({ navigation }: any) => {
           text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,
           text2: notification.data.message.message,
           onHide: () => setNotification(null),
+          onPress: () => {
+            Toast.hide();
+            navigation.navigate("Message", {
+              matchDetails: notification.data.matchDetails,
+            });
+          },
         });
       }
     }
