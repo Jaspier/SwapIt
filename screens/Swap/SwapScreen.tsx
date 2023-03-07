@@ -71,30 +71,20 @@ const SwapScreen = ({ navigation }: any) => {
               ) {
                 navigation.goBack();
                 navigation.navigate("Swapped");
-                try {
-                  await axios.post("/deleteMatch", matchDetails.usersMatched, {
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-                    },
-                  });
-                } catch (e: any) {
-                  console.error(e.response.data.detail);
-                }
-                try {
-                  await axios.post(
-                    "/deactivateMatches",
-                    matchDetails.users[user.uid].itemName,
+                axios
+                  .post(
+                    "/deleteMatches",
+                    snapshot.data().users[user.uid].itemName,
                     {
                       headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
                       },
                     }
-                  );
-                } catch (e: any) {
-                  console.error(e.response.data.detail);
-                }
+                  )
+                  .catch((error) => {
+                    console.error(error.message);
+                  });
                 const imagesToDelete = [
                   ...snapshot.data().users[user.uid].photoUrls,
                   ...snapshot.data().users[matchedUser.id].photoUrls,

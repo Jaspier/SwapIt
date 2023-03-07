@@ -12,18 +12,12 @@ export const loginRequest = (email: string, password: string) => {
             const deviceToken = response.data;
             const accessToken = res.user.stsTokenManager.accessToken;
             axios
-              .post(
-                "/storeDeviceToken",
-                {
-                  token: deviceToken,
+              .post("/storeDeviceToken", deviceToken, {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${accessToken}`,
                 },
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                }
-              )
+              })
               .catch((e) => {
                 console.error(e.response.data.detail);
               });
