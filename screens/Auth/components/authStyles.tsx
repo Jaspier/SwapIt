@@ -10,7 +10,7 @@ import { Button, TextInput } from "react-native-paper";
 import { colors } from "../../../theme/colors";
 
 export const AuthBackground = styled(ImageBackground).attrs({
-  source: require("../../../assets/background.jpg"),
+  source: require("../../../assets/gradient.jpeg"),
   resizeMode: "cover",
 })`
   flex: 1;
@@ -19,7 +19,8 @@ export const AuthBackground = styled(ImageBackground).attrs({
 `;
 
 export const Title = styled(Text)`
-  font-size: 30px;
+  font-size: 60px;
+  font-weight: 600;
   color: #fff;
 `;
 
