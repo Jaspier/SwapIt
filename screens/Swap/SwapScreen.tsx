@@ -13,6 +13,8 @@ import {
   CancelText,
   ConfirmedText,
   ConfirmedTextContainer,
+  DisclaimerTextContainer,
+  DisclaimerText,
   SwapButton,
   SwapContainer,
   SwapText,
@@ -189,6 +191,12 @@ const SwapScreen = ({ navigation }: any) => {
             resizeMode="cover"
             source={require("../../assets/ripple.json")}
           />
+          <DisclaimerTextContainer>
+            <DisclaimerText>
+              DISCLAIMER: After completing this swap all other swap partners
+              will be notified and deleted.
+            </DisclaimerText>
+          </DisclaimerTextContainer>
           <SwapButton onPress={() => confirmSwap()}>
             <SwapText>SWAP</SwapText>
           </SwapButton>

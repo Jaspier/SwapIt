@@ -43,6 +43,18 @@ export const ConfirmedText = styled(Text)`
   color: ${colors.text.inverse};
 `;
 
+export const DisclaimerTextContainer = styled(View)`
+  position: absolute;
+  bottom: 100px;
+  padding-horizontal: 20px;
+`;
+
+export const DisclaimerText = styled(Text)`
+  font-size: 20px;
+  font-weight: semi-bold;
+  color: ${colors.text.inverse};
+`;
+
 export const CancelButton = styled(TouchableOpacity)`
   position: absolute;
   bottom: 10%;
