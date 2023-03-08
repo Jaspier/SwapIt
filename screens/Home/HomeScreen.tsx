@@ -44,7 +44,7 @@ interface Profile {
 
 const HomeScreen = ({ navigation }: any) => {
   const isFocused = useIsFocused();
-  const { notification, setNotification } = useContext(NotificationContext);
+  const { notifications, removeNotification } = useContext(NotificationContext);
   const authContext = AuthenticationContext();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const swipeRef = useRef<any>(null);
@@ -69,48 +69,58 @@ const HomeScreen = ({ navigation }: any) => {
   }, [user, navigation]);
 
   useEffect(() => {
-    if (notification) {
-      if (isFocused && notification.type === "match") {
-        const loggedInProfile = notification.data.match.loggedInProfile;
-        const userSwiped = notification.data.match.userSwiped;
+    if (notifications.length > 0) {
+      const currentNotification = notifications[0];
+      if (isFocused && currentNotification.type === "match") {
+        const loggedInProfile = currentNotification.data.match.loggedInProfile;
+        const userSwiped = currentNotification.data.match.userSwiped;
         navigation.navigate("Match", {
           loggedInProfile,
           userSwiped,
-          matchDetails: notification.data.matchDetails,
+          matchDetails: currentNotification.data.matchDetails,
         });
-      } else if (!isFocused && notification.type === "match") {
+      } else if (!isFocused && currentNotification.type === "match") {
         Toast.show({
           type: "success",
-          text1: `You got a new match! (${notification.data.match.userSwiped.itemName})`,
-          text2: `${notification.data.match.userSwiped.displayName} wants to swap with you.`,
-          onHide: () => setNotification(null),
+          text1: `You got a new match! (${currentNotification.data.match.userSwiped.itemName})`,
+          text2: `${currentNotification.data.match.userSwiped.displayName} wants to swap with you.`,
+          onHide: () => {
+            removeNotification(currentNotification);
+          },
           onPress: () => {
             Toast.hide();
             navigation.navigate("Message", {
-              matchDetails: notification.data.matchDetails,
+              matchDetails: currentNotification.data.matchDetails,
             });
           },
         });
-      } else if (notification.type === "message") {
+      } else if (currentNotification.type === "message") {
         Toast.show({
           type: "success",
-          text1: `${notification.data.message.sender.displayName} (${notification.data.message.sender.itemName})`,
-          text2: notification.data.message.message,
-          onHide: () => setNotification(null),
+          text1: `${currentNotification.data.message.sender.displayName} (${currentNotification.data.message.sender.itemName})`,
+          text2: currentNotification.data.message.message,
+          onHide: () => {
+            removeNotification(currentNotification);
+          },
           onPress: () => {
             Toast.hide();
             navigation.navigate("Message", {
-              matchDetails: notification.data.matchDetails,
+              matchDetails: currentNotification.data.matchDetails,
             });
+          },
+        });
+      } else {
+        Toast.show({
+          type: "success",
+          text1: currentNotification.data.title,
+          text2: currentNotification.data.text,
+          onHide: () => {
+            removeNotification(currentNotification);
           },
         });
       }
     }
-
-    return () => {
-      setNotification(null);
-    };
-  }, [notification, setNotification]);
+  }, [notifications]);
 
   useEffect(() => {
     const getPermissions = async () => {

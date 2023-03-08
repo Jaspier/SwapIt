@@ -74,7 +74,10 @@ const SwapScreen = ({ navigation }: any) => {
                 axios
                   .post(
                     "/deleteMatches",
-                    snapshot.data().users[user.uid].itemName,
+                    {
+                      itemName: snapshot.data().users[user.uid].itemName,
+                      matchedUserId: matchedUser.id,
+                    },
                     {
                       headers: {
                         "Content-Type": "application/json",
@@ -82,6 +85,25 @@ const SwapScreen = ({ navigation }: any) => {
                       },
                     }
                   )
+                  .then((e) => {
+                    if (e.status === 200) {
+                      const notificationsObject = e.data;
+                      axios
+                        .post(
+                          "/sendManyPushNotifications",
+                          notificationsObject,
+                          {
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+                            },
+                          }
+                        )
+                        .catch((error) => {
+                          console.error(error.message);
+                        });
+                    }
+                  })
                   .catch((error) => {
                     console.error(error.message);
                   });

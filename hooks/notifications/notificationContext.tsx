@@ -3,18 +3,20 @@ import * as Notifications from "expo-notifications";
 import AuthenticationContext from "../authentication/authenticationContext";
 
 type Notification = {
-  type: "match" | "message";
+  type: string;
   data: any;
 };
 
 type NotificationContextType = {
-  notification: Notification | null;
-  setNotification: (notification: Notification | null) => void;
+  notifications: Notification[];
+  addNotification: (notification: Notification) => void;
+  removeNotification: (notification: Notification) => void;
 };
 
 export const NotificationContext = createContext<NotificationContextType>({
-  notification: null,
-  setNotification: () => {},
+  notifications: [],
+  addNotification: () => {},
+  removeNotification: () => {},
 });
 
 export const NotificationListener = ({ children }: any) => {
@@ -23,15 +25,17 @@ export const NotificationListener = ({ children }: any) => {
     return null;
   }
   const { user }: AuthContextInterface = authContext;
-  const [notification, setNotification] = useState<Notification | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     if (user) {
       const handleNotification = (notification: any) => {
         const data = notification.request.content.data;
-        if (data.type === "match" || data.type === "message") {
-          setNotification({ type: data.type, data });
-        }
+        const newNotification = { type: data.type, data };
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          newNotification,
+        ]);
       };
       Notifications.addNotificationReceivedListener(handleNotification);
       return () => {
@@ -41,9 +45,30 @@ export const NotificationListener = ({ children }: any) => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (notifications.length > 0) {
+      // Display the current notification for 4 seconds
+      setTimeout(() => {
+        // Remove the current notification from the queue
+        setNotifications((prevNotifications) => prevNotifications.slice(1));
+      }, 4000);
+    }
+  }, [notifications]);
+
+  const addNotification = (notification: Notification) => {
+    setNotifications((prevNotifications) => [
+      ...prevNotifications,
+      notification,
+    ]);
+  };
+
+  const removeNotification = (notification: Notification) => {
+    setNotifications(notifications.filter((n) => n !== notification));
+  };
+
   return (
     <NotificationContext.Provider
-      value={{ notification, setNotification: setNotification }}
+      value={{ notifications, addNotification, removeNotification }}
     >
       {children}
     </NotificationContext.Provider>
