@@ -1,11 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import * as Notifications from "expo-notifications";
+import { Notification } from "../../types";
 import AuthenticationContext from "../authentication/authenticationContext";
-
-type Notification = {
-  type: string;
-  data: any;
-};
 
 type NotificationContextType = {
   notifications: Notification[];

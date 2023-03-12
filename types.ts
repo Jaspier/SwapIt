@@ -32,3 +32,20 @@ export interface Message {
   timestamp: any;
   userId: string;
 }
+
+export interface Notification {
+  type: string;
+  data: {
+    match: {
+      loggedInProfile: MatchedUser;
+      userSwiped: MatchedUser;
+    };
+    message: {
+      message: string;
+      sender: MatchedUser;
+    };
+    matchDetails: Match;
+    title: string;
+    text: string;
+  };
+}
