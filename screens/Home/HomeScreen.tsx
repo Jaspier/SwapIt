@@ -23,25 +23,21 @@ import {
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
-import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
-import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
-import { getDistance } from "geolib";
 import { useRoute, useIsFocused } from "@react-navigation/native";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
-import { Coords, Profile } from "../../types";
+import { Profile } from "../../types";
 import Toast from "react-native-toast-message";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
-import generateId from "../../lib/generateId";
 import {
-  checkUserExists,
-  getSearchPreferences,
-  like,
-  pass,
-  sendPushNotification,
-  updateLocation,
-} from "../../api";
+  fetchCards,
+  getUserLocation,
+  notificationHandler,
+  swipeLeft,
+  swipeRight,
+} from "./homeHelpers";
 
 const HomeScreen = ({ navigation }: any) => {
   const isFocused = useIsFocused();
@@ -70,176 +66,22 @@ const HomeScreen = ({ navigation }: any) => {
   }, [user, navigation]);
 
   useEffect(() => {
-    if (notifications.length > 0) {
-      const currentNotification = notifications[0];
-      if (isFocused && currentNotification.type === "match") {
-        const loggedInProfile = currentNotification.data.match.loggedInProfile;
-        const userSwiped = currentNotification.data.match.userSwiped;
-        navigation.navigate("Match", {
-          loggedInProfile,
-          userSwiped,
-          matchDetails: currentNotification.data.matchDetails,
-        });
-      } else if (!isFocused && currentNotification.type === "match") {
-        Toast.show({
-          type: "success",
-          text1: `You got a new match! (${currentNotification.data.match.userSwiped.itemName})`,
-          text2: `${currentNotification.data.match.userSwiped.displayName} wants to swap with you.`,
-          onHide: () => {
-            removeNotification(currentNotification);
-          },
-          onPress: () => {
-            Toast.hide();
-            navigation.navigate("Message", {
-              matchDetails: currentNotification.data.matchDetails,
-            });
-          },
-        });
-      } else if (currentNotification.type === "message") {
-        Toast.show({
-          type: "success",
-          text1: `${currentNotification.data.message.sender.displayName} (${currentNotification.data.message.sender.itemName})`,
-          text2: currentNotification.data.message.message,
-          onHide: () => {
-            removeNotification(currentNotification);
-          },
-          onPress: () => {
-            Toast.hide();
-            navigation.navigate("Message", {
-              matchDetails: currentNotification.data.matchDetails,
-            });
-          },
-        });
-      } else {
-        Toast.show({
-          type: "success",
-          text1: currentNotification.data.title,
-          text2: currentNotification.data.text,
-          onHide: () => {
-            removeNotification(currentNotification);
-          },
-        });
-      }
-    }
-  }, [notifications]);
+    notificationHandler(
+      notifications,
+      isFocused,
+      navigation,
+      removeNotification,
+      Toast
+    );
+  }, [notifications, isFocused, removeNotification, Toast, navigation]);
 
   useEffect(() => {
-    if (user) {
-      const accessToken = user.stsTokenManager.accessToken;
-      const getPermissions = async () => {
-        if (await !checkUserExists(accessToken)) return;
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          alert("Please grant location permissions");
-          return;
-        }
-
-        let currentLocation = await Location.getCurrentPositionAsync({});
-        const coords = {
-          latitude: currentLocation.coords.latitude,
-          longitude: currentLocation.coords.longitude,
-        };
-        const reverseGeocode = await Location.reverseGeocodeAsync(coords);
-        const city = reverseGeocode[0].city;
-        if (city) {
-          updateLocation(accessToken, city, coords);
-        }
-      };
-      getPermissions();
-    }
+    user && getUserLocation(user.stsTokenManager.accessToken);
   }, []);
 
   useEffect(() => {
-    let unsub;
-    if (user) {
-      const accessToken = user.stsTokenManager.accessToken;
-      const fetchCards = async () => {
-        let userCoords: Coords;
-        let radius: number;
-        let passes;
-        let swipes;
-        const searchPreferences = await getSearchPreferences(accessToken);
-        if (searchPreferences) {
-          userCoords = searchPreferences.userCoords;
-          radius = searchPreferences.radius;
-          passes = searchPreferences.passes;
-          swipes = searchPreferences.swipes;
-        }
-        const passedUserIds = passes.length > 0 ? passes : ["none"];
-        const swipedUserIds = swipes.length > 0 ? swipes : ["none"];
-
-        unsub = onSnapshot(
-          query(
-            collection(db, "users"),
-            where("id", "not-in", [
-              ...passedUserIds,
-              ...swipedUserIds,
-              user.uid,
-            ])
-          ),
-          (snapshot) => {
-            setProfiles(
-              snapshot.docs
-                .filter(
-                  (doc) =>
-                    getDistance(doc.data().coords, userCoords) / 1609.34 <
-                      radius && doc.data().active
-                )
-                .map((doc) => ({
-                  id: doc.id,
-                  displayName: doc.data().displayName,
-                  itemName: doc.data().itemName,
-                  ...doc.data(),
-                }))
-            );
-          }
-        );
-      };
-
-      fetchCards();
-    }
-    return unsub;
-  }, [db, params]);
-
-  const swipeLeft = async (cardIndex: number) => {
-    if (!profiles[cardIndex]) return;
-    const userSwiped = profiles[cardIndex];
-    if (user) {
-      const accessToken = user.stsTokenManager.accessToken;
-      pass(accessToken, userSwiped);
-    }
-  };
-
-  const swipeRight = async (cardIndex: number) => {
-    if (!profiles[cardIndex]) return;
-
-    const userSwiped = profiles[cardIndex];
-    if (user) {
-      const accessToken = user.stsTokenManager.accessToken;
-      const response = await like(accessToken, userSwiped);
-      if (response && response.status == 201) {
-        const loggedInProfile = response.data;
-        const matchDetails = {
-          id: generateId(loggedInProfile.id, userSwiped.id),
-          users: {
-            [loggedInProfile.id]: {
-              ...loggedInProfile,
-            },
-            [userSwiped.id]: {
-              ...userSwiped,
-            },
-          },
-          usersMatched: [loggedInProfile.id, userSwiped.id],
-        };
-        sendPushNotification(accessToken, "match", matchDetails, "");
-        navigation.navigate("Match", {
-          loggedInProfile,
-          userSwiped,
-          matchDetails,
-        });
-      }
-    }
-  };
+    user && fetchCards(user.stsTokenManager.accessToken, user.uid, setProfiles);
+  }, [db, user, params]);
 
   return (
     <SafeArea>
@@ -283,10 +125,17 @@ const HomeScreen = ({ navigation }: any) => {
           animateCardOpacity
           verticalSwipe={false}
           onSwipedLeft={(cardIndex) => {
-            swipeLeft(cardIndex);
+            user &&
+              swipeLeft(user.stsTokenManager.accessToken, cardIndex, profiles);
           }}
           onSwipedRight={(cardIndex) => {
-            swipeRight(cardIndex);
+            user &&
+              swipeRight(
+                user.stsTokenManager.accessToken,
+                cardIndex,
+                profiles,
+                navigation
+              );
           }}
           overlayLabels={{
             left: {
