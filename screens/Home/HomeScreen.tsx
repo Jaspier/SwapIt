@@ -29,18 +29,19 @@ import * as Location from "expo-location";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { getDistance } from "geolib";
 import { useRoute, useIsFocused } from "@react-navigation/native";
-import axios from "axios";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
-import { Coords } from "../../types";
+import { Coords, Profile } from "../../types";
 import Toast from "react-native-toast-message";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
 import generateId from "../../lib/generateId";
-
-interface Profile {
-  id: string;
-  displayName: string;
-  itemName: string;
-}
+import {
+  checkUserExists,
+  getSearchPreferences,
+  like,
+  pass,
+  sendPushNotification,
+  updateLocation,
+} from "../../api";
 
 const HomeScreen = ({ navigation }: any) => {
   const isFocused = useIsFocused();
@@ -123,83 +124,47 @@ const HomeScreen = ({ navigation }: any) => {
   }, [notifications]);
 
   useEffect(() => {
-    const getPermissions = async () => {
-      if (user) {
-        axios
-          .get("/checkUserExists", {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-            },
-          })
-          .then((e) => {
-            if (e.status !== 200) {
-              return;
-            }
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
-      }
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        alert("Please grant location permissions");
-        return;
-      }
+    if (user) {
+      const accessToken = user.stsTokenManager.accessToken;
+      const getPermissions = async () => {
+        if (await !checkUserExists(accessToken)) return;
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          alert("Please grant location permissions");
+          return;
+        }
 
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        const coords = {
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        };
+        const reverseGeocode = await Location.reverseGeocodeAsync(coords);
+        const city = reverseGeocode[0].city;
+        if (city) {
+          updateLocation(accessToken, city, coords);
+        }
       };
-      const reverseGeocode = await Location.reverseGeocodeAsync(coords);
-      const city = reverseGeocode[0].city;
-      if (user) {
-        axios
-          .post(
-            "/updateLocation",
-            {
-              location: city,
-              coords: coords,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-              },
-            }
-          )
-          .catch((e) => {
-            console.error(e.response.data.detail);
-          });
-      }
-    };
-    getPermissions();
+      getPermissions();
+    }
   }, []);
 
   useEffect(() => {
     let unsub;
-
-    const fetchCards = async () => {
-      let userCoords: Coords;
-      let radius: number;
-      let passes;
-      let swipes;
-      if (user) {
-        try {
-          const res = await axios.get("/getSearchPreferences", {
-            headers: {
-              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-            },
-          });
-          userCoords = res.data.coords;
-          radius = res.data.radius;
-          passes = res.data.passes;
-          swipes = res.data.swipes;
-        } catch (e: any) {
-          console.error(e.response.data.detail);
+    if (user) {
+      const accessToken = user.stsTokenManager.accessToken;
+      const fetchCards = async () => {
+        let userCoords: Coords;
+        let radius: number;
+        let passes;
+        let swipes;
+        const searchPreferences = await getSearchPreferences(accessToken);
+        if (searchPreferences) {
+          userCoords = searchPreferences.userCoords;
+          radius = searchPreferences.radius;
+          passes = searchPreferences.passes;
+          swipes = searchPreferences.swipes;
         }
-
         const passedUserIds = passes.length > 0 ? passes : ["none"];
         const swipedUserIds = swipes.length > 0 ? swipes : ["none"];
 
@@ -229,28 +194,19 @@ const HomeScreen = ({ navigation }: any) => {
             );
           }
         );
-      }
-    };
+      };
 
-    fetchCards();
+      fetchCards();
+    }
     return unsub;
   }, [db, params]);
 
   const swipeLeft = async (cardIndex: number) => {
     if (!profiles[cardIndex]) return;
-
     const userSwiped = profiles[cardIndex];
     if (user) {
-      axios
-        .post("/swipeLeft", userSwiped, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-          },
-        })
-        .catch((e) => {
-          console.error(e.response.data.detail);
-        });
+      const accessToken = user.stsTokenManager.accessToken;
+      pass(accessToken, userSwiped);
     }
   };
 
@@ -259,55 +215,29 @@ const HomeScreen = ({ navigation }: any) => {
 
     const userSwiped = profiles[cardIndex];
     if (user) {
-      axios
-        .post("/swipeRight", userSwiped, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+      const accessToken = user.stsTokenManager.accessToken;
+      const response = await like(accessToken, userSwiped);
+      if (response && response.status == 201) {
+        const loggedInProfile = response.data;
+        const matchDetails = {
+          id: generateId(loggedInProfile.id, userSwiped.id),
+          users: {
+            [loggedInProfile.id]: {
+              ...loggedInProfile,
+            },
+            [userSwiped.id]: {
+              ...userSwiped,
+            },
           },
-        })
-        .then((e) => {
-          if (e.status === 201) {
-            const loggedInProfile = e.data;
-            const matchDetails = {
-              id: generateId(loggedInProfile.id, userSwiped.id),
-              users: {
-                [loggedInProfile.id]: {
-                  ...loggedInProfile,
-                },
-                [userSwiped.id]: {
-                  ...userSwiped,
-                },
-              },
-              usersMatched: [loggedInProfile.id, userSwiped.id],
-            };
-            axios
-              .post(
-                "/sendPushNotification",
-                {
-                  type: "match",
-                  matchDetails: matchDetails,
-                },
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-                  },
-                }
-              )
-              .catch((e) => {
-                console.error(e.response.data.detail);
-              });
-            navigation.navigate("Match", {
-              loggedInProfile,
-              userSwiped,
-              matchDetails,
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e.response.data.detail);
+          usersMatched: [loggedInProfile.id, userSwiped.id],
+        };
+        sendPushNotification(accessToken, "match", matchDetails, "");
+        navigation.navigate("Match", {
+          loggedInProfile,
+          userSwiped,
+          matchDetails,
         });
+      }
     }
   };
 

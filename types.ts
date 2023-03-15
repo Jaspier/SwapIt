@@ -3,6 +3,12 @@ export interface Coords {
   latitude: number;
 }
 
+export interface Profile {
+  id: string;
+  displayName: string;
+  itemName: string;
+}
+
 export interface MatchedUser {
   active: boolean;
   coords: Coords;
