@@ -1,11 +1,10 @@
 import {
   FlatList,
-  Platform,
   TouchableWithoutFeedback,
   Keyboard,
   View,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import * as ImagePicker from "expo-image-picker";
@@ -26,18 +25,19 @@ import {
   UpdateProfileButton,
 } from "../../components/form";
 import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
-import { Storage } from "aws-amplify";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
-import axios from "axios";
 import { useRoute } from "@react-navigation/core";
 import { colors } from "../../theme/colors";
-import * as Location from "expo-location";
-import { NotificationContext } from "../../hooks/notifications/notificationContext";
 import Toast from "react-native-toast-message";
+import { getUserLocation } from "../../helpers";
+import {
+  checkIncompleteForm,
+  fetchUserProfile,
+  pickImages,
+  storeToDB,
+} from "./profileHelpers";
 
 const ProfileScreen = ({ navigation }: any) => {
-  const { notification, setNotification } = useContext(NotificationContext);
   const { params } = useRoute();
   let isNewUser: boolean | null | undefined;
   if (params) {
@@ -55,7 +55,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const [itemName, setItemName] = useState("");
   const [initialItemName, setInitialItemName] = useState("");
   const [location, setLocation] = useState<null | string>("");
-  const [coords, setCoords] = useState({});
+  const [coords, setCoords] = useState({ longitude: 0, latitude: 0 });
   const [processing, setProcessing] = useState(false);
   const authContext = AuthenticationContext();
   if (!authContext) {
@@ -64,147 +64,41 @@ const ProfileScreen = ({ navigation }: any) => {
   const { user }: AuthContextInterface = authContext;
 
   useEffect(() => {
-    const getPermissions = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        alert("Please grant location permissions");
-        return;
-      }
-
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      const coords = {
-        longitude: currentLocation.coords.longitude,
-        latitude: currentLocation.coords.latitude,
-      };
-      const reverseGeocode = await Location.reverseGeocodeAsync(coords);
-      const city = reverseGeocode[0].city;
-      if (user) {
-        setLocation(city);
-        setCoords(coords);
+    const getLocation = async () => {
+      if (user && isNewUser) {
+        const location = await getUserLocation(
+          user.stsTokenManager.accessToken,
+          isNewUser
+        );
+        if (location && location.city && location.coords) {
+          setLocation(location.city);
+          setCoords(location.coords);
+        }
       }
     };
-    if (isNewUser) {
-      getPermissions();
-    } else {
-      return;
-    }
+    getLocation();
   }, []);
 
   useEffect(() => {
     if (user && !isNewUser) {
-      axios
-        .get("/myprofile", {
-          headers: {
-            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-          },
-        })
-        .then((res) => {
-          const documentSnapshot = res.data;
-          setImages(JSON.parse(documentSnapshot.photoUrls));
-          setImagesToDelete(JSON.parse(documentSnapshot.photoUrls));
-          setInitialPhotoUrls(documentSnapshot.photoUrls);
-          setItemName(documentSnapshot.itemName);
-          setInitialItemName(documentSnapshot.itemName);
-          setLocation(documentSnapshot.location);
-        })
-        .catch((e) => console.error(e.response.data.detail));
+      fetchUserProfile(user.stsTokenManager.accessToken).then((data) => {
+        if (data) {
+          setImages(data.images);
+          setImagesToDelete(data.imagesToDelete);
+          setInitialPhotoUrls(data.images);
+          setItemName(data.itemName);
+          setInitialItemName(data.itemName);
+          setLocation(data.location);
+        }
+      });
     }
   }, [user]);
 
   useEffect(() => {
-    if (isNewUser && itemName !== "" && imagesSelected) {
-      setIncompleteForm(false);
-    } else if (
-      (!isNewUser && itemName !== initialItemName) ||
-      (itemName !== "" && imagesSelected)
-    ) {
-      setIncompleteForm(false);
-    } else {
-      setIncompleteForm(true);
-    }
-  }, [itemName, initialItemName, imagesSelected]);
-
-  const pickImages = async () => {
-    (async () => {
-      if (Platform.OS === "ios") {
-        const { accessPrivileges } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (accessPrivileges === "none") {
-          alert("No permission granted.");
-        } else {
-          let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsMultipleSelection: true,
-            selectionLimit: 3,
-            aspect: [4, 3],
-            quality: 1,
-          });
-
-          if (!result.cancelled) {
-            setImages(result.selected);
-            setImagesSelected(true);
-          }
-        }
-      }
-    })();
-  };
-
-  const imageAllUrls: { uri: string }[] = [];
-  const storeToDB = async () => {
-    setProcessing(true);
-    images &&
-      images.map(async (component, index) => {
-        if (imagesSelected) {
-          const imageUrl = component.uri;
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const urlParts = imageUrl.split(".");
-          const extension = urlParts[urlParts.length - 1];
-          const key = `${uuidv4()}.${extension}`;
-          imageAllUrls.push({ uri: key });
-          for (let i in imagesToDelete) {
-            await Storage.remove(imagesToDelete[i].uri);
-          }
-          await Storage.put(key, blob);
-        }
-        if (index + 1 === images.length && user) {
-          axios
-            .post(
-              "/createProfile",
-              {
-                id: user.uid,
-                displayName: user.displayName ? user.displayName : user.email,
-                photoUrls: imagesSelected
-                  ? JSON.stringify(imageAllUrls)
-                  : initialPhotoUrls,
-                itemName: itemName,
-                location: location,
-                coords: coords,
-                active: true,
-                radius: 50,
-                isNewUser: isNewUser,
-              },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-                },
-              }
-            )
-            .then((e) => {
-              setProcessing(false);
-              if (e.status === 204 && e.data.isNewUser) {
-                navigation.navigate("Settings", { newUser: true });
-              } else {
-                navigation.navigate("Home", { refresh: true });
-              }
-            })
-            .catch((e) => {
-              console.error(e.response.data.detail);
-            });
-        }
-      });
-  };
+    setIncompleteForm(
+      checkIncompleteForm(isNewUser, itemName, initialItemName, imagesSelected)
+    );
+  }, [isNewUser, itemName, initialItemName, imagesSelected]);
 
   return (
     <SafeArea>
@@ -234,7 +128,9 @@ const ProfileScreen = ({ navigation }: any) => {
               placeholder="Enter your location"
             />
           </DetailsContainer>
-          <ImagePickerPressable onPress={pickImages}>
+          <ImagePickerPressable
+            onPress={() => pickImages(setImagesSelected, setImages)}
+          >
             <AntDesign name="pluscircle" size={24} color="grey" />
           </ImagePickerPressable>
         </View>
@@ -257,7 +153,21 @@ const ProfileScreen = ({ navigation }: any) => {
       <ButtonContainer>
         <UpdateProfileButton
           disabled={incompleteForm || processing}
-          onPress={() => storeToDB()}
+          onPress={() =>
+            storeToDB(
+              user,
+              images,
+              imagesSelected,
+              imagesToDelete,
+              initialPhotoUrls,
+              itemName,
+              location,
+              coords,
+              isNewUser,
+              navigation,
+              setProcessing
+            )
+          }
         >
           <ButtonText>Update Profile</ButtonText>
         </UpdateProfileButton>

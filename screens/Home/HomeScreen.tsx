@@ -33,11 +33,11 @@ import Toast from "react-native-toast-message";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
 import {
   fetchCards,
-  getUserLocation,
   notificationHandler,
   swipeLeft,
   swipeRight,
 } from "./homeHelpers";
+import { getUserLocation } from "../../helpers";
 
 const HomeScreen = ({ navigation }: any) => {
   const isFocused = useIsFocused();
@@ -76,7 +76,7 @@ const HomeScreen = ({ navigation }: any) => {
   }, [notifications, isFocused, removeNotification, Toast, navigation]);
 
   useEffect(() => {
-    user && getUserLocation(user.stsTokenManager.accessToken);
+    user && getUserLocation(user.stsTokenManager.accessToken, false);
   }, []);
 
   useEffect(() => {

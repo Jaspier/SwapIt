@@ -1,5 +1,6 @@
 import { Coords, Profile } from "./types";
 import axios from "axios";
+import { NavigationProp } from "@react-navigation/core";
 
 export const checkUserExists = async (accessToken: string) => {
   try {
@@ -11,7 +12,7 @@ export const checkUserExists = async (accessToken: string) => {
     });
     return response.status === 200;
   } catch (e: any) {
-    console.error(e.message);
+    console.log("New User");
   }
 };
 
@@ -108,4 +109,50 @@ export const sendPushNotification = async (
     .catch((e) => {
       console.error(e.response.data.detail);
     });
+};
+
+export const createProfile = async (
+  user: any,
+  imagesSelected: boolean,
+  imageAllUrls: { uri: string }[],
+  initialPhotoUrls: string,
+  itemName: string,
+  location: string | null,
+  coords: Coords,
+  isNewUser: boolean | null | undefined,
+  navigation: NavigationProp<any>,
+  setProcessing: any
+) => {
+  try {
+    const response = await axios.post(
+      "/createProfile",
+      {
+        id: user.uid,
+        displayName: user.displayName ? user.displayName : user.email,
+        photoUrls: imagesSelected
+          ? JSON.stringify(imageAllUrls)
+          : JSON.stringify(initialPhotoUrls),
+        itemName: itemName,
+        location: location,
+        coords: coords,
+        active: true,
+        radius: 50,
+        isNewUser: isNewUser,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+        },
+      }
+    );
+    setProcessing(false);
+    if (response.status === 204 && response.data.isNewUser) {
+      navigation.navigate("Settings", { newUser: true });
+    } else {
+      navigation.navigate("Home", { refresh: true });
+    }
+  } catch (e: any) {
+    console.error(e.response.data.detail);
+  }
 };
