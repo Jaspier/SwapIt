@@ -156,3 +156,42 @@ export const createProfile = async (
     console.error(e.response.data.detail);
   }
 };
+
+export const getInitialDistance = async (accessToken: string) => {
+  try {
+    const res = await axios.get("/getSearchRadius", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (e: any) {
+    console.error(e.response.data.detail);
+  }
+};
+
+export const updateUserPreferences = async (
+  accessToken: string,
+  displayName: string,
+  distance: number
+) => {
+  try {
+    const response = await axios.post(
+      "/updateUserPreferences",
+      {
+        displayName: displayName,
+        radius: distance,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.status === 204;
+  } catch (e: any) {
+    console.error(e.response.data.detail);
+  }
+};

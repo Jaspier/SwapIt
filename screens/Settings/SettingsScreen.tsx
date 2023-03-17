@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeArea } from "../../components/utilities";
 import Header from "../../components/Header/Header";
 import {
@@ -26,17 +26,18 @@ import {
 } from "../../components/form";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { useRoute } from "@react-navigation/core";
-import { v4 as uuidv4 } from "uuid";
-import { Storage } from "aws-amplify";
 import { colors } from "../../theme/colors";
-import axios from "axios";
-import { updateProfile } from "firebase/auth";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import Toast from "react-native-toast-message";
-import { NotificationContext } from "../../hooks/notifications/notificationContext";
+import {
+  getUserSettings,
+  fetchInitialDistance,
+  checkIncompleteForm,
+  updateUserInfo,
+  removeProfilePicture,
+} from "./settingsHelper";
 
 const SettingsScreen = ({ navigation }: any) => {
-  const { notification, setNotification } = useContext(NotificationContext);
   const [photo, setPhoto] = useState("");
   const [photoTaken, setPhotoTaken] = useState(false);
   const [displayName, setDisplayName] = useState("");
@@ -61,124 +62,35 @@ const SettingsScreen = ({ navigation }: any) => {
   }
 
   useEffect(() => {
-    if (user) {
-      if (user.displayName) {
-        setDisplayName(user.displayName);
-        setInitialDisplayName(user.displayName);
-      }
-      if (user.photoURL) {
-        setPhoto(user.photoURL);
-      }
-    }
-    if (params) {
-      // @ts-ignore
-      const { photo } = params;
-      if (photo) {
-        setPhoto(photo.uri);
-        setPhotoTaken(true);
-        setIncompleteForm(false);
-      }
-    }
+    getUserSettings(
+      user,
+      params,
+      setDisplayName,
+      setInitialDisplayName,
+      setPhoto,
+      setPhotoTaken,
+      setIncompleteForm
+    );
   }, [user, params]);
 
   useEffect(() => {
-    const getInitialDistance = async () => {
-      if (user) {
-        try {
-          const res = await axios.get("/getSearchRadius", {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-            },
-          });
-          const getInitialDistance = res.data;
-          if (distance === 0) {
-            setDistance(getInitialDistance);
-          }
-          setInitialDistance(getInitialDistance);
-        } catch (e: any) {
-          console.error(e.response.data.detail);
-        }
-      }
-    };
-    getInitialDistance();
-  }, []);
-
-  useEffect(() => {
-    if (
-      (displayName !== initialDisplayName && displayName !== "") ||
-      (distance !== initialDistance && distance !== 0)
-    ) {
-      setIncompleteForm(false);
-    } else {
-      setIncompleteForm(true);
-    }
-  }, [initialDistance, distance, displayName, initialDisplayName]);
-
-  const updateUserInfo = async () => {
-    setProcessing(true);
-    let key;
     if (user) {
-      if (photoTaken) {
-        const imageUrl = photo;
-        const response = await fetch(photo);
-        const blob = await response.blob();
-        const urlParts = imageUrl.split(".");
-        const extension = urlParts[urlParts.length - 1];
-        key = `${uuidv4()}.${extension}`;
-        if (user.photoURL) {
-          await Storage.remove(`profiles/${user.photoURL}`);
-        }
-        await Storage.put(`profiles/${key}`, blob);
-      }
-      // @ts-ignore
-      updateProfile(user, {
-        displayName: displayName,
-        photoURL: photoTaken ? key : user.photoURL,
-      }).catch((e) => {
-        console.error(e.message);
-      });
-      axios
-        .post(
-          "/updateUserPreferences",
-          {
-            displayName: displayName,
-            radius: distance,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-            },
-          }
-        )
-        .then(() => {
-          setProcessing(false);
-          setIncompleteForm(true);
-          navigation.navigate("Home", { distanceChanged: true });
-        })
-        .catch((e) => {
-          console.error(e.response.data.detail);
-        });
+      fetchInitialDistance(
+        user.stsTokenManager.accessToken,
+        distance,
+        setDistance,
+        setInitialDistance
+      );
     }
-  };
+  }, [user, distance, setDistance, setInitialDistance]);
 
-  const removeProfilePicture = async () => {
-    if (user && user.photoURL) {
-      // @ts-ignore
-      updateProfile(user, {
-        photoURL: "",
-      })
-        .then(() => {
-          navigation.goBack();
-          navigation.navigate("Settings");
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-      await Storage.remove(`profiles/${user.photoURL}`);
-    }
-  };
+  checkIncompleteForm(
+    displayName,
+    initialDisplayName,
+    distance,
+    initialDistance,
+    setIncompleteForm
+  );
 
   return (
     <SafeArea>
@@ -209,7 +121,7 @@ const SettingsScreen = ({ navigation }: any) => {
           {user && user.photoURL && (
             <Button
               title="Remove Profile Picture"
-              onPress={() => removeProfilePicture()}
+              onPress={() => removeProfilePicture(user, navigation)}
             />
           )}
           <UserEmail>{user ? user.email : "NULL"}</UserEmail>
@@ -238,7 +150,18 @@ const SettingsScreen = ({ navigation }: any) => {
       </SliderContainer>
       <ButtonContainer>
         <UpdateProfileButton
-          onPress={() => updateUserInfo()}
+          onPress={() =>
+            updateUserInfo(
+              user,
+              photoTaken,
+              photo,
+              displayName,
+              distance,
+              setIncompleteForm,
+              setProcessing,
+              navigation
+            )
+          }
           disabled={incompleteForm || processing}
         >
           <ButtonText>Update</ButtonText>
