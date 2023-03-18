@@ -1,4 +1,4 @@
-import { Coords, Profile } from "./types";
+import { Coords, Match, Profile } from "./types";
 import axios from "axios";
 import { NavigationProp } from "@react-navigation/core";
 
@@ -220,4 +220,29 @@ export const deleteMatch = async (user: any, usersMatched: string[]) => {
     .catch((e) => {
       console.error(e.response.data.detail);
     });
+};
+
+export const sendMessage = async (
+  accessToken: string,
+  matchDetails: Match,
+  input: string
+) => {
+  try {
+    const response = await axios.post(
+      "/sendMessage",
+      {
+        matchId: matchDetails.id,
+        message: input,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.status === 200;
+  } catch (e: any) {
+    console.error(e.data.response.detail);
+  }
 };

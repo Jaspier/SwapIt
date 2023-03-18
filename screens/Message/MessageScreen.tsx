@@ -1,5 +1,5 @@
 import { Platform, TouchableWithoutFeedback, Keyboard } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "../../components/Header/Header";
 import { SafeArea } from "../../components/utilities";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
@@ -14,9 +14,7 @@ import {
 } from "./MessageStyles";
 import SenderMessage from "./components/SenderMessage/SenderMessage";
 import ReceiverMessage from "./components/ReceiverMessage/ReceiverMessage";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "../../firebase";
-import axios from "axios";
+import { send, useFetchMessages } from "./messageHelpers";
 
 interface Message {
   id: string;
@@ -35,65 +33,7 @@ const MessageScreen = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
 
-  useEffect(
-    () =>
-      onSnapshot(
-        query(
-          collection(db, "matches", matchDetails.id, "messages"),
-          orderBy("timestamp", "desc")
-        ),
-        (snapshot) =>
-          setMessages(
-            snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }))
-          )
-      ),
-    [matchDetails, db]
-  );
-
-  const sendMessage = () => {
-    if (user) {
-      axios
-        .post(
-          "/sendMessage",
-          {
-            matchId: matchDetails.id,
-            message: input,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-            },
-          }
-        )
-        .then((e) => {
-          if (e.status === 200) {
-            axios.post(
-              "/sendPushNotification",
-              {
-                type: "message",
-                matchDetails: matchDetails,
-                message: input,
-              },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-                },
-              }
-            );
-          }
-        })
-        .catch((e) => {
-          console.error(e.response.data.detail);
-        });
-
-      setInput("");
-    }
-  };
+  useFetchMessages(matchDetails, setMessages);
 
   return (
     <SafeArea>
@@ -132,10 +72,13 @@ const MessageScreen = () => {
           <MessageInput
             placeholder="Send Message..."
             onChangeText={setInput}
-            onSubmitEditing={sendMessage}
+            onSubmitEditing={() => send(user, matchDetails, input, setInput)}
             value={input}
           />
-          <SendButton onPress={sendMessage} title="Send" />
+          <SendButton
+            onPress={() => send(user, matchDetails, input, setInput)}
+            title="Send"
+          />
         </MessageInputContainer>
       </MessagesView>
     </SafeArea>
