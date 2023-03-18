@@ -1,47 +1,76 @@
 import { Coords } from "./../../types";
-import axios from "axios";
 import { Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { NavigationProp } from "@react-navigation/core";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
-import { createProfile } from "../../api";
+import { createProfile, myProfile } from "../../api";
+import { useEffect } from "react";
 
-export const fetchUserProfile = async (accessToken: string) => {
-  try {
-    const res = await axios.get("/myprofile", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const documentSnapshot = res.data;
-    const images = JSON.parse(documentSnapshot.photoUrls);
-    const imagesToDelete = JSON.parse(documentSnapshot.photoUrls);
-    const itemName = documentSnapshot.itemName;
-    const location = documentSnapshot.location;
-    return { images, imagesToDelete, itemName, location };
-  } catch (e: any) {
-    console.error(e.response.data.detail);
-    return null;
-  }
+export const fetchUserProfile = (
+  user: any,
+  isNewUser: boolean | null | undefined,
+  setLocation: React.Dispatch<React.SetStateAction<string | null>>,
+  setImages: React.Dispatch<
+    React.SetStateAction<ImagePicker.ImageInfo[] | null>
+  >,
+  setImagesToDelete: React.Dispatch<
+    React.SetStateAction<ImagePicker.ImageInfo[]>
+  >,
+  setInitialPhotoUrls: React.Dispatch<React.SetStateAction<string>>,
+  setItemName: React.Dispatch<React.SetStateAction<string>>,
+  setInitialItemName: React.Dispatch<React.SetStateAction<string>>
+): void => {
+  useEffect(() => {
+    const fetchUserProfileData = async () => {
+      if (user && !isNewUser) {
+        const documentSnapshot = await myProfile(
+          user.stsTokenManager.accessToken
+        );
+        const images = JSON.parse(documentSnapshot.photoUrls);
+        const imagesToDelete = JSON.parse(documentSnapshot.photoUrls);
+        const itemName = documentSnapshot.itemName;
+        const location = documentSnapshot.location;
+        setImages(images);
+        setImagesToDelete(imagesToDelete);
+        setInitialPhotoUrls(images);
+        setItemName(itemName);
+        setInitialItemName(itemName);
+        setLocation(location);
+      }
+    };
+    fetchUserProfileData();
+  }, [
+    user,
+    isNewUser,
+    setImages,
+    setImagesToDelete,
+    setInitialPhotoUrls,
+    setItemName,
+    setInitialItemName,
+    setLocation,
+  ]);
 };
 
 export const checkIncompleteForm = (
   isNewUser: boolean | null | undefined,
   itemName: string,
   initialItemName: string,
-  imagesSelected: boolean
-): boolean => {
-  if (isNewUser && itemName !== "" && imagesSelected) {
-    return false;
-  } else if (
-    (!isNewUser && itemName !== initialItemName) ||
-    (itemName !== "" && imagesSelected)
-  ) {
-    return false;
-  } else {
-    return true;
-  }
+  imagesSelected: boolean,
+  setIncompleteForm: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  useEffect(() => {
+    if (isNewUser && itemName !== "" && imagesSelected) {
+      setIncompleteForm(false);
+    } else if (
+      (!isNewUser && itemName !== initialItemName) ||
+      (itemName !== "" && imagesSelected)
+    ) {
+      setIncompleteForm(false);
+    } else {
+      setIncompleteForm(true);
+    }
+  }, [isNewUser, itemName, initialItemName, imagesSelected, setIncompleteForm]);
 };
 
 export const pickImages = async (setImagesSelected: any, setImages: any) => {

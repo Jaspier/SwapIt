@@ -111,6 +111,19 @@ export const sendPushNotification = async (
     });
 };
 
+export const myProfile = async (accessToken: string) => {
+  try {
+    const res = await axios.get("/myprofile", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return res.data;
+  } catch (e: any) {
+    console.error(e.response.data.detail);
+  }
+};
+
 export const createProfile = async (
   user: any,
   imagesSelected: boolean,

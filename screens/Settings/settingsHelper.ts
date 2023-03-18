@@ -14,40 +14,60 @@ export const getUserSettings = (
   setPhotoTaken: React.Dispatch<React.SetStateAction<boolean>>,
   setIncompleteForm: React.Dispatch<React.SetStateAction<boolean>>
 ): void => {
-  if (user) {
-    if (user.displayName) {
-      setDisplayName(user.displayName);
-      setInitialDisplayName(user.displayName);
+  useEffect(() => {
+    if (user) {
+      if (user.displayName) {
+        setDisplayName(user.displayName);
+        setInitialDisplayName(user.displayName);
+      }
+      if (user.photoURL) {
+        setPhoto(user.photoURL);
+      }
     }
-    if (user.photoURL) {
-      setPhoto(user.photoURL);
+    if (params) {
+      const { photo } = params;
+      if (photo) {
+        setPhoto(photo.uri);
+        setPhotoTaken(true);
+        setIncompleteForm(false);
+      }
     }
-  }
-  if (params) {
-    const { photo } = params;
-    if (photo) {
-      setPhoto(photo.uri);
-      setPhotoTaken(true);
-      setIncompleteForm(false);
-    }
-  }
+  }, [
+    user,
+    params,
+    setDisplayName,
+    setInitialDisplayName,
+    setPhoto,
+    setPhotoTaken,
+    setIncompleteForm,
+  ]);
 };
 
-export const fetchInitialDistance = async (
-  accessToken: string,
+export const fetchInitialDistance = (
+  user: any,
   distance: number,
   setDistance: React.Dispatch<React.SetStateAction<number>>,
   setInitialDistance: React.Dispatch<React.SetStateAction<number>>
 ) => {
-  try {
-    const fetchedInitialDistance = await getInitialDistance(accessToken);
-    if (distance === 0) {
-      setDistance(fetchedInitialDistance);
+  useEffect(() => {
+    const fetchInitialDistance = async () => {
+      try {
+        const fetchedInitialDistance = await getInitialDistance(
+          user.stsTokenManager.accessToken
+        );
+        if (distance === 0) {
+          setDistance(fetchedInitialDistance);
+        }
+        setInitialDistance(fetchedInitialDistance);
+      } catch (e: any) {
+        console.error(e.response.data.detail);
+      }
+    };
+
+    if (user) {
+      fetchInitialDistance();
     }
-    setInitialDistance(fetchedInitialDistance);
-  } catch (e: any) {
-    console.error(e.response.data.detail);
-  }
+  }, [user, distance, setDistance, setInitialDistance]);
 };
 
 export const checkIncompleteForm = (

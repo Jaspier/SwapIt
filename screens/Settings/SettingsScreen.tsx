@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SafeArea } from "../../components/utilities";
 import Header from "../../components/Header/Header";
 import {
@@ -36,6 +36,8 @@ import {
   updateUserInfo,
   removeProfilePicture,
 } from "./settingsHelper";
+import { NotificationContext } from "../../hooks/notifications/notificationContext";
+import { notificationHandler } from "../Home/homeHelpers";
 
 const SettingsScreen = ({ navigation }: any) => {
   const [photo, setPhoto] = useState("");
@@ -46,6 +48,7 @@ const SettingsScreen = ({ navigation }: any) => {
   const [incompleteForm, setIncompleteForm] = useState(true);
   const [distance, setDistance] = useState(0);
   const [initialDistance, setInitialDistance] = useState(0);
+  const { notifications, removeNotification } = useContext(NotificationContext);
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -61,28 +64,19 @@ const SettingsScreen = ({ navigation }: any) => {
     isNewUser = newUser;
   }
 
-  useEffect(() => {
-    getUserSettings(
-      user,
-      params,
-      setDisplayName,
-      setInitialDisplayName,
-      setPhoto,
-      setPhotoTaken,
-      setIncompleteForm
-    );
-  }, [user, params]);
+  notificationHandler(notifications, navigation, removeNotification, Toast);
 
-  useEffect(() => {
-    if (user) {
-      fetchInitialDistance(
-        user.stsTokenManager.accessToken,
-        distance,
-        setDistance,
-        setInitialDistance
-      );
-    }
-  }, [user, distance, setDistance, setInitialDistance]);
+  getUserSettings(
+    user,
+    params,
+    setDisplayName,
+    setInitialDisplayName,
+    setPhoto,
+    setPhotoTaken,
+    setIncompleteForm
+  );
+
+  fetchInitialDistance(user, distance, setDistance, setInitialDistance);
 
   checkIncompleteForm(
     displayName,

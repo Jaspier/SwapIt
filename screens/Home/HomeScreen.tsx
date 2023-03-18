@@ -1,11 +1,5 @@
 import { TouchableOpacity } from "react-native";
-import React, {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useRef, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import {
@@ -23,8 +17,6 @@ import {
 } from "./homeStyles";
 import { AntDesign, Ionicons, Entypo } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebase";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { useRoute, useIsFocused } from "@react-navigation/native";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
@@ -32,6 +24,7 @@ import { Profile } from "../../types";
 import Toast from "react-native-toast-message";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
 import {
+  checkProfileCompletion,
   fetchCards,
   notificationHandler,
   swipeLeft,
@@ -52,36 +45,19 @@ const HomeScreen = ({ navigation }: any) => {
 
   const { params } = useRoute();
 
-  useLayoutEffect(() => {
-    if (user) {
-      onSnapshot(doc(db, "users", user.uid), (snapshot) => {
-        if (
-          !snapshot.exists() ||
-          (snapshot.exists() && !snapshot.data().active)
-        ) {
-          navigation.navigate("Profile", { newUser: true });
-        }
-      });
-    }
-  }, [user, navigation]);
+  checkProfileCompletion(user, navigation);
 
-  useEffect(() => {
-    notificationHandler(
-      notifications,
-      isFocused,
-      navigation,
-      removeNotification,
-      Toast
-    );
-  }, [notifications, isFocused, removeNotification, Toast, navigation]);
+  notificationHandler(
+    notifications,
+    navigation,
+    removeNotification,
+    Toast,
+    isFocused
+  );
 
-  useEffect(() => {
-    user && getUserLocation(user.stsTokenManager.accessToken, false);
-  }, []);
+  getUserLocation(user, false, false);
 
-  useEffect(() => {
-    user && fetchCards(user.stsTokenManager.accessToken, user.uid, setProfiles);
-  }, [db, user, params]);
+  fetchCards(user, params, setProfiles);
 
   return (
     <SafeArea>

@@ -4,7 +4,7 @@ import {
   Keyboard,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import * as ImagePicker from "expo-image-picker";
@@ -36,6 +36,8 @@ import {
   pickImages,
   storeToDB,
 } from "./profileHelpers";
+import { NotificationContext } from "../../hooks/notifications/notificationContext";
+import { notificationHandler } from "../Home/homeHelpers";
 
 const ProfileScreen = ({ navigation }: any) => {
   const { params } = useRoute();
@@ -50,6 +52,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const [imagesToDelete, setImagesToDelete] = useState<ImagePicker.ImageInfo[]>(
     []
   );
+  const { notifications, removeNotification } = useContext(NotificationContext);
   const [incompleteForm, setIncompleteForm] = useState(true);
   const [initialPhotoUrls, setInitialPhotoUrls] = useState("");
   const [itemName, setItemName] = useState("");
@@ -63,42 +66,28 @@ const ProfileScreen = ({ navigation }: any) => {
   }
   const { user }: AuthContextInterface = authContext;
 
-  useEffect(() => {
-    const getLocation = async () => {
-      if (user && isNewUser) {
-        const location = await getUserLocation(
-          user.stsTokenManager.accessToken,
-          isNewUser
-        );
-        if (location && location.city && location.coords) {
-          setLocation(location.city);
-          setCoords(location.coords);
-        }
-      }
-    };
-    getLocation();
-  }, []);
+  notificationHandler(notifications, navigation, removeNotification, Toast);
 
-  useEffect(() => {
-    if (user && !isNewUser) {
-      fetchUserProfile(user.stsTokenManager.accessToken).then((data) => {
-        if (data) {
-          setImages(data.images);
-          setImagesToDelete(data.imagesToDelete);
-          setInitialPhotoUrls(data.images);
-          setItemName(data.itemName);
-          setInitialItemName(data.itemName);
-          setLocation(data.location);
-        }
-      });
-    }
-  }, [user]);
+  getUserLocation(user, isNewUser, true, setLocation, setCoords);
 
-  useEffect(() => {
-    setIncompleteForm(
-      checkIncompleteForm(isNewUser, itemName, initialItemName, imagesSelected)
-    );
-  }, [isNewUser, itemName, initialItemName, imagesSelected]);
+  fetchUserProfile(
+    user,
+    isNewUser,
+    setLocation,
+    setImages,
+    setImagesToDelete,
+    setInitialPhotoUrls,
+    setItemName,
+    setInitialItemName
+  );
+
+  checkIncompleteForm(
+    isNewUser,
+    itemName,
+    initialItemName,
+    imagesSelected,
+    setIncompleteForm
+  );
 
   return (
     <SafeArea>
