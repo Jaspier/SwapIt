@@ -57,7 +57,6 @@ export const useCheckSwapConfirmation = (
                   snapshot.data().users[user.uid].itemName,
                   matchedUser.id
                 );
-                console.log(notificationsObject);
                 if (notificationsObject != undefined) {
                   sendManyPushNotifications(
                     user.stsTokenManager.accessToken,

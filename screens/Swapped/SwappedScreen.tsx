@@ -7,7 +7,7 @@ import {
 import AnimatedLottieView from "lottie-react-native";
 import { TouchableWithoutFeedback } from "react-native";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
-import axios from "axios";
+import { resetProfile } from "../../api";
 
 const SwappedScreen = ({ navigation }: any) => {
   const authContext = AuthenticationContext();
@@ -16,25 +16,10 @@ const SwappedScreen = ({ navigation }: any) => {
   }
   const { user }: AuthContextInterface = authContext;
 
-  const resetProfile = async () => {
-    if (user) {
-      axios
-        .get("/resetProfile", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-          },
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-    }
-  };
-
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        resetProfile();
+        resetProfile(user);
         navigation.navigate("Profile", { newUser: true });
       }}
     >

@@ -319,3 +319,16 @@ export const confirmSwap = async (accessToken: string, matchDetails: Match) => {
     console.error(e.response.data.detail);
   }
 };
+
+export const resetProfile = async (user: any) => {
+  axios
+    .get("/resetProfile", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+      },
+    })
+    .catch((e: any) => {
+      console.error(e.response.data.detail);
+    });
+};

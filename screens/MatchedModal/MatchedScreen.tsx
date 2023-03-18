@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { useRoute } from "@react-navigation/core";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import {
@@ -12,15 +12,23 @@ import {
   Subheader,
   TouchableContainer,
 } from "./MatchedStyles";
+import Toast from "react-native-toast-message";
+import { NotificationContext } from "../../hooks/notifications/notificationContext";
 
 const MatchedScreen = ({ navigation }: any) => {
   const { params } = useRoute();
 
   // @ts-ignore
   const { loggedInProfile, userSwiped, matchDetails } = params;
-
+  const { notifications, removeNotification } = useContext(NotificationContext);
   return (
-    <TouchableContainer onPress={() => navigation.goBack()}>
+    <TouchableContainer
+      onPress={() => {
+        navigation.goBack();
+        Toast.hide();
+        removeNotification(notifications[0]);
+      }}
+    >
       <MatchedContainer>
         <HeaderContainer>
           <Header>Let's Get Swapping!</Header>
