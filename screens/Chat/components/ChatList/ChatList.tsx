@@ -1,12 +1,16 @@
-import { FlatList, View, Text } from "react-native";
-import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../../../../firebase";
+import { FlatList } from "react-native";
+import React, { useState } from "react";
 import AuthenticationContext from "../../../../hooks/authentication/authenticationContext";
 import ChatRow from "../ChatRow/ChatRow";
-import { NoMatchesContainer, NoMatchesText } from "./ChatListStyles";
+import {
+  DeleteSlider,
+  DeleteText,
+  NoMatchesContainer,
+  NoMatchesText,
+} from "./ChatListStyles";
 import { Swipeable } from "react-native-gesture-handler";
-import axios from "axios";
+import { deleteMatch } from "../../../../api";
+import { fetchMatches } from "./chatListHelpers";
 
 const ChatList = () => {
   const authContext = AuthenticationContext();
@@ -16,57 +20,7 @@ const ChatList = () => {
   }
   const { user }: AuthContextInterface = authContext;
 
-  const deleteMatch = async (usersMatched: string[]) => {
-    if (user) {
-      axios
-        .post("/deleteMatch", usersMatched, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-          },
-        })
-        .catch((e) => {
-          console.error(e.response.data.detail);
-        });
-    }
-  };
-
-  useEffect(() => {
-    let unsub;
-    if (user) {
-      unsub = onSnapshot(
-        query(
-          collection(db, "matches"),
-          where("usersMatched", "array-contains", user.uid)
-        ),
-        (snapshot) =>
-          setMatches(
-            snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }))
-          )
-      );
-    }
-    return unsub;
-  }, [user]);
-
-  const RightActions = () => {
-    return (
-      <View
-        style={{
-          backgroundColor: "red",
-          alignItems: "center",
-          justifyContent: "center",
-          alignSelf: "center",
-          width: 85,
-          height: 85,
-        }}
-      >
-        <Text style={{ color: "white", fontWeight: "bold" }}>Delete</Text>
-      </View>
-    );
-  };
+  fetchMatches(user, setMatches);
 
   return matches.length > 0 ? (
     <FlatList
@@ -76,8 +30,12 @@ const ChatList = () => {
       renderItem={({ item }: any) => (
         <Swipeable
           friction={3}
-          renderRightActions={() => <RightActions />}
-          onSwipeableRightOpen={() => deleteMatch(item.usersMatched)}
+          renderRightActions={() => (
+            <DeleteSlider>
+              <DeleteText>Delete</DeleteText>
+            </DeleteSlider>
+          )}
+          onSwipeableRightOpen={() => deleteMatch(user, item.usersMatched)}
         >
           <ChatRow matchDetails={item} />
         </Swipeable>

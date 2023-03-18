@@ -208,3 +208,16 @@ export const updateUserPreferences = async (
     console.error(e.response.data.detail);
   }
 };
+
+export const deleteMatch = async (user: any, usersMatched: string[]) => {
+  axios
+    .post("/deleteMatch", usersMatched, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+      },
+    })
+    .catch((e) => {
+      console.error(e.response.data.detail);
+    });
+};

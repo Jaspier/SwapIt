@@ -1,7 +1,6 @@
 import { Text } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AuthenticationContext from "../../../../hooks/authentication/authenticationContext";
-import getMatchedUserInfo from "../../../../lib/getMatchedUserInfo";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { useNavigation, NavigationProp } from "@react-navigation/core";
 import {
@@ -11,15 +10,8 @@ import {
   ProfileItemName,
   Row,
 } from "./ChatRowStyles";
-import { db } from "../../../../firebase";
-import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
 import { MatchedUser, Match } from "../../../../types";
+import { fetchMatchedUserInfo, getLastMessage } from "./chatRowHelpers";
 
 interface ChatRowProps {
   matchDetails: Match;
@@ -38,27 +30,9 @@ const ChatRow = ({ matchDetails }: ChatRowProps) => {
   const [lastMessage, setLastMessage] = useState(null);
   const [lastMessageUser, setLastMessageUser] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      setMatchedUserInfo(getMatchedUserInfo(matchDetails.users, user.uid));
-    }
-  }, [matchDetails, user]);
+  fetchMatchedUserInfo(matchDetails, user, setMatchedUserInfo);
 
-  useEffect(
-    () =>
-      onSnapshot(
-        query(
-          collection(db, "matches", matchDetails.id, "messages"),
-          orderBy("timestamp", "desc"),
-          limit(1)
-        ),
-        (snapshot) => {
-          setLastMessage(snapshot.docs[0]?.data()?.message);
-          setLastMessageUser(snapshot.docs[0]?.data()?.userId);
-        }
-      ),
-    [matchDetails, db]
-  );
+  getLastMessage(matchDetails, setLastMessage, setLastMessageUser);
 
   return (
     <Row
