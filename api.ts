@@ -1,17 +1,22 @@
 import { Coords, Match, Profile } from "./types";
 import axios from "axios";
 import { NavigationProp } from "@react-navigation/core";
-import Toast from "react-native-toast-message";
+import displayError from "./lib/displayError";
 
-const displayError = (message: string | undefined) => {
-  Toast.show({
-    type: "error",
-    text1: "System Log",
-    text2: message ? message : "An error has occurred. Please try again later.",
-    onPress: () => {
-      Toast.hide();
-    },
-  });
+export const storeDeviceToken = async (
+  accessToken: string,
+  deviceToken: string
+) => {
+  axios
+    .post("/storeDeviceToken", deviceToken, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .catch((e) => {
+      displayError(e.response.data.detail);
+    });
 };
 
 export const checkUserExists = async (accessToken: string) => {

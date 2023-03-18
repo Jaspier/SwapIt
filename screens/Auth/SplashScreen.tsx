@@ -7,6 +7,7 @@ import {
   Title,
 } from "./components/authStyles";
 import * as Notifications from "expo-notifications";
+import displayError from "../../lib/displayError";
 
 const SplashScreen = ({ navigation }: any) => {
   useEffect(() => {
@@ -24,7 +25,9 @@ const SplashScreen = ({ navigation }: any) => {
     }
 
     if (finalStatus !== "granted") {
-      console.error("Failed to get push token for push notification!");
+      displayError(
+        "Failed to get push token for push notification. Please try again later."
+      );
       return;
     }
   };

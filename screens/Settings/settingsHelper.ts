@@ -4,6 +4,7 @@ import { NavigationProp } from "@react-navigation/core";
 import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { updateProfile } from "firebase/auth";
+import displayError from "../../lib/displayError";
 
 export const useGetUserSettings = (
   user: any,
@@ -116,7 +117,7 @@ export const updateUserInfo = async (
       displayName: displayName,
       photoURL: photoTaken ? key : user.photoURL,
     }).catch((e: any) => {
-      console.error(e.message);
+      displayError(e.message);
     });
     const updated = await updateUserPreferences(
       user.stsTokenManager.accessToken,
