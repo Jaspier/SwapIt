@@ -1,6 +1,18 @@
 import { Coords, Match, Profile } from "./types";
 import axios from "axios";
 import { NavigationProp } from "@react-navigation/core";
+import Toast from "react-native-toast-message";
+
+const displayError = (message: string | undefined) => {
+  Toast.show({
+    type: "error",
+    text1: "System Log",
+    text2: message ? message : "An error has occurred. Please try again later.",
+    onPress: () => {
+      Toast.hide();
+    },
+  });
+};
 
 export const checkUserExists = async (accessToken: string) => {
   try {
@@ -36,7 +48,7 @@ export const updateLocation = async (
       }
     )
     .catch((e) => {
-      console.error(e.response.data.detail);
+      displayError(e.response.data.detail);
     });
 };
 
@@ -54,7 +66,7 @@ export const getSearchPreferences = async (accessToken: string) => {
       swipes: res.data.swipes,
     };
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -67,7 +79,7 @@ export const pass = async (accessToken: string, userSwiped: Profile) => {
       },
     })
     .catch((e) => {
-      console.error(e.response.data.detail);
+      displayError(e.response.data.detail);
     });
 };
 
@@ -81,7 +93,7 @@ export const like = async (accessToken: string, userSwiped: Profile) => {
     });
     return response;
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -107,7 +119,7 @@ export const sendPushNotification = async (
       }
     )
     .catch((e) => {
-      console.error(e.response.data.detail);
+      console.log(e.response.data);
     });
 };
 
@@ -120,7 +132,7 @@ export const myProfile = async (accessToken: string) => {
     });
     return res.data;
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -166,7 +178,7 @@ export const createProfile = async (
       navigation.navigate("Home", { refresh: true });
     }
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -180,7 +192,7 @@ export const getInitialDistance = async (accessToken: string) => {
     });
     return res.data;
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -205,7 +217,7 @@ export const updateUserPreferences = async (
     );
     return response.status === 204;
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -218,7 +230,7 @@ export const deleteMatch = async (user: any, usersMatched: string[]) => {
       },
     })
     .catch((e) => {
-      console.error(e.response.data.detail);
+      displayError(e.response.data.detail);
     });
 };
 
@@ -243,7 +255,7 @@ export const sendMessage = async (
     );
     return response.status === 200;
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -268,7 +280,7 @@ export const deleteMatches = async (
     );
     return response.data;
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -284,7 +296,7 @@ export const sendManyPushNotifications = async (
       },
     });
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -303,7 +315,7 @@ export const cancelSwap = async (accessToken: string, matchDetails: Match) => {
 
     return response.status === 200;
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -316,7 +328,7 @@ export const confirmSwap = async (accessToken: string, matchDetails: Match) => {
       },
     });
   } catch (e: any) {
-    console.error(e.response.data.detail);
+    displayError(e.response.data.detail);
   }
 };
 
@@ -329,6 +341,6 @@ export const resetProfile = async (user: any) => {
       },
     })
     .catch((e: any) => {
-      console.error(e.response.data.detail);
+      displayError(e.response.data.detail);
     });
 };

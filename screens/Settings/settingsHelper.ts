@@ -51,16 +51,14 @@ export const useFetchInitialDistance = (
 ) => {
   useEffect(() => {
     const fetchInitialDistance = async () => {
-      try {
-        const fetchedInitialDistance = await getInitialDistance(
-          user.stsTokenManager.accessToken
-        );
+      const fetchedInitialDistance = await getInitialDistance(
+        user.stsTokenManager.accessToken
+      );
+      if (fetchInitialDistance != undefined) {
         if (distance === 0) {
           setDistance(fetchedInitialDistance);
         }
         setInitialDistance(fetchedInitialDistance);
-      } catch (e: any) {
-        console.error(e.response.data.detail);
       }
     };
 
