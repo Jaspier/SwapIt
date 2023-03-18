@@ -1,17 +1,18 @@
 import styled from "styled-components";
 import { View, Text } from "react-native";
+import { colors } from "../../../../theme/colors";
 
 export const NoMatchesContainer = styled(View)`
-  padding: 20px;
+  padding: ${(props) => props.theme.space[5]};
 `;
 export const NoMatchesText = styled(Text)`
   text-align: center;
-  font-size: 18px;
-  line-height: 28px;
+  font-size: ${(props) => props.theme.fontSizes.default};
+  line-height: ${(props) => props.theme.lineHeights.title};
 `;
 
 export const DeleteSlider = styled(View)`
-  background-color: red;
+  background-color: ${colors.ui.error};
   align-items: center;
   justify-content: center;
   align-self: center;
@@ -20,6 +21,6 @@ export const DeleteSlider = styled(View)`
 `;
 
 export const DeleteText = styled(Text)`
-  color: white;
-  font-weight: bold;
+  color: ${colors.text.inverse};
+  font-weight: ${(props) => props.theme.fontWeights.bold};
 `;

@@ -29,7 +29,7 @@ export const SplashButton = styled(TouchableOpacity)`
   bottom: 15%;
   width: 50%;
   background-color: ${colors.bg.primary};
-  padding: ${(props) => props.theme.space[3]};
+  padding: ${(props) => props.theme.space[4]};
   border-radius: 30%;
 `;
 
@@ -44,7 +44,7 @@ export const AuthKeyboardAvoidingView = styled(KeyboardAvoidingView)`
 
 export const AuthContainer = styled(View)`
   background-color: rgba(255, 255, 255, 0.4);
-  padding: ${(props) => props.theme.space[4]};
+  padding: ${(props) => props.theme.space[6]};
   margin-top: ${(props) => props.theme.space[2]};
   align-items: center;
 `;
@@ -53,7 +53,7 @@ export const AuthButton = styled(Button).attrs({
   color: colors.ui.auth,
 })`
   padding: ${(props) => props.theme.space[2]};
-  margin-top: ${(props) => props.theme.space[4]};
+  margin-top: ${(props) => props.theme.space[6]};
 `;
 
 export const AuthInput = styled(TextInput)`
