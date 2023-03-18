@@ -243,6 +243,79 @@ export const sendMessage = async (
     );
     return response.status === 200;
   } catch (e: any) {
-    console.error(e.data.response.detail);
+    console.error(e.response.data.detail);
+  }
+};
+
+export const deleteMatches = async (
+  accessToken: string,
+  itemName: string,
+  matchedUserId: string
+) => {
+  try {
+    const response = await axios.post(
+      "/deleteMatches",
+      {
+        itemName,
+        matchedUserId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (e: any) {
+    console.error(e.response.data.detail);
+  }
+};
+
+export const sendManyPushNotifications = async (
+  accessToken: string,
+  notificationsObject: any
+) => {
+  try {
+    axios.post("/sendManyPushNotifications", notificationsObject, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (e: any) {
+    console.error(e.response.data.detail);
+  }
+};
+
+export const cancelSwap = async (accessToken: string, matchDetails: Match) => {
+  try {
+    const response = await axios.post(
+      "/cancelSwap",
+      matchDetails.usersMatched,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    return response.status === 200;
+  } catch (e: any) {
+    console.error(e.response.data.detail);
+  }
+};
+
+export const confirmSwap = async (accessToken: string, matchDetails: Match) => {
+  try {
+    axios.post("/confirmSwap", matchDetails.usersMatched, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (e: any) {
+    console.error(e.response.data.detail);
   }
 };

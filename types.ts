@@ -3,6 +3,13 @@ export interface Coords {
   latitude: number;
 }
 
+export interface User {
+  id: number;
+  displayName: string;
+  itemName: string;
+  location: string;
+}
+
 export interface Profile {
   id: string;
   displayName: string;

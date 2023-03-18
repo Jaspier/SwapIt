@@ -36,7 +36,6 @@ const ChatRow = ({ matchDetails }: ChatRowProps) => {
 
   return (
     <Row
-      disabled={matchDetails.deactivated}
       onPress={() =>
         navigation.navigate("Message", {
           matchDetails,
