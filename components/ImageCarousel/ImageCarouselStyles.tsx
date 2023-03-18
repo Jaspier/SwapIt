@@ -5,7 +5,7 @@ import { Image, View } from "react-native";
 export const CardImage = styled(Image)`
   height: 100%;
   width: 100%;
-  border-radius: 12px;
+  border-radius: ${(props) => props.theme.sizes[1]};
 `;
 
 export const Pagination = styled(View)`

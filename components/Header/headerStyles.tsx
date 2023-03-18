@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
 
 export const HeaderContainer = styled(View)`
-  padding: 8px;
+  padding: ${(props) => props.theme.space[2]};
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -17,7 +17,7 @@ export const NavContainer = styled(View)`
 `;
 
 export const GoBackButton = styled(TouchableOpacity)`
-  padding: 8px;
+  padding: ${(props) => props.theme.space[2]};
 `;
 
 export const Chevron = styled(Ionicons).attrs({
@@ -31,23 +31,23 @@ export const HeaderTextContainer = styled(View)`
 `;
 
 export const Title = styled(Text)`
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 700;
-  padding-left: 8px;
+  font-size: ${(props) => props.theme.fontSizes.h5};
+  line-height: ${(props) => props.theme.lineHeights.title};
+  font-weight: ${(props) => props.theme.fontWeights.bold};
+  padding-left: ${(props) => props.theme.space[2]};
 `;
 
 export const SubHeading = styled(Text)`
-  margin-left: 8px;
+  margin-left: ${(props) => props.theme.space[2]};
 `;
 
 export const NFCButton = styled(TouchableOpacity)`
   border-radius: 9999px;
-  margin-right: 16px;
-  padding: 12px;
-  background-color: rgb(187, 247, 208);
+  margin-right: ${(props) => props.theme.space[4]};
+  padding: ${(props) => props.theme.space[3]};
+  background-color: ${colors.bg.light};
 `;
 
 export const SettingsButton = styled(TouchableOpacity)`
-  margin-right: 16px;
+  margin-right: ${(props) => props.theme.space[4]};
 `;

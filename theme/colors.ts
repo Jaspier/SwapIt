@@ -13,6 +13,8 @@ export const colors = {
     primary: "#FFFFFF",
     account: "#523A28",
     brand: "#59CD90",
+    light: "#BBF7D0",
+    red: "#FECACA",
   },
   text: {
     primary: "#1B1B1E",

@@ -6,12 +6,12 @@ export const ErrorText = styled(Text)`
 `;
 
 export const Label = styled(Text)`
-  font-size: ${(props) => props.theme.fontSizes.label};
+  font-size: ${(props) => props.theme.fontSizes.caption};
   color: ${(props) => props.theme.colors.text.secondary};
 `;
 
 export const LinkedLabel = styled(Text)`
-  font-size: ${(props) => props.theme.fontSizes.label};
+  font-size: ${(props) => props.theme.fontSizes.caption};
   font-weight: ${(props) => props.theme.fontWeights.bold}
   color: ${(props) => props.theme.colors.text.link};
 `;

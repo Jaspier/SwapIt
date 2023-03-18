@@ -53,9 +53,9 @@ export const SwipeButton = styled(TouchableOpacity)<{ type: string }>`
   height: 64px;
   background-color: ${(props) =>
     props.type === "swap"
-      ? "rgb(187, 247, 208)"
+      ? colors.bg.light
       : props.type === "cross"
-      ? "rgb(254, 202, 202)"
+      ? colors.bg.red
       : "none"};
 `;
 
