@@ -19,22 +19,22 @@ export const AuthBackground = styled(ImageBackground).attrs({
 `;
 
 export const Title = styled(Text)`
-  font-size: 60px;
-  font-weight: 600;
-  color: #fff;
+  font-size: ${(props) => props.theme.fontSizes.h2};
+  font-weight: ${(props) => props.theme.fontWeights.medium};
+  color: ${colors.text.inverse};
 `;
 
 export const SplashButton = styled(TouchableOpacity)`
   position: absolute;
   bottom: 15%;
   width: 50%;
-  background-color: #fff;
-  padding: 16px;
+  background-color: ${colors.bg.primary};
+  padding: ${(props) => props.theme.space[3]};
   border-radius: 30%;
 `;
 
 export const SplashText = styled(Text)`
-  font-weight: 600;
+  font-weight: ${(props) => props.theme.fontWeights.medium};
   text-align: center;
 `;
 
