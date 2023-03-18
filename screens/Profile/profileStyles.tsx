@@ -4,15 +4,15 @@ import { View, Text, Pressable, Image } from "react-native";
 
 export const DisplayName = styled(Text)`
   text-align: center;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: ${(props) => props.theme.fontSizes.title};
+  line-height: ${(props) => props.theme.lineHeights.title};
   color: ${colors.text.primary};
-  padding-bottom: 16px;
-  font-weight: 700;
+  padding-bottom: ${(props) => props.theme.space[4]};
+  font-weight: ${(props) => props.theme.fontWeights.bold};
 `;
 
 export const DetailsContainer = styled(View)`
-  margin-bottom: 35px;
+  margin-bottom: ${(props) => props.theme.space[6]};
 `;
 
 export const ImagePickerPressable = styled(Pressable)`
@@ -20,8 +20,8 @@ export const ImagePickerPressable = styled(Pressable)`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-vertical: 5px;
-  margin-left: 132px;
+  margin-vertical: ${(props) => props.theme.space[1]};
+  margin-left: ${(props) => props.theme.space[8]};
   height: 130px;
   width: 130px;
   border-width: 1px;
@@ -31,15 +31,15 @@ export const ImagePickerPressable = styled(Pressable)`
 
 export const MaxImagesText = styled(Text)`
   text-align: center;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: ${(props) => props.theme.fontSizes.caption};
+  line-height: ${(props) => props.theme.lineHeights.copy};
   color: ${colors.text.disabled};
-  padding-vertical: 8px;
-  font-weight: 700;
+  padding-vertical: ${(props) => props.theme.space[2]};
+  font-weight: ${(props) => props.theme.fontWeights.bold};
 `;
 
 export const SelectedImages = styled(Image)`
   width: 150px;
   height: 150px;
-  margin-right: 10px;
+  margin-right: ${(props) => props.theme.space[2]};
 `;
