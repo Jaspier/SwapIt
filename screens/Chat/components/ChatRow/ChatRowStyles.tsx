@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { colors } from "../../../../theme/colors";
 import { Text, Image, TouchableOpacity, View } from "react-native";
 
-export const Row = styled(TouchableOpacity)<{ deactivated: boolean }>`
+export const Row = styled(TouchableOpacity)`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -11,7 +11,6 @@ export const Row = styled(TouchableOpacity)<{ deactivated: boolean }>`
   margin: 4px 12px;
   border-radius: 8px;
   box-shadow: 0px 1px rgba(0, 0, 0, 0.2);
-  opacity: ${(props) => (props.deactivated ? 0.5 : 1)};
 `;
 
 export const PreviewContainer = styled(View)`
