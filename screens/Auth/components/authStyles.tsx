@@ -20,7 +20,7 @@ export const AuthBackground = styled(ImageBackground).attrs({
 
 export const Title = styled(Text)`
   font-size: ${(props) => props.theme.fontSizes.h2};
-  font-weight: ${(props) => props.theme.fontWeights.medium};
+  font-weight: ${(props) => props.theme.fontWeights.semiBold};
   color: ${colors.text.inverse};
 `;
 
@@ -34,7 +34,7 @@ export const SplashButton = styled(TouchableOpacity)`
 `;
 
 export const SplashText = styled(Text)`
-  font-weight: ${(props) => props.theme.fontWeights.medium};
+  font-weight: ${(props) => props.theme.fontWeights.semiBold};
   text-align: center;
 `;
 

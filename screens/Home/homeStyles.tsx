@@ -9,8 +9,7 @@ export const HeaderContainer = styled(View)`
   align-items: center;
   justify-content: space-between
   position: relative;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-horizontal: ${(props) => props.theme.space[5]}
 `;
 
 export const DefaultAccountIcon = styled(Avatar.Text).attrs({
@@ -26,8 +25,8 @@ export const AccountImage = styled(Avatar.Image).attrs({
 `;
 
 export const Logo = styled(Text)`
-  font-size: 25px;
-  font-weight: 500;
+  font-size: ${(props) => props.theme.fontSizes.h4};
+  font-weight: ${(props) => props.theme.fontWeights.medium};
   color: ${colors.brand.primary};
 `;
 
@@ -62,17 +61,17 @@ export const SwipeButton = styled(TouchableOpacity)<{ type: string }>`
 
 export const NoProfilesCard = styled(View)`
   position: relative;
-  background-color: white;
+  background-color: ${colors.bg.primary};
   height: 75%;
-  border-radius: 12px;
+  border-radius: ${(props) => props.theme.sizes[1]};
   justify-content: center;
   align-items: center;
   box-shadow: 0px 1px rgba(0, 0, 0, 0.2);
 `;
 
 export const NoProfilesText = styled(Text)`
-  font-weight: 700;
-  padding-bottom: 20px;
+  font-weight: ${(props) => props.theme.fontWeights.bold};
+  padding-bottom: ${(props) => props.theme.space[5]};
 `;
 
 export const NoProfilesImage = styled(Image)`

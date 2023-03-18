@@ -28,7 +28,7 @@ export const ProfileImage = styled(Image)`
 export const ProfileDisplayName = styled(Text)`
   font-size: ${(props) => props.theme.fontSizes.default};
   line-height: ${(props) => props.theme.lineHeights.title};
-  font-weight: ${(props) => props.theme.fontWeights.medium};
+  font-weight: ${(props) => props.theme.fontWeights.semiBold};
 `;
 
 export const ProfileItemName = styled(Text)`
