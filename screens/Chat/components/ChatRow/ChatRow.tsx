@@ -11,7 +11,7 @@ import {
   Row,
 } from "./ChatRowStyles";
 import { MatchedUser, Match } from "../../../../types";
-import { fetchMatchedUserInfo, getLastMessage } from "./chatRowHelpers";
+import { useFetchMatchedUserInfo, useGetLastMessage } from "./chatRowHelpers";
 
 interface ChatRowProps {
   matchDetails: Match;
@@ -30,9 +30,9 @@ const ChatRow = ({ matchDetails }: ChatRowProps) => {
   const [lastMessage, setLastMessage] = useState(null);
   const [lastMessageUser, setLastMessageUser] = useState(null);
 
-  fetchMatchedUserInfo(matchDetails, user, setMatchedUserInfo);
+  useFetchMatchedUserInfo(matchDetails, user, setMatchedUserInfo);
 
-  getLastMessage(matchDetails, setLastMessage, setLastMessageUser);
+  useGetLastMessage(matchDetails, setLastMessage, setLastMessageUser);
 
   return (
     <Row

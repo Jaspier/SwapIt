@@ -2,7 +2,7 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect } from "react";
 import { db } from "../../../../firebase";
 
-export const fetchMatches = (
+export const useFetchMatches = (
   user: any,
   setMatches: React.Dispatch<React.SetStateAction<{ id: string }[]>>
 ) => {

@@ -10,7 +10,7 @@ import {
 } from "./ChatListStyles";
 import { Swipeable } from "react-native-gesture-handler";
 import { deleteMatch } from "../../../../api";
-import { fetchMatches } from "./chatListHelpers";
+import { useFetchMatches } from "./chatListHelpers";
 
 const ChatList = () => {
   const authContext = AuthenticationContext();
@@ -20,7 +20,7 @@ const ChatList = () => {
   }
   const { user }: AuthContextInterface = authContext;
 
-  fetchMatches(user, setMatches);
+  useFetchMatches(user, setMatches);
 
   return matches.length > 0 ? (
     <FlatList

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { updateProfile } from "firebase/auth";
 
-export const getUserSettings = (
+export const useGetUserSettings = (
   user: any,
   params: any,
   setDisplayName: React.Dispatch<React.SetStateAction<string>>,
@@ -43,7 +43,7 @@ export const getUserSettings = (
   ]);
 };
 
-export const fetchInitialDistance = (
+export const useFetchInitialDistance = (
   user: any,
   distance: number,
   setDistance: React.Dispatch<React.SetStateAction<number>>,
@@ -70,7 +70,7 @@ export const fetchInitialDistance = (
   }, [user, distance, setDistance, setInitialDistance]);
 };
 
-export const checkIncompleteForm = (
+export const useCheckIncompleteForm = (
   displayName: string,
   initialDisplayName: string,
   distance: number,

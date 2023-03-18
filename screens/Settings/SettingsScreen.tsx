@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { SafeArea } from "../../components/utilities";
 import Header from "../../components/Header/Header";
 import {
@@ -30,14 +30,14 @@ import { colors } from "../../theme/colors";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import Toast from "react-native-toast-message";
 import {
-  getUserSettings,
-  fetchInitialDistance,
-  checkIncompleteForm,
+  useGetUserSettings,
+  useFetchInitialDistance,
+  useCheckIncompleteForm,
   updateUserInfo,
   removeProfilePicture,
 } from "./settingsHelper";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
-import { notificationHandler } from "../Home/homeHelpers";
+import { useNotificationHandler } from "../../helpers";
 
 const SettingsScreen = ({ navigation }: any) => {
   const [photo, setPhoto] = useState("");
@@ -64,9 +64,9 @@ const SettingsScreen = ({ navigation }: any) => {
     isNewUser = newUser;
   }
 
-  notificationHandler(notifications, navigation, removeNotification, Toast);
+  useNotificationHandler(notifications, navigation, removeNotification, Toast);
 
-  getUserSettings(
+  useGetUserSettings(
     user,
     params,
     setDisplayName,
@@ -76,9 +76,9 @@ const SettingsScreen = ({ navigation }: any) => {
     setIncompleteForm
   );
 
-  fetchInitialDistance(user, distance, setDistance, setInitialDistance);
+  useFetchInitialDistance(user, distance, setDistance, setInitialDistance);
 
-  checkIncompleteForm(
+  useCheckIncompleteForm(
     displayName,
     initialDisplayName,
     distance,

@@ -24,13 +24,12 @@ import { Profile } from "../../types";
 import Toast from "react-native-toast-message";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
 import {
-  checkProfileCompletion,
-  fetchCards,
-  notificationHandler,
+  useCheckProfileCompletion,
+  useFetchCards,
   swipeLeft,
   swipeRight,
 } from "./homeHelpers";
-import { getUserLocation } from "../../helpers";
+import { useGetUserLocation, useNotificationHandler } from "../../helpers";
 
 const HomeScreen = ({ navigation }: any) => {
   const isFocused = useIsFocused();
@@ -45,9 +44,9 @@ const HomeScreen = ({ navigation }: any) => {
 
   const { params } = useRoute();
 
-  checkProfileCompletion(user, navigation);
+  useCheckProfileCompletion(user, navigation);
 
-  notificationHandler(
+  useNotificationHandler(
     notifications,
     navigation,
     removeNotification,
@@ -55,9 +54,9 @@ const HomeScreen = ({ navigation }: any) => {
     isFocused
   );
 
-  getUserLocation(user, false, false);
+  useGetUserLocation(user, false, false);
 
-  fetchCards(user, params, setProfiles);
+  useFetchCards(user, params, setProfiles);
 
   return (
     <SafeArea>

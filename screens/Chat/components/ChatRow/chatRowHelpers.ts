@@ -10,7 +10,7 @@ import { db } from "../../../../firebase";
 import getMatchedUserInfo from "../../../../lib/getMatchedUserInfo";
 import { Match, MatchedUser } from "../../../../types";
 
-export const fetchMatchedUserInfo = (
+export const useFetchMatchedUserInfo = (
   matchDetails: Match,
   user: any,
   setMatchedUserInfo: React.Dispatch<React.SetStateAction<MatchedUser | null>>
@@ -22,7 +22,7 @@ export const fetchMatchedUserInfo = (
   }, [matchDetails, user, setMatchedUserInfo]);
 };
 
-export const getLastMessage = (
+export const useGetLastMessage = (
   matchDetails: Match,
   setLastMessage: React.Dispatch<React.SetStateAction<null>>,
   setLastMessageUser: React.Dispatch<React.SetStateAction<null>>

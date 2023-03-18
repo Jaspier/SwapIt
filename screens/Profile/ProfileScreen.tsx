@@ -29,15 +29,14 @@ import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { useRoute } from "@react-navigation/core";
 import { colors } from "../../theme/colors";
 import Toast from "react-native-toast-message";
-import { getUserLocation } from "../../helpers";
+import { useGetUserLocation, useNotificationHandler } from "../../helpers";
 import {
-  checkIncompleteForm,
-  fetchUserProfile,
+  useCheckIncompleteForm,
+  useFetchUserProfile,
   pickImages,
   storeToDB,
 } from "./profileHelpers";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
-import { notificationHandler } from "../Home/homeHelpers";
 
 const ProfileScreen = ({ navigation }: any) => {
   const { params } = useRoute();
@@ -66,11 +65,11 @@ const ProfileScreen = ({ navigation }: any) => {
   }
   const { user }: AuthContextInterface = authContext;
 
-  notificationHandler(notifications, navigation, removeNotification, Toast);
+  useNotificationHandler(notifications, navigation, removeNotification, Toast);
 
-  getUserLocation(user, isNewUser, true, setLocation, setCoords);
+  useGetUserLocation(user, isNewUser, true, setLocation, setCoords);
 
-  fetchUserProfile(
+  useFetchUserProfile(
     user,
     isNewUser,
     setLocation,
@@ -81,7 +80,7 @@ const ProfileScreen = ({ navigation }: any) => {
     setInitialItemName
   );
 
-  checkIncompleteForm(
+  useCheckIncompleteForm(
     isNewUser,
     itemName,
     initialItemName,

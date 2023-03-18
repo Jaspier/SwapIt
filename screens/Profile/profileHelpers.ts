@@ -7,7 +7,7 @@ import { Storage } from "aws-amplify";
 import { createProfile, myProfile } from "../../api";
 import { useEffect } from "react";
 
-export const fetchUserProfile = (
+export const useFetchUserProfile = (
   user: any,
   isNewUser: boolean | null | undefined,
   setLocation: React.Dispatch<React.SetStateAction<string | null>>,
@@ -52,7 +52,7 @@ export const fetchUserProfile = (
   ]);
 };
 
-export const checkIncompleteForm = (
+export const useCheckIncompleteForm = (
   isNewUser: boolean | null | undefined,
   itemName: string,
   initialItemName: string,
