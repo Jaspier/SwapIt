@@ -4,10 +4,10 @@ import { View, Text } from "react-native";
 
 export const SenderMessageBubble = styled(View)`
   background-color: rgb(147, 51, 234);
-  border-radius: 8px;
+  border-radius: ${(props) => props.theme.sizes[0]};
   border-top-right-radius: 0px;
-  padding: 12px 20px;
-  margin: 8px 12px;
+  padding: ${(props) => props.theme.space[3]} ${(props) => props.theme.space[5]};
+  margin: ${(props) => props.theme.space[2]} ${(props) => props.theme.space[3]};
   align-self: flex-start;
   margin-left: auto;
 `;

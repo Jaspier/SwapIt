@@ -13,7 +13,7 @@ export const MessagesView = styled(KeyboardAvoidingView)`
 `;
 
 export const Messages = styled(FlatList)`
-  padding-left: 16px;
+  padding-left: ${(props) => props.theme.space[4]};
 `;
 
 export const MessageInputContainer = styled(View)`
@@ -23,15 +23,15 @@ export const MessageInputContainer = styled(View)`
   align-items: center;
   border-top-width: 1px;
   border-color: rgb(229, 231, 235);
-  padding-horizontal: 20px;
-  padding-vertical: 8px;
+  padding-horizontal: ${(props) => props.theme.space[5]};
+  padding-vertical: ${(props) => props.theme.space[2]};
 `;
 
 export const MessageInput = styled(TextInput)`
   height: 40px;
   width: 85%;
-  font-size: 18px;
-  line-height: 28px;
+  font-size: ${(props) => props.theme.fontSizes.default};
+  line-height: ${(props) => props.theme.lineHeights.title};
 `;
 
 export const SendButton = styled(Button).attrs({
