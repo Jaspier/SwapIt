@@ -26,32 +26,32 @@ export const SwapButton = styled(TouchableOpacity)`
 `;
 
 export const SwapText = styled(Text)`
-  font-size: 36px;
+  font-size: ${(props) => props.theme.fontSizes.h4};
   color: ${colors.bg.brand};
-  font-weight: semi-bold;
+  font-weight: ${(props) => props.theme.fontWeights.semiBold};
 `;
 
 export const ConfirmedTextContainer = styled(View)`
   position: absolute;
-  top: 120px;
-  padding-horizontal: 10px;
+  top: ${(props) => props.theme.space[8]};
+  padding-horizontal: ${(props) => props.theme.space[3]};
 `;
 
 export const ConfirmedText = styled(Text)`
-  font-size: 28px;
-  font-weight: semi-bold;
+  font-size: ${(props) => props.theme.fontSizes.h5};
+  font-weight: ${(props) => props.theme.fontWeights.semiBold};
   color: ${colors.text.inverse};
 `;
 
 export const DisclaimerTextContainer = styled(View)`
   position: absolute;
-  bottom: 100px;
-  padding-horizontal: 20px;
+  bottom: ${(props) => props.theme.space[7]};
+  padding-horizontal: ${(props) => props.theme.space[5]};
 `;
 
 export const DisclaimerText = styled(Text)`
-  font-size: 20px;
-  font-weight: semi-bold;
+  font-size: ${(props) => props.theme.fontSizes.title};
+  font-weight: ${(props) => props.theme.fontWeights.medium};
   color: ${colors.text.inverse};
 `;
 
@@ -63,11 +63,11 @@ export const CancelButton = styled(TouchableOpacity)`
   background-color: ${colors.ui.error};
   justify-content: center;
   align-items: center;
-  padding: 10px;
-  border-radius: 10px;
+  padding: ${(props) => props.theme.space[2]};
+  border-radius: ${(props) => props.theme.space[2]};
 `;
 
 export const CancelText = styled(Text)`
   color: ${colors.text.inverse};
-  font-size: 18px;
+  font-size: ${(props) => props.theme.fontSizes.title};
 `;

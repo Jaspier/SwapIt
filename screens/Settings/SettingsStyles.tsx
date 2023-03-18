@@ -24,8 +24,8 @@ export const SettingsContainer = styled(View)``;
 
 export const UserEmail = styled(Text)`
   text-align: center;
-  padding: 16px;
-  font-weight: 700;
+  padding: ${(props) => props.theme.space[4]};
+  font-weight: ${(props) => props.theme.fontWeights.bold};
 `;
 
 export const SliderContainer = styled(View)`

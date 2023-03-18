@@ -19,9 +19,9 @@ export const SwappedContainer = styled(View)`
 export const SwappedText = styled(Text)`
   position: absolute;
   top: 22%;
-  font-size: 42px;
+  font-size: ${(props) => props.theme.fontSizes.h3};
   color: ${colors.text.inverse};
-  font-weight: semi-bold;
+  font-weight: ${(props) => props.theme.fontWeights.semiBold};
 `;
 
 export const AnimationContainer = styled(View)`
