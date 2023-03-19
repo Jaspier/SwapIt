@@ -1,11 +1,9 @@
-import { checkUserExists, updateLocation } from "./api";
+import { checkUserExists, updateLocation, updateUserStatus } from "./api";
 import * as Location from "expo-location";
 import { Coords, Notification } from "./types";
 import { useEffect, useRef } from "react";
 import { NavigationProp } from "@react-navigation/core";
 import { AppState, AppStateStatus } from "react-native";
-import { doc, Timestamp, updateDoc } from "firebase/firestore";
-import { db } from "./firebase";
 
 export const useGetUserLocation = (
   user: any,
@@ -109,44 +107,27 @@ export const useNotificationHandler = (
   }, [notifications, isFocused, removeNotification, Toast, navigation]);
 };
 
-const updateUserStatus = (userId: string, status: string) => {
-  const userRef = doc(db, "users", userId);
-  try {
-    if (status === "offline") {
-      updateDoc(userRef, {
-        status: status,
-        lastOnline: Timestamp.now(),
-      });
-    } else {
-      updateDoc(userRef, {
-        status: status,
-      });
-    }
-  } catch (e: any) {
-    console.log(e);
-  }
-};
-
 export const useUserStatus = (user: any) => {
   const prevAppStateRef = useRef<AppStateStatus>(AppState.currentState);
 
   useEffect(() => {
     if (user) {
+      const accessToken = user.stsTokenManager.accessToken;
       const handleAppStateChange = (nextAppState: AppStateStatus) => {
         if (
           prevAppStateRef.current !== "background" &&
           nextAppState === "background"
         ) {
-          updateUserStatus(user.uid, "offline");
+          updateUserStatus(accessToken, "offline");
         } else if (
           prevAppStateRef.current !== "active" &&
           nextAppState === "active"
         ) {
-          updateUserStatus(user.uid, "online");
+          updateUserStatus(accessToken, "online");
         }
         prevAppStateRef.current = nextAppState;
       };
-      updateUserStatus(user.uid, "online");
+      updateUserStatus(accessToken, "online");
       const subscription = AppState.addEventListener(
         "change",
         handleAppStateChange
@@ -154,7 +135,7 @@ export const useUserStatus = (user: any) => {
       return () => {
         subscription.remove();
         if (prevAppStateRef.current !== "background") {
-          updateUserStatus(user.uid, "offline");
+          updateUserStatus(accessToken, "offline");
         }
       };
     }

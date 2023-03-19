@@ -349,3 +349,16 @@ export const resetProfile = async (user: any) => {
       displayError(e.response.data.detail);
     });
 };
+
+export const updateUserStatus = async (accessToken: string, status: string) => {
+  axios
+    .post("/updateUserStatus", status, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .catch((e) => {
+      displayError(e.response.data.detail);
+    });
+};
