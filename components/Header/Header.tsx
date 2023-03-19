@@ -57,8 +57,9 @@ const Header = ({
             {status && (
               <>
                 <StatusIndicator status={status} />
-                <StatusText>
-                  {status} {status === "offline" && `: last seen ${lastOnline}`}
+                <StatusText numberOfLines={1} ellipsizeMode="tail">
+                  {status}
+                  {status === "offline" && `: ${lastOnline}`}
                 </StatusText>
               </>
             )}
@@ -66,7 +67,7 @@ const Header = ({
           {subheading && (
             <TouchableWithoutFeedback
               onPress={() =>
-                matchDetails &&
+                matchedUserDetails &&
                 navigation.navigate("MatchDetails", {
                   matchedUserDetails,
                 })

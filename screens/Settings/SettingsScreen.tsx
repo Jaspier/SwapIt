@@ -124,6 +124,7 @@ const SettingsScreen = ({ navigation }: any) => {
             <Input
               value={displayName ? displayName : ""}
               onChangeText={setDisplayName}
+              maxLength={11}
               placeholder="Enter your username"
             />
           </SettingsContainer>

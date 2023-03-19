@@ -106,6 +106,7 @@ const ProfileScreen = ({ navigation }: any) => {
             <Input
               value={itemName ? itemName : ""}
               onChangeText={setItemName}
+              maxLength={19}
               placeholder="Enter the name of your item"
             />
             <Label>Current location</Label>

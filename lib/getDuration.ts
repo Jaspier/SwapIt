@@ -17,5 +17,5 @@ export const getDuration = (timestamp: number): string => {
       return `${count}${interval.label} ago`;
     }
   }
-  return "10s ago";
+  return "1s ago";
 };

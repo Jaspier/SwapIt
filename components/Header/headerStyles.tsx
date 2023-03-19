@@ -29,9 +29,12 @@ export const Chevron = styled(Ionicons).attrs({
 export const HeaderTextContainer = styled(View)`
   display: flex;
   flex-direction: column;
+  width: 70%;
 `;
 
 export const TitleContainer = styled(View)`
+  position: relative;
+  width: 80%;
   flex-direction: row;
   align-items: center;
 `;
@@ -64,6 +67,8 @@ export const StatusIndicator = styled(View)<{ status: string }>`
 export const StatusText = styled(Text)`
   font-size: ${(props) => props.theme.fontSizes.small};
   color: ${colors.text.disabled};
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const NFCButton = styled(TouchableOpacity)`
