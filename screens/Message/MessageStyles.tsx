@@ -6,7 +6,26 @@ import {
   TextInput,
   KeyboardAvoidingView,
   FlatList,
+  Text,
 } from "react-native";
+
+export const StatusIndicator = styled(View)<{ status: string }>`
+  height: 12px;
+  width: 12px;
+  border-radius: 9999px;
+  background-color: ${(props) =>
+    props.status === "online"
+      ? colors.brand.primary
+      : props.status === "offline"
+      ? colors.text.disabled
+      : "none"};
+  margin-left: ${(props) => props.theme.space[2]};
+  margin-right: ${(props) => props.theme.space[1]};
+`;
+
+export const StatusText = styled(Text)`
+  color: ${colors.text.disabled};
+`;
 
 export const MessagesView = styled(KeyboardAvoidingView)`
   flex: 1 1 0%;

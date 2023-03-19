@@ -14,6 +14,7 @@ import CameraScreen from "./screens/Settings/Camera/CameraScreen";
 import SwapScreen from "./screens/Swap/SwapScreen";
 import SwappedScreen from "./screens/Swapped/SwappedScreen";
 import MatchDetailsScreen from "./screens/Message/components/MatchDetails/MatchDetailsScreen";
+import { useUserStatus } from "./helpers";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,9 @@ const StackNavigator = () => {
     return null;
   }
   const { user } = authContext;
+
+  useUserStatus(user);
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (

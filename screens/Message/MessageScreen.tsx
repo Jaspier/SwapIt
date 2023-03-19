@@ -14,7 +14,7 @@ import {
 } from "./MessageStyles";
 import SenderMessage from "./components/SenderMessage/SenderMessage";
 import ReceiverMessage from "./components/ReceiverMessage/ReceiverMessage";
-import { send, useFetchMessages } from "./messageHelpers";
+import { send, useFetchMessages, useMatchedUserStatus } from "./messageHelpers";
 
 interface Message {
   id: string;
@@ -32,6 +32,9 @@ const MessageScreen = () => {
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [status, setStatus] = useState("offline");
+
+  useMatchedUserStatus(user, matchDetails, setStatus);
 
   useFetchMessages(matchDetails, setMessages);
 
@@ -41,6 +44,7 @@ const MessageScreen = () => {
         title={getMatchedUserInfo(matchDetails.users, user?.uid).displayName}
         subheading={getMatchedUserInfo(matchDetails.users, user?.uid).itemName}
         nfc
+        status={status}
         matchDetails={matchDetails}
       />
       <MessagesView

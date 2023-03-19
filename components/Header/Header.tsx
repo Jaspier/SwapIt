@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import {
   Chevron,
   GoBackButton,
@@ -7,25 +7,31 @@ import {
   NavContainer,
   NFCButton,
   SettingsButton,
+  StatusIndicator,
+  StatusText,
   SubHeading,
   Title,
+  TitleContainer,
 } from "./headerStyles";
 import { useNavigation, NavigationProp } from "@react-navigation/core";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Match } from "../../types";
 
 interface Props {
-  title?: ReactNode;
-  subheading?: ReactNode;
-  nfc?: ReactNode;
-  isNewUser?: ReactNode;
-  settings?: ReactNode;
-  matchDetails?: ReactNode;
+  title: string;
+  subheading?: string;
+  nfc?: boolean;
+  status?: string;
+  isNewUser?: boolean;
+  settings?: boolean;
+  matchDetails?: Match;
 }
 
 const Header = ({
   title,
   subheading,
   nfc,
+  status,
   isNewUser,
   settings,
   matchDetails,
@@ -39,8 +45,17 @@ const Header = ({
             <Chevron />
           </GoBackButton>
         )}
+
         <HeaderTextContainer>
-          <Title>{title}</Title>
+          <TitleContainer>
+            <Title>{title}</Title>
+            {status && (
+              <>
+                <StatusIndicator status={status} />
+                <StatusText>{status}</StatusText>
+              </>
+            )}
+          </TitleContainer>
           {subheading && <SubHeading>{subheading}</SubHeading>}
         </HeaderTextContainer>
       </NavContainer>

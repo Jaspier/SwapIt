@@ -28,6 +28,12 @@ export const Chevron = styled(Ionicons).attrs({
 
 export const HeaderTextContainer = styled(View)`
   display: flex;
+  flex-direction: column;
+`;
+
+export const TitleContainer = styled(View)`
+  flex-direction: row;
+  align-items: center;
 `;
 
 export const Title = styled(Text)`
@@ -39,6 +45,24 @@ export const Title = styled(Text)`
 
 export const SubHeading = styled(Text)`
   margin-left: ${(props) => props.theme.space[2]};
+`;
+
+export const StatusIndicator = styled(View)<{ status: string }>`
+  height: 12px;
+  width: 12px;
+  border-radius: 9999px;
+  background-color: ${(props) =>
+    props.status === "online"
+      ? colors.brand.primary
+      : props.status === "offline"
+      ? colors.text.disabled
+      : "none"};
+  margin-left: ${(props) => props.theme.space[2]};
+  margin-right: ${(props) => props.theme.space[1]};
+`;
+
+export const StatusText = styled(Text)`
+  color: ${colors.text.disabled};
 `;
 
 export const NFCButton = styled(TouchableOpacity)`
