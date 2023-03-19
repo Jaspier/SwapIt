@@ -9,6 +9,7 @@ export const colors = {
     error: "#ED474A",
     auth: "#90EE90",
     dark: "#1B1B1E",
+    light: "#FFFFFF",
   },
   bg: {
     primary: "#FFFFFF",

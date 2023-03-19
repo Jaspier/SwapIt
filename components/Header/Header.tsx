@@ -22,7 +22,7 @@ interface Props {
   subheading?: string;
   nfc?: boolean;
   status?: string;
-  isNewUser?: boolean;
+  isNewUser?: boolean | null | undefined;
   settings?: boolean;
   matchDetails?: Match;
 }

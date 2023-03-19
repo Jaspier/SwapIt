@@ -12,6 +12,8 @@ import {
   ReverseCameraContainer,
 } from "./CameraStyles";
 import { Ionicons } from "@expo/vector-icons";
+import { colors } from "../../../theme/colors";
+import { Colors } from "react-native-paper";
 
 const CameraScreen = ({ navigation }: any) => {
   const [type, setType] = useState(CameraType.front);
@@ -66,7 +68,11 @@ const CameraScreen = ({ navigation }: any) => {
           </CameraButtonInner>
         </CameraButton>
         <ReverseCameraContainer onPress={reverseCamera}>
-          <Ionicons name="camera-reverse-outline" size={24} color="white" />
+          <Ionicons
+            name="camera-reverse-outline"
+            size={24}
+            color={colors.ui.light}
+          />
         </ReverseCameraContainer>
       </FooterContainer>
     </View>
