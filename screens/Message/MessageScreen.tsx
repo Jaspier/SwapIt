@@ -48,6 +48,7 @@ const MessageScreen = () => {
         status={status}
         lastOnline={lastOnline}
         matchDetails={matchDetails}
+        matchedUserDetails={getMatchedUserInfo(matchDetails.users, user?.uid)}
       />
       <MessagesView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

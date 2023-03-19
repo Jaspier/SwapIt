@@ -15,7 +15,8 @@ import {
 } from "./headerStyles";
 import { useNavigation, NavigationProp } from "@react-navigation/core";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Match } from "../../types";
+import { Match, MatchedUser } from "../../types";
+import { TouchableWithoutFeedback } from "react-native";
 
 interface Props {
   title: string;
@@ -26,6 +27,7 @@ interface Props {
   isNewUser?: boolean | null | undefined;
   settings?: boolean;
   matchDetails?: Match;
+  matchedUserDetails?: MatchedUser;
 }
 
 const Header = ({
@@ -37,6 +39,7 @@ const Header = ({
   isNewUser,
   settings,
   matchDetails,
+  matchedUserDetails,
 }: Props) => {
   const navigation: NavigationProp<any> = useNavigation();
   return (
@@ -60,7 +63,18 @@ const Header = ({
               </>
             )}
           </TitleContainer>
-          {subheading && <SubHeading>{subheading}</SubHeading>}
+          {subheading && (
+            <TouchableWithoutFeedback
+              onPress={() =>
+                matchDetails &&
+                navigation.navigate("MatchDetails", {
+                  matchedUserDetails,
+                })
+              }
+            >
+              <SubHeading>{subheading}</SubHeading>
+            </TouchableWithoutFeedback>
+          )}
         </HeaderTextContainer>
       </NavContainer>
       {nfc && (
