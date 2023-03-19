@@ -4,7 +4,7 @@ import { Coords, Notification } from "./types";
 import { useEffect, useRef } from "react";
 import { NavigationProp } from "@react-navigation/core";
 import { AppState, AppStateStatus } from "react-native";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 export const useGetUserLocation = (
@@ -112,9 +112,16 @@ export const useNotificationHandler = (
 const updateUserStatus = (userId: string, status: string) => {
   const userRef = doc(db, "users", userId);
   try {
-    updateDoc(userRef, {
-      status: status,
-    });
+    if (status === "offline") {
+      updateDoc(userRef, {
+        status: status,
+        lastOnline: Timestamp.now(),
+      });
+    } else {
+      updateDoc(userRef, {
+        status: status,
+      });
+    }
   } catch (e: any) {
     console.log(e);
   }

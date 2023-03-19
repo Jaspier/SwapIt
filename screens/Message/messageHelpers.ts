@@ -5,16 +5,19 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+import moment from "moment";
 import { useEffect } from "react";
 import { sendMessage, sendPushNotification } from "../../api";
 import { db } from "../../firebase";
+import { getDuration } from "../../lib/getDuration";
 import getMatchedUserInfo from "../../lib/getMatchedUserInfo";
 import { Match } from "../../types";
 
 export const useMatchedUserStatus = (
   user: any,
   matchDetails: Match,
-  setStatus: React.Dispatch<React.SetStateAction<string>>
+  setStatus: React.Dispatch<React.SetStateAction<string>>,
+  setLastOnline: React.Dispatch<React.SetStateAction<string>>
 ) => {
   useEffect(() => {
     if (user) {
@@ -25,6 +28,12 @@ export const useMatchedUserStatus = (
           const matchedUser = snapshot.data();
           if (matchedUser) {
             setStatus(matchedUser.status);
+          }
+          if (matchedUser.status === "offline") {
+            const timestamp = matchedUser.lastOnline;
+            const momentObj = moment(timestamp.toDate());
+            const formattedTime = getDuration(momentObj.valueOf());
+            setLastOnline(formattedTime);
           }
         }
       );

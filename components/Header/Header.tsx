@@ -22,6 +22,7 @@ interface Props {
   subheading?: string;
   nfc?: boolean;
   status?: string;
+  lastOnline?: string;
   isNewUser?: boolean | null | undefined;
   settings?: boolean;
   matchDetails?: Match;
@@ -32,6 +33,7 @@ const Header = ({
   subheading,
   nfc,
   status,
+  lastOnline,
   isNewUser,
   settings,
   matchDetails,
@@ -52,7 +54,9 @@ const Header = ({
             {status && (
               <>
                 <StatusIndicator status={status} />
-                <StatusText>{status}</StatusText>
+                <StatusText>
+                  {status} {status === "offline" && `: last seen ${lastOnline}`}
+                </StatusText>
               </>
             )}
           </TitleContainer>

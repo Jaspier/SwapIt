@@ -62,6 +62,7 @@ export const StatusIndicator = styled(View)<{ status: string }>`
 `;
 
 export const StatusText = styled(Text)`
+  font-size: ${(props) => props.theme.fontSizes.small};
   color: ${colors.text.disabled};
 `;
 

@@ -33,8 +33,9 @@ const MessageScreen = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [status, setStatus] = useState("offline");
+  const [lastOnline, setLastOnline] = useState("");
 
-  useMatchedUserStatus(user, matchDetails, setStatus);
+  useMatchedUserStatus(user, matchDetails, setStatus, setLastOnline);
 
   useFetchMessages(matchDetails, setMessages);
 
@@ -45,6 +46,7 @@ const MessageScreen = () => {
         subheading={getMatchedUserInfo(matchDetails.users, user?.uid).itemName}
         nfc
         status={status}
+        lastOnline={lastOnline}
         matchDetails={matchDetails}
       />
       <MessagesView
