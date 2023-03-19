@@ -1,11 +1,17 @@
-import { View, Text, Button, TouchableOpacity } from "react-native";
+import { View, Text, Button } from "react-native";
 import React, { createRef, useState } from "react";
 import { Camera, CameraType } from "expo-camera";
 import {
   ProfileCamera,
   PermissionsContainer,
   PermissionsText,
+  FooterContainer,
+  CameraButton,
+  CameraButtonInner,
+  CameraButtonIcon,
+  ReverseCameraContainer,
 } from "./CameraStyles";
+import { Ionicons } from "@expo/vector-icons";
 
 const CameraScreen = ({ navigation }: any) => {
   const [type, setType] = useState(CameraType.front);
@@ -41,10 +47,29 @@ const CameraScreen = ({ navigation }: any) => {
       </PermissionsContainer>
     );
   }
+
+  const reverseCamera = () => {
+    if (type === CameraType.front) {
+      setType(CameraType.back);
+    } else {
+      setType(CameraType.front);
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={snap}>
+    <View>
       <ProfileCamera ref={cameraRef} type={type} ratio={"16:9"} />
-    </TouchableOpacity>
+      <FooterContainer>
+        <CameraButton onPress={snap}>
+          <CameraButtonInner>
+            <CameraButtonIcon />
+          </CameraButtonInner>
+        </CameraButton>
+        <ReverseCameraContainer onPress={reverseCamera}>
+          <Ionicons name="camera-reverse-outline" size={24} color="white" />
+        </ReverseCameraContainer>
+      </FooterContainer>
+    </View>
   );
 };
 

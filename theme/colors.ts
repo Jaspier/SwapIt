@@ -8,6 +8,7 @@ export const colors = {
     disabled: "#DEDEDE",
     error: "#ED474A",
     auth: "#90EE90",
+    dark: "#1B1B1E",
   },
   bg: {
     primary: "#FFFFFF",
@@ -15,6 +16,7 @@ export const colors = {
     brand: "#59CD90",
     light: "#BBF7D0",
     red: "#FECACA",
+    black: "#000",
   },
   text: {
     primary: "#1B1B1E",
