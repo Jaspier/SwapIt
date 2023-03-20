@@ -34,7 +34,6 @@ export const HeaderTextContainer = styled(View)`
 
 export const TitleContainer = styled(View)`
   position: relative;
-  width: 80%;
   flex-direction: row;
   align-items: center;
 `;
