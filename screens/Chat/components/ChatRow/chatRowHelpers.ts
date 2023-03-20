@@ -24,7 +24,7 @@ export const useFetchMatchedUserInfo = (
 
 export const useGetLastMessage = (
   matchDetails: Match,
-  setLastMessage: React.Dispatch<React.SetStateAction<null>>,
+  setLastMessage: React.Dispatch<React.SetStateAction<string | null>>,
   setLastMessageUser: React.Dispatch<React.SetStateAction<null>>
 ) => {
   useEffect(
@@ -36,7 +36,11 @@ export const useGetLastMessage = (
           limit(1)
         ),
         (snapshot) => {
-          setLastMessage(snapshot.docs[0]?.data()?.message);
+          if (snapshot.docs[0]?.data()?.type === "photo") {
+            setLastMessage("Image");
+          } else {
+            setLastMessage(snapshot.docs[0]?.data()?.message);
+          }
           setLastMessageUser(snapshot.docs[0]?.data()?.userId);
         }
       ),

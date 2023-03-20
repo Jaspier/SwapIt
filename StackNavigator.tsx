@@ -10,7 +10,7 @@ import ProfileScreen from "./screens/Profile/ProfileScreen";
 import MatchedScreen from "./screens/MatchedModal/MatchedScreen";
 import MessageScreen from "./screens/Message/MessageScreen";
 import SettingsScreen from "./screens/Settings/SettingsScreen";
-import CameraScreen from "./screens/Settings/Camera/CameraScreen";
+import CameraScreen from "./components/Camera/CameraScreen";
 import SwapScreen from "./screens/Swap/SwapScreen";
 import SwappedScreen from "./screens/Swapped/SwappedScreen";
 import MatchDetailsScreen from "./screens/Message/components/MatchDetails/MatchDetailsScreen";

@@ -12,8 +12,8 @@ import {
   ReverseCameraContainer,
 } from "./CameraStyles";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../../theme/colors";
-import { Colors } from "react-native-paper";
+import { colors } from "../../theme/colors";
+import { useRoute } from "@react-navigation/core";
 
 const CameraScreen = ({ navigation }: any) => {
   const [type, setType] = useState(CameraType.front);
@@ -21,11 +21,18 @@ const CameraScreen = ({ navigation }: any) => {
 
   const cameraRef = createRef<Camera>();
 
+  const { params }: any = useRoute();
+
   const snap = async () => {
-    if (cameraRef) {
+    if (cameraRef && params) {
       const photo =
         cameraRef.current && (await cameraRef.current.takePictureAsync());
-      navigation.navigate("Settings", { photo });
+      const { screen, matchDetails } = params;
+      if (screen === "settings") {
+        navigation.navigate("Settings", { photo });
+      } else if (screen === "message") {
+        navigation.navigate("Message", { photo, matchDetails });
+      }
     }
   };
 

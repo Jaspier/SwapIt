@@ -12,6 +12,9 @@ import { db } from "../../firebase";
 import { getDuration } from "../../lib/getDuration";
 import getMatchedUserInfo from "../../lib/getMatchedUserInfo";
 import { Match } from "../../types";
+import { Storage } from "aws-amplify";
+import displayError from "../../lib/displayError";
+import { v4 as uuidv4 } from "uuid";
 
 export const useMatchedUserStatus = (
   user: any,
@@ -66,19 +69,67 @@ export const useFetchMessages = (
   );
 };
 
+export const useFormatPhotoTaken = (
+  photo: any,
+  setPhotoDetails: React.Dispatch<
+    React.SetStateAction<{ key: string; blob: Blob } | null>
+  >
+) => {
+  useEffect(() => {
+    const formatPhoto = async () => {
+      if (photo) {
+        const imageUrl = photo.uri;
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const urlParts = imageUrl.split(".");
+        const extension = urlParts[urlParts.length - 1];
+        const key = `${uuidv4()}.${extension}`;
+        setPhotoDetails({ key, blob });
+      }
+    };
+    formatPhoto();
+  }, [photo, setPhotoDetails]);
+};
+
 export const send = async (
   user: any,
   matchDetails: Match,
   input: string,
-  setInput: React.Dispatch<React.SetStateAction<string>>
+  setInput: React.Dispatch<React.SetStateAction<string>>,
+  photoDetails: any,
+  setPhotoDetails: React.Dispatch<
+    React.SetStateAction<{ key: string; blob: Blob } | null>
+  >,
+  params: any
 ) => {
   if (user) {
+    let type = "message";
+    if (photoDetails) {
+      input = photoDetails.key;
+      type = "photo";
+      try {
+        await Storage.put(
+          `chats/${matchDetails.id}/${photoDetails.key}`,
+          photoDetails.blob
+        );
+      } catch (e: any) {
+        displayError(e.message);
+        return;
+      }
+    }
     const sent = await sendMessage(
       user.stsTokenManager.accessToken,
-      matchDetails,
-      input
+      matchDetails.id,
+      input,
+      type
     );
     if (sent) {
+      setInput("");
+      setPhotoDetails(null);
+      params.photo = null;
+      if (photoDetails) {
+        input = "Image";
+      }
       sendPushNotification(
         user.stsTokenManager.accessToken,
         "message",
@@ -86,6 +137,5 @@ export const send = async (
         input
       );
     }
-    setInput("");
   }
 };

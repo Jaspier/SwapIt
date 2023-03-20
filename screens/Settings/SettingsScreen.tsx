@@ -95,7 +95,11 @@ const SettingsScreen = ({ navigation }: any) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>
           <ProfilePicContainer>
-            <TouchableOpacity onPress={() => navigation.navigate("Camera")}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("Camera", { screen: "settings" })
+              }
+            >
               {!photo && (
                 <DefaultProfilePic
                   label={user ? user.email.charAt(0).toUpperCase() : "NULL"}

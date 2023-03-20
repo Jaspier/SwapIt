@@ -241,15 +241,17 @@ export const deleteMatch = async (user: any, usersMatched: string[]) => {
 
 export const sendMessage = async (
   accessToken: string,
-  matchDetails: Match,
-  input: string
+  matchId: string,
+  input: string,
+  type: string
 ) => {
   try {
     const response = await axios.post(
       "/sendMessage",
       {
-        matchId: matchDetails.id,
+        matchId,
         message: input,
+        type,
       },
       {
         headers: {

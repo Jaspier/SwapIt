@@ -1,28 +1,32 @@
 import React from "react";
-import {
-  DefaultReceiverProfileImage,
-  ProfileImageTouchable,
-  ReceiverMessageBubble,
-  ReceiverMessageText,
-  ReceiverProfileImage,
-} from "./ReceiverStyles";
 import { CLOUD_FRONT_API_ENDPOINT } from "@env";
 import { useNavigation, NavigationProp } from "@react-navigation/core";
-import { MatchedUser, Message } from "../../../../types";
+import { Match, MatchedUser, Message } from "../../../types";
+import {
+  DefaultReceiverProfileImage,
+  MessageBubble,
+  MessagePhoto,
+  MessageText,
+  ProfileImageTouchable,
+  ReceiverProfileImage,
+} from "../MessageStyles";
 
 interface ReceiverMessageProps {
   message: Message;
   matchedUserDetails: MatchedUser;
+  matchDetails: Match;
 }
 
 const ReceiverMessage = ({
   message,
   matchedUserDetails,
+  matchDetails,
 }: ReceiverMessageProps) => {
   const navigation: NavigationProp<any> = useNavigation();
   return (
-    <ReceiverMessageBubble>
+    <MessageBubble sender={false} type={message.type}>
       <ProfileImageTouchable
+        type={message.type}
         onPress={() =>
           navigation.navigate("MatchDetails", { matchedUserDetails })
         }
@@ -39,8 +43,16 @@ const ReceiverMessage = ({
           />
         )}
       </ProfileImageTouchable>
-      <ReceiverMessageText>{message.message}</ReceiverMessageText>
-    </ReceiverMessageBubble>
+      {message.type === "photo" ? (
+        <MessagePhoto
+          source={{
+            uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/chats/${matchDetails.id}/${message.message}`,
+          }}
+        />
+      ) : (
+        <MessageText>{message.message}</MessageText>
+      )}
+    </MessageBubble>
   );
 };
 

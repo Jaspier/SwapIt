@@ -11,16 +11,24 @@ import {
   Messages,
   MessagesView,
   SendButton,
+  CameraButton,
+  PhotoPreview,
 } from "./MessageStyles";
-import SenderMessage from "./components/SenderMessage/SenderMessage";
-import ReceiverMessage from "./components/ReceiverMessage/ReceiverMessage";
-import { send, useFetchMessages, useMatchedUserStatus } from "./messageHelpers";
+import SenderMessage from "./components/SenderMessage";
+import ReceiverMessage from "./components/ReceiverMessage";
+import {
+  send,
+  useFetchMessages,
+  useFormatPhotoTaken,
+  useMatchedUserStatus,
+} from "./messageHelpers";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Message {
   id: string;
 }
 
-const MessageScreen = () => {
+const MessageScreen = ({ navigation }: any) => {
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -28,16 +36,22 @@ const MessageScreen = () => {
   const { user }: AuthContextInterface = authContext;
   const { params } = useRoute();
   //@ts-ignore
-  const { matchDetails } = params;
+  const { photo, matchDetails } = params;
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [status, setStatus] = useState("offline");
   const [lastOnline, setLastOnline] = useState("");
+  const [photoDetails, setPhotoDetails] = useState<{
+    key: string;
+    blob: Blob;
+  } | null>(null);
 
   useMatchedUserStatus(user, matchDetails, setStatus, setLastOnline);
 
   useFetchMessages(matchDetails, setMessages);
+
+  useFormatPhotoTaken(photo, setPhotoDetails);
 
   return (
     <SafeArea>
@@ -61,7 +75,11 @@ const MessageScreen = () => {
             keyExtractor={(item: any) => item.id}
             renderItem={({ item: message }: any) =>
               message.userId === user?.uid ? (
-                <SenderMessage key={message.id} message={message} />
+                <SenderMessage
+                  key={message.id}
+                  message={message}
+                  matchDetails={matchDetails}
+                />
               ) : (
                 <ReceiverMessage
                   key={message.id}
@@ -70,20 +88,55 @@ const MessageScreen = () => {
                     matchDetails.users,
                     user?.uid
                   )}
+                  matchDetails={matchDetails}
                 />
               )
             }
           />
         </TouchableWithoutFeedback>
+        {photo && (
+          <PhotoPreview
+            source={{
+              uri: photo.uri,
+            }}
+          />
+        )}
         <MessageInputContainer>
+          <CameraButton
+            onPress={() =>
+              navigation.navigate("Camera", { screen: "message", matchDetails })
+            }
+          >
+            <Ionicons name="camera" size={24} color="grey" />
+          </CameraButton>
           <MessageInput
             placeholder="Send Message..."
             onChangeText={setInput}
-            onSubmitEditing={() => send(user, matchDetails, input, setInput)}
+            onSubmitEditing={() =>
+              send(
+                user,
+                matchDetails,
+                input,
+                setInput,
+                photoDetails,
+                setPhotoDetails,
+                params
+              )
+            }
             value={input}
           />
           <SendButton
-            onPress={() => send(user, matchDetails, input, setInput)}
+            onPress={() =>
+              send(
+                user,
+                matchDetails,
+                input,
+                setInput,
+                photoDetails,
+                setPhotoDetails,
+                params
+              )
+            }
             title="Send"
           />
         </MessageInputContainer>

@@ -40,6 +40,7 @@ export interface Match {
 
 export interface Message {
   displayName: string;
+  type: string;
   message: string;
   photoUrl: string;
   timestamp: any;

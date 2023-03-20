@@ -7,7 +7,10 @@ import {
   KeyboardAvoidingView,
   FlatList,
   Text,
+  TouchableOpacity,
+  Image,
 } from "react-native";
+import { Avatar } from "react-native-paper";
 
 export const StatusIndicator = styled(View)<{ status: string }>`
   height: 12px;
@@ -35,6 +38,63 @@ export const Messages = styled(FlatList)`
   padding-left: ${(props) => props.theme.space[4]};
 `;
 
+export const MessageBubble = styled(View)<{ sender: boolean; type: string }>`
+  background-color: ${(props) =>
+    props.sender ? `${colors.brand.secondary}` : `${colors.brand.primary}`};
+  border-radius: ${(props) => props.theme.sizes[0]};
+  ${(props) =>
+    props.sender
+      ? `border-top-right-radius: 0px
+        `
+      : `border-top-left-radius: 0px       
+        `};
+  padding: ${(props) =>
+    props.type === "photo"
+      ? `${props.theme.space[2]} ${props.theme.space[3]}`
+      : `${props.theme.space[3]} ${props.theme.space[5]}`};
+  margin: ${(props) => props.theme.space[2]} ${(props) => props.theme.space[3]};
+  margin: ${(props) => props.theme.space[2]} ${(props) => props.theme.space[3]};
+  align-self: flex-start;
+  margin-left: ${(props) => (props.sender ? `auto` : `56px`)};
+`;
+
+export const MessagePhoto = styled(Image)`
+  height: 125px;
+  width: 125px;
+`;
+
+export const MessageText = styled(Text)`
+  color: ${colors.text.inverse};
+`;
+
+export const PhotoPreview = styled(Image)`
+  height: 100px;
+  width: 100px;
+  margin-top: 10px;
+  left: 20px;
+  bottom: 10px;
+`;
+
+export const ProfileImageTouchable = styled(TouchableOpacity)<{ type: string }>`
+  top: -15px;
+  left: ${(props) => (props.type === "photo" ? `-73px` : `-81px`)};
+`;
+
+export const ReceiverProfileImage = styled(Image)`
+  height: 48px;
+  width: 48px;
+  border-radius: 9999px;
+  position: absolute;
+`;
+
+export const DefaultReceiverProfileImage = styled(Avatar.Text).attrs({
+  size: 48,
+})`
+  background-color: ${colors.bg.account};
+  border-radius: 9999px;
+  position: absolute;
+`;
+
 export const MessageInputContainer = styled(View)`
   display: flex;
   flex-direction: row;
@@ -46,9 +106,14 @@ export const MessageInputContainer = styled(View)`
   padding-vertical: ${(props) => props.theme.space[2]};
 `;
 
+export const CameraButton = styled(TouchableOpacity)`
+  margin-right: 10px;
+  top: 3px;
+`;
+
 export const MessageInput = styled(TextInput)`
   height: 40px;
-  width: 85%;
+  width: 75%;
   font-size: ${(props) => props.theme.fontSizes.default};
   line-height: ${(props) => props.theme.lineHeights.title};
 `;

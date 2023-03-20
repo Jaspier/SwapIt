@@ -27,7 +27,7 @@ const ChatRow = ({ matchDetails }: ChatRowProps) => {
   const [matchedUserInfo, setMatchedUserInfo] = useState<MatchedUser | null>(
     null
   );
-  const [lastMessage, setLastMessage] = useState(null);
+  const [lastMessage, setLastMessage] = useState<string | null>(null);
   const [lastMessageUser, setLastMessageUser] = useState(null);
 
   useFetchMatchedUserInfo(matchDetails, user, setMatchedUserInfo);

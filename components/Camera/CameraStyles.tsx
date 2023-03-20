@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Camera } from "expo-camera";
 import { View, Text, TouchableOpacity } from "react-native";
-import { colors } from "../../../theme/colors";
+import { colors } from "../../theme/colors";
 
 export const ProfileCamera = styled(Camera)`
   width: 100%;
