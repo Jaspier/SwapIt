@@ -133,11 +133,7 @@ const HomeScreen = ({ navigation }: any) => {
           }}
           renderCard={(card: any) =>
             card ? (
-              <ProfileCard
-                modal={false}
-                key={card.id}
-                matchedUserDetails={card}
-              />
+              <ProfileCard modal={false} key={card.id} userProfile={card} />
             ) : (
               <NoProfilesCard>
                 <NoProfilesText>No more profiles</NoProfilesText>

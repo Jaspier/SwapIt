@@ -45,9 +45,9 @@ const ChatRow = ({ matchDetails }: ChatRowProps) => {
       <ProfileImage
         source={{
           uri: matchedUserInfo
-            ? `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${
-                JSON.parse(matchedUserInfo?.photoUrls)[0].uri
-              }`
+            ? `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${
+                matchedUserInfo.id
+              }/items/${JSON.parse(matchedUserInfo?.photoUrls)[0].uri}`
             : "NULL",
         }}
       />

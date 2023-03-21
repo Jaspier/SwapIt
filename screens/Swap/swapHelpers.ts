@@ -63,15 +63,6 @@ export const useCheckSwapConfirmation = (
                     notificationsObject
                   );
                 }
-                const imagesToDelete = [
-                  ...JSON.parse(snapshot.data().users[user.uid].photoUrls),
-                  ...JSON.parse(
-                    snapshot.data().users[matchedUser.id].photoUrls
-                  ),
-                ];
-                for (const image of imagesToDelete) {
-                  await Storage.remove(image.uri);
-                }
               }
             } else {
               console.log("No such document!");

@@ -13,7 +13,7 @@ const MatchDetailsScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
       <CardContainer>
-        <ProfileCard matchedUserDetails={matchedUserDetails} modal />
+        <ProfileCard userProfile={matchedUserDetails} modal />
       </CardContainer>
     </TouchableWithoutFeedback>
   );

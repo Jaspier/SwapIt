@@ -37,16 +37,16 @@ const MatchedScreen = ({ navigation }: any) => {
         <ImagesContainer>
           <ProfileImage
             source={{
-              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${
-                JSON.parse(loggedInProfile.photoUrls)[0].uri
-              }`,
+              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${
+                loggedInProfile.id
+              }/items/${JSON.parse(loggedInProfile.photoUrls)[0].uri}`,
             }}
           />
           <ProfileImage
             source={{
-              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${
-                JSON.parse(userSwiped.photoUrls)[0].uri
-              }`,
+              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${
+                userSwiped.id
+              }/items/${JSON.parse(userSwiped.photoUrls)[0].uri}`,
             }}
           />
         </ImagesContainer>

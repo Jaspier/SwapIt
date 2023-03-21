@@ -5,20 +5,20 @@ import ImageCarousel from "../ImageCarousel/ImageCarousel";
 import { MatchedUser } from "../../types";
 
 interface ProfileCardProps {
-  matchedUserDetails: MatchedUser;
+  userProfile: MatchedUser;
   modal: boolean;
 }
 
-const ProfileCard = ({ matchedUserDetails, modal }: ProfileCardProps) => {
+const ProfileCard = ({ userProfile, modal }: ProfileCardProps) => {
   return (
     <Card modal={modal}>
-      <ImageCarousel images={JSON.parse(matchedUserDetails.photoUrls)} />
+      <ImageCarousel userProfile={userProfile} />
       <CardFooter>
         <View>
-          <ItemName>{matchedUserDetails.itemName}</ItemName>
-          <Text>{matchedUserDetails.displayName}</Text>
+          <ItemName>{userProfile.itemName}</ItemName>
+          <Text>{userProfile.displayName}</Text>
         </View>
-        <LocationText>{matchedUserDetails.location}</LocationText>
+        <LocationText>{userProfile.location}</LocationText>
       </CardFooter>
     </Card>
   );
