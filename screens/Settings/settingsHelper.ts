@@ -106,9 +106,9 @@ export const updateUserInfo = async (
       const blob = await response.blob();
       const urlParts = imageUrl.split(".");
       const extension = urlParts[urlParts.length - 1];
-      key = `${user.uid}.${extension}`;
+      key = `${uuidv4()}.${extension}`;
       if (user.photoURL) {
-        await Storage.remove(`profiles/${user.uid}/${user.uid}.jpg`);
+        await Storage.remove(`profiles/${user.uid}/${user.photoURL}`);
       }
       await Storage.put(`profiles/${user.uid}/${key}`, blob);
     }
@@ -147,6 +147,6 @@ export const removeProfilePicture = async (
       .catch((error) => {
         alert(error.message);
       });
-    await Storage.remove(`profiles/${user.uid}/${user.uid}.jpg`);
+    await Storage.remove(`profiles/${user.uid}/${user.photoURL}`);
   }
 };
