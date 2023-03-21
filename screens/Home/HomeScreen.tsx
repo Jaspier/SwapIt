@@ -66,7 +66,7 @@ const HomeScreen = ({ navigation }: any) => {
           {user && user.photoURL ? (
             <AccountImage
               source={{
-                uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${user.photoURL}`,
+                uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${user.uid}/${user.photoURL}`,
               }}
             />
           ) : (

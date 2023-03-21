@@ -105,12 +105,12 @@ const SettingsScreen = ({ navigation }: any) => {
                   label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
                 />
               )}
-              {photo && (
+              {user && photo && (
                 <ProfilePicture
                   source={{
                     uri: photoTaken
                       ? photo
-                      : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${photo}`,
+                      : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${user.uid}/${photo}`,
                   }}
                 />
               )}
