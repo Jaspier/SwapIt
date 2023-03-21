@@ -204,7 +204,8 @@ export const getInitialDistance = async (accessToken: string) => {
 export const updateUserPreferences = async (
   accessToken: string,
   displayName: string,
-  distance: number
+  distance: number,
+  photoKey: string
 ) => {
   try {
     const response = await axios.post(
@@ -212,6 +213,7 @@ export const updateUserPreferences = async (
       {
         displayName: displayName,
         radius: distance,
+        photoKey: photoKey,
       },
       {
         headers: {

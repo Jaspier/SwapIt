@@ -99,11 +99,12 @@ export const updateUserInfo = async (
   setProcessing: React.Dispatch<React.SetStateAction<boolean>>,
   navigation: NavigationProp<any>
 ) => {
-  let key;
+  let photoKey = "";
   if (user) {
     setProcessing(true);
     if (photoTaken) {
       const { key, blob } = await extractPhoto(photo);
+      photoKey = key;
       if (user.photoURL) {
         await Storage.remove(`profiles/${user.uid}/${user.photoURL}`);
       }
@@ -112,14 +113,15 @@ export const updateUserInfo = async (
     // @ts-ignore
     updateProfile(user, {
       displayName: displayName,
-      photoURL: photoTaken ? key : user.photoURL,
+      photoURL: photoTaken ? photoKey : user.photoURL,
     }).catch((e: any) => {
       displayError(e.message);
     });
     const updated = await updateUserPreferences(
       user.stsTokenManager.accessToken,
       displayName,
-      distance
+      distance,
+      photoKey
     );
     if (updated) {
       setProcessing(false);
