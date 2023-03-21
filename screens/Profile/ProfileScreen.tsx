@@ -4,7 +4,7 @@ import {
   Keyboard,
   View,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import AuthenticationContext from "../../hooks/authentication/authenticationContext";
 import { SafeArea } from "../../components/utilities";
 import * as ImagePicker from "expo-image-picker";
@@ -48,9 +48,6 @@ const ProfileScreen = ({ navigation }: any) => {
   }
   const [images, setImages] = useState<ImagePicker.ImageInfo[] | null>(null);
   const [imagesSelected, setImagesSelected] = useState(false);
-  const [imagesToDelete, setImagesToDelete] = useState<ImagePicker.ImageInfo[]>(
-    []
-  );
   const { notifications, removeNotification } = useContext(NotificationContext);
   const [incompleteForm, setIncompleteForm] = useState(true);
   const [initialPhotoUrls, setInitialPhotoUrls] = useState("");
@@ -74,7 +71,6 @@ const ProfileScreen = ({ navigation }: any) => {
     isNewUser,
     setLocation,
     setImages,
-    setImagesToDelete,
     setInitialPhotoUrls,
     setItemName,
     setInitialItemName
@@ -134,7 +130,7 @@ const ProfileScreen = ({ navigation }: any) => {
             source={{
               uri: imagesSelected
                 ? item.uri
-                : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/${item.uri}`,
+                : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${user?.uid}/items/${item.uri}`,
             }}
           />
         )}
@@ -147,7 +143,6 @@ const ProfileScreen = ({ navigation }: any) => {
               user,
               images,
               imagesSelected,
-              imagesToDelete,
               initialPhotoUrls,
               itemName,
               location,

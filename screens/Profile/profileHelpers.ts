@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { createProfile, myProfile } from "../../api";
 import { useEffect } from "react";
+import deleteS3Folder from "../../lib/deleteS3Folder";
 
 export const useFetchUserProfile = (
   user: any,
@@ -13,9 +14,6 @@ export const useFetchUserProfile = (
   setLocation: React.Dispatch<React.SetStateAction<string | null>>,
   setImages: React.Dispatch<
     React.SetStateAction<ImagePicker.ImageInfo[] | null>
-  >,
-  setImagesToDelete: React.Dispatch<
-    React.SetStateAction<ImagePicker.ImageInfo[]>
   >,
   setInitialPhotoUrls: React.Dispatch<React.SetStateAction<string>>,
   setItemName: React.Dispatch<React.SetStateAction<string>>,
@@ -28,11 +26,9 @@ export const useFetchUserProfile = (
           user.stsTokenManager.accessToken
         );
         const images = JSON.parse(documentSnapshot.photoUrls);
-        const imagesToDelete = JSON.parse(documentSnapshot.photoUrls);
         const itemName = documentSnapshot.itemName;
         const location = documentSnapshot.location;
         setImages(images);
-        setImagesToDelete(imagesToDelete);
         setInitialPhotoUrls(images);
         setItemName(itemName);
         setInitialItemName(itemName);
@@ -44,7 +40,6 @@ export const useFetchUserProfile = (
     user,
     isNewUser,
     setImages,
-    setImagesToDelete,
     setInitialPhotoUrls,
     setItemName,
     setInitialItemName,
@@ -102,7 +97,6 @@ export const storeToDB = async (
   user: any,
   images: ImagePicker.ImageInfo[] | null,
   imagesSelected: boolean,
-  imagesToDelete: ImagePicker.ImageInfo[],
   initialPhotoUrls: string,
   itemName: string,
   location: string | null,
@@ -123,11 +117,12 @@ export const storeToDB = async (
         const blob = await response.blob();
         const urlParts = imageUrl.split(".");
         const extension = urlParts[urlParts.length - 1];
-        const key = `${uuidv4()}.${extension}`;
-        imageAllUrls.push({ uri: key });
-        for (let i in imagesToDelete) {
-          await Storage.remove(imagesToDelete[i].uri);
-        }
+        const imageName = `${uuidv4()}.${extension}`;
+        imageAllUrls.push({ uri: imageName });
+
+        const folderPath = `profiles/${user.uid}/items/`;
+        deleteS3Folder(folderPath);
+        const key = `${folderPath}${imageName}`;
         await Storage.put(key, blob);
       }
       if (index + 1 === images.length && user) {
