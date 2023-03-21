@@ -10,6 +10,7 @@ import {
   ProfileImageTouchable,
   ReceiverProfileImage,
 } from "../MessageStyles";
+import { TouchableOpacity } from "react-native";
 
 interface ReceiverMessageProps {
   message: Message;
@@ -27,9 +28,7 @@ const ReceiverMessage = ({
     <MessageBubble sender={false} type={message.type}>
       <ProfileImageTouchable
         type={message.type}
-        onPress={() =>
-          navigation.navigate("MatchDetails", { matchedUserDetails })
-        }
+        onPress={() => navigation.navigate("Inspect", { matchedUserDetails })}
       >
         {message.photoUrl ? (
           <ReceiverProfileImage
@@ -44,11 +43,19 @@ const ReceiverMessage = ({
         )}
       </ProfileImageTouchable>
       {message.type === "photo" ? (
-        <MessagePhoto
-          source={{
-            uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/chats/${matchDetails.id}/${message.message}`,
-          }}
-        />
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Inspect", {
+              photo: { matchId: matchDetails.id, key: message.message },
+            })
+          }
+        >
+          <MessagePhoto
+            source={{
+              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/chats/${matchDetails.id}/${message.message}`,
+            }}
+          />
+        </TouchableOpacity>
       ) : (
         <MessageText>{message.message}</MessageText>
       )}

@@ -68,7 +68,7 @@ const Header = ({
             <TouchableWithoutFeedback
               onPress={() =>
                 matchedUserDetails &&
-                navigation.navigate("MatchDetails", {
+                navigation.navigate("Inspect", {
                   matchedUserDetails,
                 })
               }

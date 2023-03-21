@@ -13,8 +13,8 @@ import SettingsScreen from "./screens/Settings/SettingsScreen";
 import CameraScreen from "./components/Camera/CameraScreen";
 import SwapScreen from "./screens/Swap/SwapScreen";
 import SwappedScreen from "./screens/Swapped/SwappedScreen";
-import MatchDetailsScreen from "./screens/Message/components/MatchDetails/MatchDetailsScreen";
 import { useUserStatus } from "./helpers";
+import InspectModal from "./components/Inspect/InspectModal";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,7 +42,7 @@ const StackNavigator = () => {
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: "transparentModal" }}>
             <Stack.Screen name="Match" component={MatchedScreen} />
-            <Stack.Screen name="MatchDetails" component={MatchDetailsScreen} />
+            <Stack.Screen name="Inspect" component={InspectModal} />
           </Stack.Group>
           <Stack.Group screenOptions={{ presentation: "modal" }}>
             <Stack.Screen name="Swap" component={SwapScreen} />
