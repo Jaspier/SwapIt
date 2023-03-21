@@ -1,4 +1,9 @@
-import { Platform, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import Header from "../../components/Header/Header";
 import { SafeArea } from "../../components/utilities";
@@ -13,6 +18,8 @@ import {
   SendButton,
   CameraButton,
   PhotoPreview,
+  LoadingCircle,
+  PhotoPreviewContainer,
 } from "./MessageStyles";
 import SenderMessage from "./components/SenderMessage";
 import ReceiverMessage from "./components/ReceiverMessage";
@@ -23,6 +30,7 @@ import {
   useMatchedUserStatus,
 } from "./messageHelpers";
 import { Ionicons } from "@expo/vector-icons";
+import { colors } from "../../theme/colors";
 
 interface Message {
   id: string;
@@ -46,6 +54,7 @@ const MessageScreen = ({ navigation }: any) => {
     key: string;
     blob: Blob;
   } | null>(null);
+  const [isSending, setIsSending] = useState(false);
 
   useMatchedUserStatus(user, matchDetails, setStatus, setLastOnline);
 
@@ -95,11 +104,16 @@ const MessageScreen = ({ navigation }: any) => {
           />
         </TouchableWithoutFeedback>
         {photo && (
-          <PhotoPreview
-            source={{
-              uri: photo.uri,
-            }}
-          />
+          <PhotoPreviewContainer>
+            {isSending && (
+              <LoadingCircle animating={true} color={colors.brand.primary} />
+            )}
+            <PhotoPreview
+              source={{
+                uri: photo.uri,
+              }}
+            />
+          </PhotoPreviewContainer>
         )}
         <MessageInputContainer>
           <CameraButton
@@ -120,7 +134,8 @@ const MessageScreen = ({ navigation }: any) => {
                 setInput,
                 photoDetails,
                 setPhotoDetails,
-                params
+                params,
+                setIsSending
               )
             }
             value={input}
@@ -134,7 +149,8 @@ const MessageScreen = ({ navigation }: any) => {
                 setInput,
                 photoDetails,
                 setPhotoDetails,
-                params
+                params,
+                setIsSending
               )
             }
             title="Send"

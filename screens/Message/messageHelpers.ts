@@ -100,19 +100,22 @@ export const send = async (
   setPhotoDetails: React.Dispatch<
     React.SetStateAction<{ key: string; blob: Blob } | null>
   >,
-  params: any
+  params: any,
+  setIsSending: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (user) {
     let type = "message";
     if (photoDetails) {
       input = photoDetails.key;
       type = "photo";
+      setIsSending(true);
       try {
         await Storage.put(
           `chats/${matchDetails.id}/${photoDetails.key}`,
           photoDetails.blob
         );
       } catch (e: any) {
+        setIsSending(false);
         displayError(e.message);
         return;
       }
@@ -126,6 +129,7 @@ export const send = async (
     if (sent) {
       setInput("");
       setPhotoDetails(null);
+      setIsSending(false);
       params.photo = null;
       if (photoDetails) {
         input = "Image";

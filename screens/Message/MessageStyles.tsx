@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { Avatar } from "react-native-paper";
+import { ActivityIndicator, Avatar } from "react-native-paper";
 
 export const StatusIndicator = styled(View)<{ status: string }>`
   height: 12px;
@@ -67,12 +67,24 @@ export const MessageText = styled(Text)`
   color: ${colors.text.inverse};
 `;
 
+export const PhotoPreviewContainer = styled(View)`
+  height: 100px;
+  width: 100px;
+  justify-content: center;
+  align-items: center;
+  margin-top: ${(props) => props.theme.space[3]};
+  left: ${(props) => props.theme.space[5]};
+  bottom: ${(props) => props.theme.space[5]};
+`;
+
+export const LoadingCircle = styled(ActivityIndicator)`
+  top: 60px;
+  z-index: 9999;
+`;
+
 export const PhotoPreview = styled(Image)`
   height: 100px;
   width: 100px;
-  margin-top: 10px;
-  left: 20px;
-  bottom: 10px;
 `;
 
 export const ProfileImageTouchable = styled(TouchableOpacity)<{ type: string }>`
