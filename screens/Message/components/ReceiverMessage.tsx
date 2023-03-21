@@ -28,12 +28,22 @@ const ReceiverMessage = ({
     <MessageBubble sender={false} type={message.type}>
       <ProfileImageTouchable
         type={message.type}
-        onPress={() => navigation.navigate("Inspect", { matchedUserDetails })}
+        onPress={() => {
+          if (message.photoUrl !== "") {
+            navigation.navigate("Inspect", {
+              profilePic: {
+                userId: matchedUserDetails.id,
+                key: message.photoUrl,
+                text: message.displayName.charAt(0).toUpperCase(),
+              },
+            });
+          }
+        }}
       >
         {message.photoUrl ? (
           <ReceiverProfileImage
             source={{
-              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${message.photoUrl}`,
+              uri: `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${matchedUserDetails.id}/${message.photoUrl}`,
             }}
           />
         ) : (

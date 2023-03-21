@@ -14,3 +14,15 @@ export const ZoomedImage = styled(Image)`
   height: 60%;
   width: 60%;
 `;
+
+export const ZoomedProfilePic = styled(Image)`
+  height: 300px;
+  width: 300px;
+  border-radius: 9999px;
+`;
+
+export const ZoomedDefaultProfileIcon = styled(Avatar.Text).attrs({
+  size: 300,
+})`
+  background-color: ${colors.bg.account};
+`;
