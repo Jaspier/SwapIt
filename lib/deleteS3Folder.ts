@@ -2,7 +2,7 @@ import { Storage } from "aws-amplify";
 
 const deleteS3Folder = async (folderPath: string) => {
   try {
-    const contents = await Storage.list(folderPath, { pageSize: 1 });
+    const contents = await Storage.list(folderPath, { pageSize: 3 });
     if (contents.results) {
       const keys = contents.results.map((result) => result.key);
       await Promise.all(

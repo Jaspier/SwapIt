@@ -7,6 +7,7 @@ import { Storage } from "aws-amplify";
 import { createProfile, myProfile } from "../../api";
 import { useEffect } from "react";
 import deleteS3Folder from "../../lib/deleteS3Folder";
+import extractPhoto from "../../lib/extractPhoto";
 
 export const useFetchUserProfile = (
   user: any,
@@ -112,18 +113,13 @@ export const storeToDB = async (
   images &&
     images.map(async (component, index) => {
       if (imagesSelected) {
-        const imageUrl = component.uri;
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const urlParts = imageUrl.split(".");
-        const extension = urlParts[urlParts.length - 1];
-        const imageName = `${uuidv4()}.${extension}`;
-        imageAllUrls.push({ uri: imageName });
+        const { key, blob } = await extractPhoto(component.uri);
+        imageAllUrls.push({ uri: key });
 
         const folderPath = `profiles/${user.uid}/items/`;
-        deleteS3Folder(folderPath);
-        const key = `${folderPath}${imageName}`;
-        await Storage.put(key, blob);
+        await deleteS3Folder(folderPath);
+        const objectKey = `${folderPath}${key}`;
+        await Storage.put(objectKey, blob);
       }
       if (index + 1 === images.length && user) {
         createProfile(

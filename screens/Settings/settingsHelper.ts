@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { updateProfile } from "firebase/auth";
 import displayError from "../../lib/displayError";
+import extractPhoto from "../../lib/extractPhoto";
 
 export const useGetUserSettings = (
   user: any,
@@ -100,13 +101,9 @@ export const updateUserInfo = async (
 ) => {
   let key;
   if (user) {
+    setProcessing(true);
     if (photoTaken) {
-      const imageUrl = photo;
-      const response = await fetch(photo);
-      const blob = await response.blob();
-      const urlParts = imageUrl.split(".");
-      const extension = urlParts[urlParts.length - 1];
-      key = `${uuidv4()}.${extension}`;
+      const { key, blob } = await extractPhoto(photo);
       if (user.photoURL) {
         await Storage.remove(`profiles/${user.uid}/${user.photoURL}`);
       }

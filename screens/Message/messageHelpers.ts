@@ -15,6 +15,7 @@ import { Match } from "../../types";
 import { Storage } from "aws-amplify";
 import displayError from "../../lib/displayError";
 import { v4 as uuidv4 } from "uuid";
+import extractPhoto from "../../lib/extractPhoto";
 
 export const useMatchedUserStatus = (
   user: any,
@@ -78,12 +79,7 @@ export const useFormatPhotoTaken = (
   useEffect(() => {
     const formatPhoto = async () => {
       if (photo) {
-        const imageUrl = photo.uri;
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const urlParts = imageUrl.split(".");
-        const extension = urlParts[urlParts.length - 1];
-        const key = `${uuidv4()}.${extension}`;
+        const { key, blob } = await extractPhoto(photo.uri);
         setPhotoDetails({ key, blob });
       }
     };
