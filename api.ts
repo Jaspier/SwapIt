@@ -149,9 +149,7 @@ export const createProfile = async (
   itemName: string,
   location: string | null,
   coords: Coords,
-  isNewUser: boolean | null | undefined,
-  navigation: NavigationProp<any>,
-  setProcessing: any
+  isNewUser: boolean | null | undefined
 ) => {
   try {
     const response = await axios.post(
@@ -176,12 +174,7 @@ export const createProfile = async (
         },
       }
     );
-    setProcessing(false);
-    if (response.status === 204 && response.data.isNewUser) {
-      navigation.navigate("Settings", { newUser: true });
-    } else {
-      navigation.navigate("Home", { refresh: true });
-    }
+    return response;
   } catch (e: any) {
     displayError(e.response.data.detail);
   }
@@ -222,7 +215,7 @@ export const updateUserPreferences = async (
         },
       }
     );
-    return response.status === 204;
+    return response.status === 200;
   } catch (e: any) {
     displayError(e.response.data.detail);
   }

@@ -122,7 +122,7 @@ export const storeToDB = async (
         await Storage.put(objectKey, blob);
       }
       if (index + 1 === images.length && user) {
-        createProfile(
+        const response = await createProfile(
           user,
           imagesSelected,
           imageAllUrls,
@@ -130,10 +130,14 @@ export const storeToDB = async (
           itemName,
           location,
           coords,
-          isNewUser,
-          navigation,
-          setProcessing
+          isNewUser
         );
+        setProcessing(false);
+        if (response && response.status === 200 && response.data.isNewUser) {
+          navigation.navigate("Settings", { newUser: true });
+        } else {
+          navigation.navigate("Home", { refresh: true });
+        }
       }
     });
 };

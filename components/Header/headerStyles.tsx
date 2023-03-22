@@ -29,7 +29,7 @@ export const Chevron = styled(Ionicons).attrs({
 export const HeaderTextContainer = styled(View)`
   display: flex;
   flex-direction: column;
-  width: 70%;
+  width: 75%;
 `;
 
 export const TitleContainer = styled(View)`
