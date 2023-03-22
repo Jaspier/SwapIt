@@ -72,7 +72,7 @@ export const StatusText = styled(Text)`
 
 export const NFCButton = styled(TouchableOpacity)`
   border-radius: 9999px;
-  margin-right: ${(props) => props.theme.space[4]};
+  right: ${(props) => props.theme.space[4]};
   padding: ${(props) => props.theme.space[3]};
   background-color: ${colors.bg.light};
 `;
