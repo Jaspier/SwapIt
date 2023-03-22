@@ -1,14 +1,15 @@
 import { Coords, Match, Profile } from "./types";
 import axios from "axios";
-import { NavigationProp } from "@react-navigation/core";
 import displayError from "./lib/displayError";
+
+const version = "v1";
 
 export const storeDeviceToken = async (
   accessToken: string,
   deviceToken: string
 ) => {
   axios
-    .post("/storeDeviceToken", deviceToken, {
+    .post(`/${version}/store_device_token`, deviceToken, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -21,7 +22,7 @@ export const storeDeviceToken = async (
 
 export const checkUserExists = async (accessToken: string) => {
   try {
-    const response = await axios.get("/checkUserExists", {
+    const response = await axios.get(`/${version}/check_user_exists`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -40,7 +41,7 @@ export const updateLocation = async (
 ) => {
   axios
     .post(
-      "/updateLocation",
+      `/${version}/update_location`,
       {
         location: city,
         coords: coords,
@@ -59,7 +60,7 @@ export const updateLocation = async (
 
 export const getSearchPreferences = async (accessToken: string) => {
   try {
-    const res = await axios.get("/getSearchPreferences", {
+    const res = await axios.get(`/${version}/get_search_preferences`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -77,7 +78,7 @@ export const getSearchPreferences = async (accessToken: string) => {
 
 export const pass = async (accessToken: string, userSwiped: Profile) => {
   axios
-    .post("/swipeLeft", userSwiped, {
+    .post(`/${version}/swipe_left`, userSwiped, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -90,7 +91,7 @@ export const pass = async (accessToken: string, userSwiped: Profile) => {
 
 export const like = async (accessToken: string, userSwiped: Profile) => {
   try {
-    const response = await axios.post("/swipeRight", userSwiped, {
+    const response = await axios.post(`/${version}/swipe_right`, userSwiped, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -110,7 +111,7 @@ export const sendPushNotification = async (
 ) => {
   axios
     .post(
-      "/sendPushNotification",
+      `/${version}/send_push_notification`,
       {
         type,
         matchDetails,
@@ -130,7 +131,7 @@ export const sendPushNotification = async (
 
 export const myProfile = async (accessToken: string) => {
   try {
-    const res = await axios.get("/myprofile", {
+    const res = await axios.get(`/${version}/my_profile`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -153,7 +154,7 @@ export const createProfile = async (
 ) => {
   try {
     const response = await axios.post(
-      "/createProfile",
+      `/${version}/create_profile`,
       {
         id: user.uid,
         displayName: user.displayName ? user.displayName : user.email,
@@ -182,7 +183,7 @@ export const createProfile = async (
 
 export const getInitialDistance = async (accessToken: string) => {
   try {
-    const res = await axios.get("/getSearchRadius", {
+    const res = await axios.get(`/${version}/get_search_radius`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -202,7 +203,7 @@ export const updateUserPreferences = async (
 ) => {
   try {
     const response = await axios.post(
-      "/updateUserPreferences",
+      `/${version}/update_user_preferences`,
       {
         displayName: displayName,
         radius: distance,
@@ -223,7 +224,7 @@ export const updateUserPreferences = async (
 
 export const deleteMatch = async (user: any, usersMatched: string[]) => {
   axios
-    .post("/deleteMatch", usersMatched, {
+    .post(`/${version}/delete_match`, usersMatched, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
@@ -242,7 +243,7 @@ export const sendMessage = async (
 ) => {
   try {
     const response = await axios.post(
-      "/sendMessage",
+      `/${version}/send_message`,
       {
         matchId,
         message: input,
@@ -268,7 +269,7 @@ export const deleteMatches = async (
 ) => {
   try {
     const response = await axios.post(
-      "/deleteMatches",
+      `/${version}/delete_matches`,
       {
         itemName,
         matchedUserId,
@@ -291,12 +292,16 @@ export const sendManyPushNotifications = async (
   notificationsObject: any
 ) => {
   try {
-    axios.post("/sendManyPushNotifications", notificationsObject, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    axios.post(
+      `/${version}/send_many_push_notifications`,
+      notificationsObject,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
   } catch (e: any) {
     displayError(e.response.data.detail);
   }
@@ -305,7 +310,7 @@ export const sendManyPushNotifications = async (
 export const cancelSwap = async (accessToken: string, matchDetails: Match) => {
   try {
     const response = await axios.post(
-      "/cancelSwap",
+      `/${version}/cancel_swap`,
       matchDetails.usersMatched,
       {
         headers: {
@@ -323,7 +328,7 @@ export const cancelSwap = async (accessToken: string, matchDetails: Match) => {
 
 export const confirmSwap = async (accessToken: string, matchDetails: Match) => {
   try {
-    axios.post("/confirmSwap", matchDetails.usersMatched, {
+    axios.post(`/${version}/confirm_swap`, matchDetails.usersMatched, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -336,7 +341,7 @@ export const confirmSwap = async (accessToken: string, matchDetails: Match) => {
 
 export const resetProfile = async (user: any) => {
   axios
-    .get("/resetProfile", {
+    .get(`/${version}/reset_profile`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
@@ -349,7 +354,7 @@ export const resetProfile = async (user: any) => {
 
 export const updateUserStatus = async (accessToken: string, status: string) => {
   axios
-    .post("/updateUserStatus", status, {
+    .post(`/${version}/update_user_status`, status, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
