@@ -110,7 +110,7 @@ const ProfileScreen = ({ navigation }: any) => {
               style={{ color: colors.text.disabled }}
               value={location ? location : ""}
               editable={false}
-              placeholder="Enter your location"
+              placeholder="Your current location"
             />
           </DetailsContainer>
           <ImagePickerPressable

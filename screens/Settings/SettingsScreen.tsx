@@ -38,10 +38,10 @@ import {
 } from "./settingsHelper";
 import { NotificationContext } from "../../hooks/notifications/notificationContext";
 import { useNotificationHandler } from "../../helpers";
+import { takePhoto } from "../../lib/takePhoto";
 
 const SettingsScreen = ({ navigation }: any) => {
-  const [photo, setPhoto] = useState("");
-  const [photoTaken, setPhotoTaken] = useState(false);
+  const [photo, setPhoto] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [initialDisplayName, setInitialDisplayName] = useState("");
   const [processing, setProcessing] = useState(false);
@@ -66,15 +66,7 @@ const SettingsScreen = ({ navigation }: any) => {
 
   useNotificationHandler(notifications, navigation, removeNotification, Toast);
 
-  useGetUserSettings(
-    user,
-    params,
-    setDisplayName,
-    setInitialDisplayName,
-    setPhoto,
-    setPhotoTaken,
-    setIncompleteForm
-  );
+  useGetUserSettings(user, setDisplayName, setInitialDisplayName);
 
   useFetchInitialDistance(user, distance, setDistance, setInitialDistance);
 
@@ -96,21 +88,25 @@ const SettingsScreen = ({ navigation }: any) => {
         <View>
           <ProfilePicContainer>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Camera", { screen: "settings" })
-              }
+              onPress={() => {
+                takePhoto().then((photo) => {
+                  if (photo) {
+                    setPhoto(photo);
+                    setIncompleteForm(false);
+                  }
+                });
+              }}
             >
-              {!photo && (
+              {!photo && !user?.photoURL ? (
                 <DefaultProfilePic
                   label={user ? user.email.charAt(0).toUpperCase() : "NULL"}
                 />
-              )}
-              {user && photo && (
+              ) : (
                 <ProfilePicture
                   source={{
-                    uri: photoTaken
+                    uri: photo
                       ? photo
-                      : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${user.uid}/${photo}`,
+                      : `${CLOUD_FRONT_API_ENDPOINT}/fit-in/400x400/public/profiles/${user?.uid}/${user?.photoURL}`,
                   }}
                 />
               )}
@@ -152,7 +148,6 @@ const SettingsScreen = ({ navigation }: any) => {
           onPress={() =>
             updateUserInfo(
               user,
-              photoTaken,
               photo,
               displayName,
               distance,

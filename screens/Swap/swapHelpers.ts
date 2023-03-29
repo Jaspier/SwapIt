@@ -11,7 +11,6 @@ import {
   deleteMatches,
   sendManyPushNotifications,
 } from "../../api";
-import { Storage } from "aws-amplify";
 
 export const useCheckSwapConfirmation = (
   user: any,

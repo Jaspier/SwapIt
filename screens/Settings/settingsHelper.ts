@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { getInitialDistance, updateUserPreferences } from "../../api";
 import { NavigationProp } from "@react-navigation/core";
-import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { updateProfile } from "firebase/auth";
 import displayError from "../../lib/displayError";
@@ -9,12 +8,8 @@ import extractPhoto from "../../lib/extractPhoto";
 
 export const useGetUserSettings = (
   user: any,
-  params: any,
   setDisplayName: React.Dispatch<React.SetStateAction<string>>,
-  setInitialDisplayName: React.Dispatch<React.SetStateAction<string>>,
-  setPhoto: React.Dispatch<React.SetStateAction<string>>,
-  setPhotoTaken: React.Dispatch<React.SetStateAction<boolean>>,
-  setIncompleteForm: React.Dispatch<React.SetStateAction<boolean>>
+  setInitialDisplayName: React.Dispatch<React.SetStateAction<string>>
 ): void => {
   useEffect(() => {
     if (user) {
@@ -22,27 +17,8 @@ export const useGetUserSettings = (
         setDisplayName(user.displayName);
         setInitialDisplayName(user.displayName);
       }
-      if (user.photoURL) {
-        setPhoto(user.photoURL);
-      }
     }
-    if (params) {
-      const { photo } = params;
-      if (photo) {
-        setPhoto(photo.uri);
-        setPhotoTaken(true);
-        setIncompleteForm(false);
-      }
-    }
-  }, [
-    user,
-    params,
-    setDisplayName,
-    setInitialDisplayName,
-    setPhoto,
-    setPhotoTaken,
-    setIncompleteForm,
-  ]);
+  }, [user, setDisplayName, setInitialDisplayName]);
 };
 
 export const useFetchInitialDistance = (
@@ -91,8 +67,7 @@ export const useCheckIncompleteForm = (
 
 export const updateUserInfo = async (
   user: any,
-  photoTaken: boolean,
-  photo: string,
+  photo: string | null,
   displayName: string,
   distance: number,
   setIncompleteForm: React.Dispatch<React.SetStateAction<boolean>>,
@@ -102,7 +77,7 @@ export const updateUserInfo = async (
   let photoKey = "";
   if (user) {
     setProcessing(true);
-    if (photoTaken) {
+    if (photo) {
       const { key, blob } = await extractPhoto(photo);
       photoKey = key;
       if (user.photoURL) {
@@ -113,7 +88,7 @@ export const updateUserInfo = async (
     // @ts-ignore
     updateProfile(user, {
       displayName: displayName,
-      photoURL: photoTaken ? photoKey : user.photoURL,
+      photoURL: photo ? photoKey : user.photoURL,
     }).catch((e: any) => {
       displayError(e.message);
     });
@@ -126,7 +101,7 @@ export const updateUserInfo = async (
     if (updated) {
       setProcessing(false);
       setIncompleteForm(true);
-      navigation.navigate("Home", { distanceChanged: true });
+      navigation.navigate("Home", { refresh: true });
     }
   }
 };

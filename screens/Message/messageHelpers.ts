@@ -14,7 +14,6 @@ import getMatchedUserInfo from "../../lib/getMatchedUserInfo";
 import { Match } from "../../types";
 import { Storage } from "aws-amplify";
 import displayError from "../../lib/displayError";
-import { v4 as uuidv4 } from "uuid";
 import extractPhoto from "../../lib/extractPhoto";
 
 export const useMatchedUserStatus = (
@@ -70,46 +69,25 @@ export const useFetchMessages = (
   );
 };
 
-export const useFormatPhotoTaken = (
-  photo: any,
-  setPhotoDetails: React.Dispatch<
-    React.SetStateAction<{ key: string; blob: Blob } | null>
-  >
-) => {
-  useEffect(() => {
-    const formatPhoto = async () => {
-      if (photo) {
-        const { key, blob } = await extractPhoto(photo.uri);
-        setPhotoDetails({ key, blob });
-      }
-    };
-    formatPhoto();
-  }, [photo, setPhotoDetails]);
-};
-
 export const send = async (
   user: any,
   matchDetails: Match,
   input: string,
   setInput: React.Dispatch<React.SetStateAction<string>>,
-  photoDetails: any,
-  setPhotoDetails: React.Dispatch<
-    React.SetStateAction<{ key: string; blob: Blob } | null>
-  >,
+  photo: string | null,
+  setPhoto: React.Dispatch<React.SetStateAction<string | null>>,
   params: any,
   setIsSending: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (user) {
     let type = "message";
-    if (photoDetails) {
-      input = photoDetails.key;
+    if (photo) {
+      const { key, blob } = await extractPhoto(photo);
+      input = key;
       type = "photo";
       setIsSending(true);
       try {
-        await Storage.put(
-          `chats/${matchDetails.id}/${photoDetails.key}`,
-          photoDetails.blob
-        );
+        await Storage.put(`chats/${matchDetails.id}/${key}`, blob);
       } catch (e: any) {
         setIsSending(false);
         displayError(e.message);
@@ -124,10 +102,10 @@ export const send = async (
     );
     if (sent) {
       setInput("");
-      setPhotoDetails(null);
+      setPhoto(null);
       setIsSending(false);
       params.photo = null;
-      if (photoDetails) {
+      if (photo) {
         input = "Image";
       }
       sendPushNotification(

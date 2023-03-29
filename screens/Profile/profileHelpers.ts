@@ -2,7 +2,6 @@ import { Coords } from "./../../types";
 import { Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { NavigationProp } from "@react-navigation/core";
-import { v4 as uuidv4 } from "uuid";
 import { Storage } from "aws-amplify";
 import { createProfile, myProfile } from "../../api";
 import { useEffect } from "react";

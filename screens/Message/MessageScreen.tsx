@@ -1,9 +1,4 @@
-import {
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
-  View,
-} from "react-native";
+import { Platform, TouchableWithoutFeedback, Keyboard } from "react-native";
 import React, { useState } from "react";
 import Header from "../../components/Header/Header";
 import { SafeArea } from "../../components/utilities";
@@ -23,20 +18,16 @@ import {
 } from "./MessageStyles";
 import SenderMessage from "./components/SenderMessage";
 import ReceiverMessage from "./components/ReceiverMessage";
-import {
-  send,
-  useFetchMessages,
-  useFormatPhotoTaken,
-  useMatchedUserStatus,
-} from "./messageHelpers";
+import { send, useFetchMessages, useMatchedUserStatus } from "./messageHelpers";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
+import { takePhoto } from "../../lib/takePhoto";
 
 interface Message {
   id: string;
 }
 
-const MessageScreen = ({ navigation }: any) => {
+const MessageScreen = () => {
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -44,23 +35,18 @@ const MessageScreen = ({ navigation }: any) => {
   const { user }: AuthContextInterface = authContext;
   const { params } = useRoute();
   //@ts-ignore
-  const { photo, matchDetails } = params;
+  const { matchDetails } = params;
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [status, setStatus] = useState("offline");
   const [lastOnline, setLastOnline] = useState("");
-  const [photoDetails, setPhotoDetails] = useState<{
-    key: string;
-    blob: Blob;
-  } | null>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
 
   useMatchedUserStatus(user, matchDetails, setStatus, setLastOnline);
 
   useFetchMessages(matchDetails, setMessages);
-
-  useFormatPhotoTaken(photo, setPhotoDetails);
 
   return (
     <SafeArea>
@@ -110,16 +96,20 @@ const MessageScreen = ({ navigation }: any) => {
             )}
             <PhotoPreview
               source={{
-                uri: photo.uri,
+                uri: photo,
               }}
             />
           </PhotoPreviewContainer>
         )}
         <MessageInputContainer>
           <CameraButton
-            onPress={() =>
-              navigation.navigate("Camera", { screen: "message", matchDetails })
-            }
+            onPress={() => {
+              takePhoto().then((photo) => {
+                if (photo) {
+                  setPhoto(photo);
+                }
+              });
+            }}
           >
             <Ionicons name="camera" size={24} color="grey" />
           </CameraButton>
@@ -132,8 +122,8 @@ const MessageScreen = ({ navigation }: any) => {
                 matchDetails,
                 input,
                 setInput,
-                photoDetails,
-                setPhotoDetails,
+                photo,
+                setPhoto,
                 params,
                 setIsSending
               )
@@ -147,8 +137,8 @@ const MessageScreen = ({ navigation }: any) => {
                 matchDetails,
                 input,
                 setInput,
-                photoDetails,
-                setPhotoDetails,
+                photo,
+                setPhoto,
                 params,
                 setIsSending
               )
