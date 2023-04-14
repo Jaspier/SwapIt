@@ -55,29 +55,31 @@ export const useNotificationHandler = (
   useEffect(() => {
     if (notifications.length > 0) {
       const currentNotification = notifications[0];
-      if (isFocused && currentNotification.type === "match") {
+      if (currentNotification.type === "match") {
         const loggedInProfile = currentNotification.data.match.loggedInProfile;
         const userSwiped = currentNotification.data.match.userSwiped;
-        navigation.navigate("Match", {
-          loggedInProfile,
-          userSwiped,
-          matchDetails: currentNotification.data.matchDetails,
-        });
-      } else if (!isFocused && currentNotification.type === "match") {
-        Toast.show({
-          type: "success",
-          text1: `You got a new match! (${currentNotification.data.match.userSwiped.itemName})`,
-          text2: `${currentNotification.data.match.userSwiped.displayName} wants to swap with you.`,
-          onHide: () => {
-            removeNotification(currentNotification);
-          },
-          onPress: () => {
-            Toast.hide();
-            navigation.navigate("Message", {
-              matchDetails: currentNotification.data.matchDetails,
-            });
-          },
-        });
+        if (isFocused) {
+          navigation.navigate("Match", {
+            loggedInProfile,
+            userSwiped,
+            matchDetails: currentNotification.data.matchDetails,
+          });
+        } else {
+          Toast.show({
+            type: "success",
+            text1: `New Swap Partner! (${loggedInProfile.itemName})`,
+            text2: `${loggedInProfile.displayName} wants to swap with you.`,
+            onHide: () => {
+              removeNotification(currentNotification);
+            },
+            onPress: () => {
+              Toast.hide();
+              navigation.navigate("Message", {
+                matchDetails: currentNotification.data.matchDetails,
+              });
+            },
+          });
+        }
       } else if (currentNotification.type === "message") {
         Toast.show({
           type: "success",

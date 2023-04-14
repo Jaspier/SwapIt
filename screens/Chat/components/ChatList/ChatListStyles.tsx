@@ -5,7 +5,7 @@ import { colors } from "../../../../theme/colors";
 export const NoMatchesContainer = styled(View)`
   padding: ${(props) => props.theme.space[5]};
 `;
-export const NoMatchesText = styled(Text)`
+export const NoPartnersText = styled(Text)`
   text-align: center;
   font-size: ${(props) => props.theme.fontSizes.default};
   line-height: ${(props) => props.theme.lineHeights.title};

@@ -6,7 +6,7 @@ import {
   DeleteSlider,
   DeleteText,
   NoMatchesContainer,
-  NoMatchesText,
+  NoPartnersText,
 } from "./ChatListStyles";
 import { Swipeable } from "react-native-gesture-handler";
 import { deleteMatch } from "../../../../api";
@@ -43,7 +43,7 @@ const ChatList = () => {
     />
   ) : (
     <NoMatchesContainer>
-      <NoMatchesText>No matches at the moment 😥</NoMatchesText>
+      <NoPartnersText>No swap partners at the moment 😥</NoPartnersText>
     </NoMatchesContainer>
   );
 };
