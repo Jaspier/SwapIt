@@ -52,7 +52,16 @@ export const AuthProvider = ({ children }: Props) => {
       })
       .catch((e) => {
         setIsLoading(false);
-        setError(e.toString());
+        if (e.code === "auth/invalid-email") {
+          setError("Error: Invalid Email. Format should be: example@test.com");
+        } else if (e.code === "auth/wrong-password") {
+          setError("Error: Incorrect Password.");
+        } else if (e.code === "auth/user-not-found") {
+          setError("Error: User does not exist.");
+        } else {
+          setError(e.message);
+        }
+        setTimeout(() => setError(null), 5000);
       });
   };
 
@@ -64,7 +73,7 @@ export const AuthProvider = ({ children }: Props) => {
     setIsLoading(true);
     if (password !== repeatedPassword) {
       setIsLoading(false);
-      setError("Error: Passwords do not match");
+      setError("Error: Passwords do not match.");
       return;
     }
     createUserWithEmailAndPassword(auth, email, password)
@@ -79,7 +88,12 @@ export const AuthProvider = ({ children }: Props) => {
       })
       .catch((e) => {
         setIsLoading(false);
-        setError(e.toString());
+        if (e.code === "auth/invalid-email") {
+          setError("Error: Invalid Email. Format should be: example@test.com");
+        } else {
+          setError(e.message);
+        }
+        setTimeout(() => setError(null), 5000);
       });
   };
 

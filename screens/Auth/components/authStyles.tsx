@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import styled from "styled-components";
 import { Button, TextInput } from "react-native-paper";
+import { Entypo } from "@expo/vector-icons";
 import { colors } from "../../../theme/colors";
 
 export const AuthBackground = styled(ImageBackground).attrs({
@@ -56,9 +57,24 @@ export const AuthButton = styled(Button).attrs({
   margin-top: ${(props) => props.theme.space[6]};
 `;
 
+export const PasswordContainer = styled(View)`
+  flex-direction: row;
+  align-items: center;
+`;
+
 export const AuthInput = styled(TextInput)`
   width: 300px;
   background-color: transparent;
+`;
+
+export const EyeContainer = styled(TouchableOpacity)`
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+`;
+
+export const Eye = styled(Entypo)`
+  color: ${colors.text.disabled};
 `;
 
 export const ErrorContainer = styled(View)`

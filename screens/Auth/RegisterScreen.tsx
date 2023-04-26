@@ -17,7 +17,7 @@ import { Keyboard, Platform, TouchableWithoutFeedback } from "react-native";
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [repeatedPassword, setRepeatedPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const authContext = AuthenticationContext();
   if (!authContext) {
     return null;
@@ -51,12 +51,12 @@ const LoginScreen = ({ navigation }: any) => {
                 onChangeText={(p) => setPassword(p)}
               />
               <AuthInput
-                label="Repeat Password"
-                value={repeatedPassword}
+                label="Confirm Password"
+                value={confirmPassword}
                 textContentType="password"
                 secureTextEntry
                 autoCapitalize="none"
-                onChangeText={(p) => setRepeatedPassword(p)}
+                onChangeText={(p) => setConfirmPassword(p)}
               />
               {error && (
                 <ErrorContainer>
@@ -71,7 +71,7 @@ const LoginScreen = ({ navigation }: any) => {
                     registerWithEmailAndPassword(
                       email,
                       password,
-                      repeatedPassword
+                      confirmPassword
                     )
                   }
                 >
