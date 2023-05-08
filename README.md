@@ -1,30 +1,35 @@
 # SwapIt
 
-## Name
+## Technologies/Tools
 
-SwapIt
+- react-native
+- TypeScript
+- Expo
+- Styled-Components
+- Firebase (Authentication/Firestore)
+- Context API
+- React Navigation
+- Axios
+- and many more!
 
-## Description
+## Features
 
-A mobile app for swapping various items with others via interactive swipeable profile cards.
+- Sign In / Register
+- Profile Creation and Management with Image Uploading to AWS S3
+- Swipe to Match (Tinder-like UI)
+- Two-Way Confirmation System
+- Push Notifications
+- Real-time Chat Messaging with 'online' status indicators
+- Locaction-Based Filtering
+- Fully Custom Minimalistic Design with Reusable Header Navigation
+- and many more! (Feel free to preview the app via the EXPO GO app)
 
-## Installation
+## API
 
-- yarn
+[Swapit-API](https://github.com/Jaspier/SwapIt-API)
 
-## Usage
-
-- npm start
-- Requires [SwapIt-API](https://gitlab2.eeecs.qub.ac.uk/40253397/swapit-api) running locally on port 8000 (for now until it is deployed)
-
-## Support
-
-adungo01@qub.ac.uk
-
-## Roadmap
-
-https://docs.google.com/document/d/1oqM3FwakssBh4wU-VFZ9-pBwo9hiAFBtuvPG1l4Hj5g/edit?usp=sharing
-
-## Project status
-
-ON-GOING
+## App Preview
+To preview the app, you will need to:
+- Step 1: Download the EXPO GO app in [IOS](https://apps.apple.com/app/apple-store/id982107779) or [Android](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www)
+- Step 2: Scan this [QR Code](https://expo.dev/@40253397/SwapIt)
+- Step 3: Enjoy the app! (Due to IOS policies, the app is not publicly available to use with iPhone devices and is currently only accessible via android)
